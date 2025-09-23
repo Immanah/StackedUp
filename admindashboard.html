@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SLB</title>
+    <link rel="stylesheet" href="assets/css/admindashboard.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">SLB</div>
+        <nav class="nav">
+            <a href="#">Browse</a>
+            <a href="#">Categories</a>
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+        </nav>
+        <div class="header-user">
+            <div class="user-info">
+                <span class="user-name">Admin</span>
+                <div class="user-avatar">A</div>
+            </div>
+            <button class="logout-btn">Logout</button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <!-- Welcome Section -->
+            <section class="welcome-section">
+                <div class="welcome-content">
+                    <h1 class="welcome-title">Admin Dashboard</h1>
+                    <p class="welcome-subtitle">Manage your dress rental business operations</p>
+                </div>
+            </section>
+
+            <!-- Stats Overview -->
+            <section class="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon products-icon"></div>
+                        <div class="stat-info">
+                            <h3>156</h3>
+                            <p>Total Products</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon customers-icon"></div>
+                        <div class="stat-info">
+                            <h3>342</h3>
+                            <p>Registered Customers</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orders-icon"></div>
+                        <div class="stat-info">
+                            <h3>89</h3>
+                            <p>Active Rentals</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon revenue-icon"></div>
+                        <div class="stat-info">
+                            <h3>R45,670</h3>
+                            <p>Monthly Revenue</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Admin Actions -->
+            <section class="admin-actions-section">
+                <h2 class="section-title">Management Tools</h2>
+                <div class="admin-grid">
+                    <div class="admin-card primary">
+                        <div class="admin-icon products-manage"></div>
+                        <div class="admin-content">
+                            <h3>Manage Products</h3>
+                            <p>Add, edit, or remove dresses from your rental catalog</p>
+                            <button class="admin-btn">Manage Products</button>
+                        </div>
+                    </div>
+                    <div class="admin-card">
+                        <div class="admin-icon customers-manage"></div>
+                        <div class="admin-content">
+                            <h3>Manage Customers</h3>
+                            <p>View and update customer accounts and profiles</p>
+                            <button class="admin-btn">Manage Customers</button>
+                        </div>
+                    </div>
+                    <div class="admin-card">
+                        <div class="admin-icon orders-manage"></div>
+                        <div class="admin-content">
+                            <h3>View Orders</h3>
+                            <p>Track rental orders, payments, and return status</p>
+                            <button class="admin-btn">View Orders</button>
+                        </div>
+                    </div>
+                    <div class="admin-card">
+                        <div class="admin-icon reports-manage"></div>
+                        <div class="admin-content">
+                            <h3>Reports & Analytics</h3>
+                            <p>Analyze sales trends, popular items, and revenue</p>
+                            <button class="admin-btn">View Reports</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Activity -->
+            <section class="recent-activity-section">
+                <h2 class="section-title">Recent Activity</h2>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon new-order"></div>
+                        <div class="activity-content">
+                            <h4>New Order Received</h4>
+                            <p>Customer Sarah Johnson rented Black Evening Gown - Order #12348</p>
+                            <span class="activity-time">10 minutes ago</span>
+                        </div>
+                        <div class="activity-status new">New</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon return"></div>
+                        <div class="activity-content">
+                            <h4>Dress Returned</h4>
+                            <p>Red Cocktail Dress returned by Emma Wilson - Order #12347</p>
+                            <span class="activity-time">1 hour ago</span>
+                        </div>
+                        <div class="activity-status returned">Returned</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon payment"></div>
+                        <div class="activity-content">
+                            <h4>Payment Received</h4>
+                            <p>Payment of R150 received for Order #12346</p>
+                            <span class="activity-time">3 hours ago</span>
+                        </div>
+                        <div class="activity-status paid">Paid</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon customer"></div>
+                        <div class="activity-content">
+                            <h4>New Customer Registration</h4>
+                            <p>New customer account created: Lisa Chen</p>
+                            <span class="activity-time">5 hours ago</span>
+                        </div>
+                        <div class="activity-status registered">Registered</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Links -->
+            <section class="quick-links-section">
+                <h2 class="section-title">Quick Links</h2>
+                <div class="quick-links-grid">
+                    <a href="#" class="quick-link">
+                        <div class="quick-link-icon inventory"></div>
+                        <span>Inventory Status</span>
+                    </a>
+                    <a href="#" class="quick-link">
+                        <div class="quick-link-icon calendar"></div>
+                        <span>Rental Calendar</span>
+                    </a>
+                    <a href="#" class="quick-link">
+                        <div class="quick-link-icon settings"></div>
+                        <span>System Settings</span>
+                    </a>
+                    <a href="#" class="quick-link">
+                        <div class="quick-link-icon backup"></div>
+                        <span>Data Backup</span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>SLB Admin</h4>
+                    <p>Professional dress rental management system for your boutique business.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Admin Guide</a></li>
+                        <li><a href="#">System Status</a></li>
+                        <li><a href="#">Contact Support</a></li>
+                        <li><a href="#">User Manual</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>System Info</h4>
+                    <ul>
+                        <li>Version: 2.1.0</li>
+                        <li>Last Updated: Today</li>
+                        <li>Server Status: Online</li>
+                        <li>Backup: Current</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 SLB Admin Dashboard. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="admin-dashboard.js"></script>
+</body>
+</html>

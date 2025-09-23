@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SLB - Dress Catalog</title>
+    <link rel="stylesheet" href="assets/css/catalog.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">SLB</div>
+        <nav class="nav">
+            <a href="#">Browse</a>
+            <a href="#">Categories</a>
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+        </nav>
+        <div class="header-icons">
+            <div class="icon">👤</div>
+            <div class="icon">🔒</div>
+            <div class="icon">?</div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Designer Dress Rentals</h1>
+                <p>Luxury dresses for every special occasion</p>
+            </div>
+        </section>
+
+        <!-- Filters Section -->
+        <section class="filters-section">
+            <div class="container">
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="category">Category</label>
+                        <select id="category">
+                            <option value="">All Categories</option>
+                            <option value="evening">Evening Gowns</option>
+                            <option value="cocktail">Cocktail Dresses</option>
+                            <option value="formal">Formal Wear</option>
+                            <option value="wedding">Wedding Guest</option>
+                            <option value="prom">Prom Dresses</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="size">Size</label>
+                        <select id="size">
+                            <option value="">All Sizes</option>
+                            <option value="xs">XS</option>
+                            <option value="s">S</option>
+                            <option value="m">M</option>
+                            <option value="l">L</option>
+                            <option value="xl">XL</option>
+                            <option value="xxl">XXL</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="color">Color</label>
+                        <select id="color">
+                            <option value="">All Colors</option>
+                            <option value="black">Black</option>
+                            <option value="red">Red</option>
+                            <option value="blue">Blue</option>
+                            <option value="green">Green</option>
+                            <option value="pink">Pink</option>
+                            <option value="white">White</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="price">Price Range</label>
+                        <select id="price">
+                            <option value="">All Prices</option>
+                            <option value="0-50">R0 - R50</option>
+                            <option value="50-100">R50 - R100</option>
+                            <option value="100-200">R100 - R200</option>
+                            <option value="200+">R200+</option>
+                        </select>
+                    </div>
+                    <button class="filter-btn">Apply Filters</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Grid -->
+        <section class="products-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Available Dresses</h2>
+                    <div class="sort-options">
+                        <label for="sort">Sort by:</label>
+                        <select id="sort">
+                            <option value="newest">Newest</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="popular">Most Popular</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="products-grid">
+                    <!-- Product Card 1 -->
+                    <div class="product-card" data-category="evening" data-size="m" data-color="black" data-price="150">
+                        <div class="product-image">
+                            <img src="https://via.placeholder.com/300x400/000000/FFFFFF?text=Black+Evening+Gown" alt="Black Evening Gown">
+                            <div class="product-overlay">
+                                <button class="quick-view-btn">Quick View</button>
+                                <button class="rent-btn">Rent Now</button>
+                            </div>
+                            <span class="availability-badge available">Available</span>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">Elegant Black Evening Gown</h3>
+                            <p class="product-designer">By Versace</p>
+                            <div class="product-details">
+                                <span class="size">Size: M</span>
+                                <span class="rental-period">3-day rental</span>
+                            </div>
+                            <div class="product-price">R150</div>
+                        </div>
+                    </div>
+
+                    <!-- Product Card 2 -->
+                    <div class="product-card" data-category="cocktail" data-size="s" data-color="red" data-price="95">
+                        <div class="product-image">
+                            <img src="https://via.placeholder.com/300x400/DC143C/FFFFFF?text=Red+Cocktail+Dress" alt="Red Cocktail Dress">
+                            <div class="product-overlay">
+                                <button class="quick-view-btn">Quick View</button>
+                                <button class="rent-btn">Rent Now</button>
+                            </div>
+                            <span class="availability-badge available">Available</span>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">Red Cocktail Dress</h3>
+                            <p class="product-designer">By Dolce & Gabbana</p>
+                            <div class="product-details">
+                                <span class="size">Size: S</span>
+                                <span class="rental-period">3-day rental</span>
+                            </div>
+                            <div class="product-price">R95</div>
+                        </div>
+                    </div>
+
+                    <!-- Product Card 3 -->
+                    <div class="product-card" data-category="formal" data-size="l" data-color="blue" data-price="120">
+                        <div class="product-image">
+                            <img src="https://via.placeholder.com/300x400/000080/FFFFFF?text=Navy+Formal+Dress" alt="Navy Formal Dress">
+                            <div class="product-overlay">
+                                <button class="quick-view-btn">Quick View</button>
+                                <button class="rent-btn">Rent Now</button>
+                            </div>
+                            <span class="availability-badge rented">Rented</span>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">Navy Blue Formal Dress</h3>
+                            <p class="product-designer">By Calvin Klein</p>
+                            <div class="product-details">
+                                <span class="size">Size: L</span>
+                                <span class="rental-period">3-day rental</span>
+                            </div>
+                            <div class="product-price">R120</div>
+                        </div>
+                    </div>
+
+                    <!-- Product Card 4 -->
+                    <div class="product-card" data-category="wedding" data-size="m" data-color="pink" data-price="85">
+                        <div class="product-image">
+                            <img src="https://via.placeholder.com/300x400/FFB6C1/000000?text=Pink+Guest+Dress" alt="Pink Wedding Guest Dress">
+                            <div class="product-overlay">
+                                <button class="quick-view-btn">Quick View</button>
+                                <button class="rent-btn">Rent Now</button>
+                            </div>
+                            <span class="availability-badge available">Available</span>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">Pink Wedding Guest Dress</h3>
+                            <p class="product-designer">By Ted Baker</p>
+                            <div class="product-details">
+                                <span class="size">Size: M</span>
+                                <span class="rental-period">3-day rental</span>
+                            </div>
+                            <div class="product-price">R85</div>
+                        </div>
+                    </div>
+
+                    <!-- Product Card 5 -->
+                    <div class="product-card" data-category="prom" data-size="s" data-color="green" data-price="180">
+                        <div class="product-image">
+                            <img src="https://via.placeholder.com/300x400/228B22/FFFFFF?text=Green+Prom+Dress" alt="Green Prom Dress">
+                            <div class="product-overlay">
+                                <button class="quick-view-btn">Quick View</button>
+                                <button class="rent-btn">Rent Now</button>
+                            </div>
+                            <span class="availability-badge available">Available</span>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">Emerald Green Prom Dress</h3>
+                            <p class="product-designer">By Jovani</p>
+                            <div class="product-details">
+                                <span class="size">Size: S</span>
+                                <span class="rental-period">3-day rental</span>
+                            </div>
+                            <div class="product-price">R180</div>
+                        </div>
+                    </div>
+
+                    <!-- Product Card 6 -->
+                    <div class="product-card" data-category="evening" data-size="l" data-color="white" data-price="200">
+                        <div class="product-image">
+                            <img src="https://via.placeholder.com/300x400/F5F5F5/000000?text=White+Evening+Gown" alt="White Evening Gown">
+                            <div class="product-overlay">
+                                <button class="quick-view-btn">Quick View</button>
+                                <button class="rent-btn">Rent Now</button>
+                            </div>
+                            <span class="availability-badge available">Available</span>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">White Evening Gown</h3>
+                            <p class="product-designer">By Chanel</p>
+                            <div class="product-details">
+                                <span class="size">Size: L</span>
+                                <span class="rental-period">3-day rental</span>
+                            </div>
+                            <div class="product-price">R200</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Load More Button -->
+                <div class="load-more-section">
+                    <button class="load-more-btn">Load More Dresses</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>About SLB</h4>
+                    <p>Premium dress rentals for your special occasions. Quality, style, and affordability combined.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#">How It Works</a></li>
+                        <li><a href="#">Size Guide</a></li>
+                        <li><a href="#">Care Instructions</a></li>
+                        <li><a href="#">Returns</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li>Email: info@slbrentals.com</li>
+                        <li>Phone: +270001112222</li>
+                        <li>Hours: Mon-Fri 9AM-6PM</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 SLB Dress Rentals. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="catalog.js"></script>
+</body>
+</html>
