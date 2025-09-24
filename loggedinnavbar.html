@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>OzYde — Logged-in Navbar (Demo)</title>
+    <style>
+         :root {
+            --bg: #fff;
+            --nav-bg: #0b0b0b;
+            --muted: #9a9a9a;
+            --accent: #111;
+            --max-width: 1200px;
+        }
+        
+        * {
+            box-sizing: border-box
+        }
+        
+        body {
+            margin: 0;
+            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            color: #111;
+            background: var(--bg)
+        }
+        
+        .nav-wrap {
+            background: var(--nav-bg);
+            color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 120;
+            box-shadow: 0 6px 20px rgba(2, 2, 2, 0.12)
+        }
+        
+        .nav {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            justify-content: space-between
+        }
+        
+        .logo {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-weight: 800;
+            letter-spacing: 1px;
+            font-size: 20px
+        }
+        
+        .logo-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #fff2, #fff6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #111;
+            font-weight: 900;
+            font-size: 16px
+        }
+        
+        .search {
+            flex: 1;
+            max-width: 640px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0 12px
+        }
+        
+        .search input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 999px 0 0 999px;
+            border: 0;
+            outline: 0;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #fff
+        }
+        
+        .search button {
+            padding: 10px 12px;
+            border-radius: 0 999px 999px 0;
+            border: 0;
+            background: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+        
+        .icons {
+            display: flex;
+            gap: 14px;
+            align-items: center
+        }
+        
+        .icon-only {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 0;
+            color: #fff;
+            cursor: pointer
+        }
+        
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #222, #111);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700
+        }
+        /* dropdown */
+        
+        .profile-area {
+            position: relative
+        }
+        
+        .profile-btn {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: transparent;
+            border: 0;
+            color: #fff;
+            cursor: pointer;
+            padding: 6px 8px;
+            border-radius: 8px
+        }
+        
+        .profile-btn:focus {
+            outline: 2px solid rgba(255, 255, 255, 0.12);
+            outline-offset: 2px
+        }
+        
+        .dropdown {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 10px);
+            background: #111;
+            border-radius: 10px;
+            padding: 8px 6px;
+            min-width: 200px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: none
+        }
+        
+        .dropdown a {
+            display: block;
+            color: #fff;
+            padding: 10px 12px;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 8px
+        }
+        
+        .dropdown a:hover,
+        .dropdown a:focus {
+            background: #1a1a1a;
+            outline: none
+        }
+        /* mobile */
+        
+        .mobile-toggle {
+            display: none;
+            background: transparent;
+            border: 0;
+            color: #fff
+        }
+        
+        .mobile-menu {
+            display: none;
+            padding: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.03)
+        }
+        
+        @media (max-width:880px) {
+            .search {
+                display: none
+            }
+            .mobile-toggle {
+                display: inline-flex
+            }
+        }
+        /* small */
+        
+        .hidden {
+            display: none
+        }
+        
+        .small {
+            font-size: 13px;
+            color: var(--muted)
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="nav-wrap" role="banner">
+        <div class="nav" role="navigation" aria-label="Main navigation">
+            <div style="display:flex;align-items:center;gap:12px">
+                <div class="logo" id="brandArea">
+                    <div class="logo-badge" aria-hidden="true">OZ</div>
+                    <div>OZYDE</div>
+                </div>
+            </div>
+
+            <div class="search" role="search" aria-label="Site search">
+                <input id="searchInput" type="search" placeholder="Search dresses, styles, collection..." aria-label="Search">
+                <button id="searchBtn" aria-label="Search">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none"><path d="M21 21l-4.35-4.35" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="11" r="6" stroke="#111" stroke-width="2"/></svg>
+        </button>
+            </div>
+
+            <div class="icons" role="group" aria-label="User actions">
+                <button class="icon-only" title="Wishlist" aria-label="Wishlist" id="wishlistBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20.8 7.2a5 5 0 0 0-7.07 0L12 8.94l-1.73-1.72a5 5 0 1 0-7.07 7.07L12 21.5l8.8-8.8a5 5 0 0 0 0-7.5z" stroke="white" stroke-width="1.2" fill="none"/></svg>
+        </button>
+
+                <button class="icon-only" title="Cart" aria-label="Cart" id="cartBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 3h2l1 7h13" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20" r="1.5" fill="white"/><circle cx="18" cy="20" r="1.5" fill="white"/></svg>
+        </button>
+
+                <!-- profile with dropdown -->
+                <div class="profile-area" id="profileArea" aria-live="polite">
+                    <!-- populated by JS (logged-in view only) -->
+                </div>
+
+                <button class="mobile-toggle" id="mobileToggle" aria-expanded="false" aria-label="Open menu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 7h18M3 12h18M3 17h18" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+            </div>
+        </div>
+
+        <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+            <div style="margin-bottom:10px">
+                <input id="mobileSearch" type="search" placeholder="Search dresses..." style="width:100%; padding:10px 12px; border-radius:8px; border:0; background:rgba(255,255,255,0.04); color:#fff">
+            </div>
+            <div style="display:flex;gap:10px;align-items:center">
+                <button class="icon-only" aria-label="Wishlist (mobile)" id="mWishlist"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20.8 7.2a5 5 0 0 0-7.07 0L12 8.94l-1.73-1.72a5 5 0 1 0-7.07 7.07L12 21.5l8.8-8.8a5 5 0 0 0 0-7.5z" stroke="white" stroke-width="1.2" fill="none"/></svg></button>
+                <button class="icon-only" aria-label="Cart (mobile)" id="mCart"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 3h2l1 7h13" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20" r="1.5" fill="white"/><circle cx="18" cy="20" r="1.5" fill="white"/></svg></button>
+                <div id="mobileAuthArea" style="margin-left:6px"></div>
+            </div>
+        </div>
+    </header>
+
+    <main style="padding:40px; max-width:var(--max-width); margin:0 auto">
+        <h2 style="margin:0 0 12px 0">Page placeholder </h2>
+        <p style="color:var(--muted)">This is the demo for the logged in navbar only.</p>
+    </main>
+
+    <script>
+        // ---- Demo user handling / rendering (logged-in only) ----
+        const USER_KEY = 'ozyde_user';
+        const DEMO_USER = {
+            firstName: 'A',
+            lastName: 'Nomvula',
+            email: 'a.nomvula@example.com'
+        };
+
+        function getCurrentUser() {
+            try {
+                const raw = localStorage.getItem(USER_KEY);
+                if (!raw) return DEMO_USER; // always return demo user if none set — logged-in demo
+                return JSON.parse(raw);
+            } catch (e) {
+                return DEMO_USER;
+            }
+        }
+
+        function setCurrentUser(user) {
+            if (!user) {
+                localStorage.removeItem(USER_KEY);
+            } else localStorage.setItem(USER_KEY, JSON.stringify(user));
+            renderProfileArea();
+            renderMobileAuth();
+        }
+
+        // Format display name like "A. Nomvula"
+        function displayNameFor(user) {
+            if (!user) return '';
+            const first = user.firstName || '';
+            const last = user.lastName || '';
+            if (first && last) return first.charAt(0).toUpperCase() + '. ' + capitalize(last);
+            if (first) return capitalize(first);
+            if (user.email) return user.email.split('@')[0];
+            return 'Member';
+        }
+
+        function capitalize(s) {
+            return s && (s.charAt(0).toUpperCase() + s.slice(1))
+        }
+
+        // Render the profile area (logged-in only)
+        function renderProfileArea() {
+            const container = document.getElementById('profileArea');
+            container.innerHTML = ''; // reset
+
+            const user = getCurrentUser();
+            // logged-in view
+            const btn = document.createElement('button');
+            btn.className = 'profile-btn';
+            btn.id = 'profileBtn';
+            btn.setAttribute('aria-haspopup', 'true');
+            btn.setAttribute('aria-expanded', 'false');
+            btn.innerHTML = `
+        <div class="profile-avatar" aria-hidden="true">${(user.firstName||user.email||'U').charAt(0).toUpperCase()}</div>
+        <div style="text-align:left">
+          <div style="font-weight:700; font-size:14px">${escapeHtml(displayNameFor(user))}</div>
+          <div style="font-size:12px; color:#bdbdbd;">Member</div>
+        </div>
+      `;
+            container.appendChild(btn);
+
+            const dd = document.createElement('div');
+            dd.className = 'dropdown';
+            dd.id = 'profileDropdown';
+            dd.setAttribute('role', 'menu');
+            dd.setAttribute('aria-hidden', 'true');
+            dd.innerHTML = `
+        <a href="profile.html" role="menuitem">My Account</a>
+        <a href="orders.html" role="menuitem">My Orders</a>
+        <a href="wishlist.html" role="menuitem">Wishlist</a>
+        <a href="#" role="menuitem" id="signOutLink">Sign out</a>
+      `;
+            container.appendChild(dd);
+
+            // wire up toggle and actions
+            btn.addEventListener('click', toggleDropdown);
+            btn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleDropdown();
+                }
+            });
+
+            // sign out: clears demo user (goes to no user state — but this file is logged-in demo)
+            const so = dd.querySelector('#signOutLink');
+            so && so.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (!confirm('Sign out?')) return;
+                // For demo: remove stored user so backend devs can test logged-out if needed
+                localStorage.removeItem(USER_KEY);
+                // re-render (will show DEMO_USER again because we default to DEMO_USER in getCurrentUser)
+                renderProfileArea();
+                renderMobileAuth();
+                closeDropdown();
+                alert('Signed out (demo). Note: navbar demo always returns a demo user unless backend sets localStorage["ozyde_user"].');
+            });
+        }
+
+        // escape HTML for minimal safety in outputs
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"]/g, (c) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;'
+            }[c]));
+        }
+
+        // ---- dropdown helpers ----
+        function toggleDropdown() {
+            const dd = document.getElementById('profileDropdown');
+            const btn = document.getElementById('profileBtn');
+            if (!dd || !btn) return;
+            const open = dd.style.display === 'block';
+            if (open) closeDropdown();
+            else openDropdown();
+        }
+
+        function openDropdown() {
+            const dd = document.getElementById('profileDropdown');
+            const btn = document.getElementById('profileBtn');
+            if (!dd || !btn) return;
+            dd.style.display = 'block';
+            dd.setAttribute('aria-hidden', 'false');
+            btn.setAttribute('aria-expanded', 'true');
+            const firstLink = dd.querySelector('a');
+            if (firstLink) firstLink.focus();
+        }
+
+        function closeDropdown() {
+            const dd = document.getElementById('profileDropdown');
+            const btn = document.getElementById('profileBtn');
+            if (!dd || !btn) return;
+            dd.style.display = 'none';
+            dd.setAttribute('aria-hidden', 'true');
+            btn.setAttribute('aria-expanded', 'false');
+        }
+
+        // close on outside click and Escape
+        document.addEventListener('click', (e) => {
+            const profileArea = document.getElementById('profileArea');
+            const dd = document.getElementById('profileDropdown');
+            if (!profileArea) return;
+            if (dd && dd.style.display === 'block' && !profileArea.contains(e.target)) {
+                closeDropdown();
+            }
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeDropdown();
+        });
+
+        // ---- mobile menu toggle ----
+        (function mobileToggleSetup() {
+            const mt = document.getElementById('mobileToggle');
+            const mm = document.getElementById('mobileMenu');
+            mt && mt.addEventListener('click', () => {
+                const open = mm.style.display === 'block';
+                mm.style.display = open ? 'none' : 'block';
+                mt.setAttribute('aria-expanded', String(!open));
+                mm.setAttribute('aria-hidden', String(open));
+            });
+        })();
+
+        // ---- wishlist / cart demo handling ----
+        document.getElementById('wishlistBtn').addEventListener('click', (e) => {
+            // logged-in demo; navigate to wishlist page
+            window.location.href = 'wishlist.html';
+        });
+        document.getElementById('cartBtn').addEventListener('click', (e) => {
+            window.location.href = 'cart.html';
+        });
+
+        // mobile buttons
+        document.getElementById('mWishlist').addEventListener('click', () => document.getElementById('wishlistBtn').click());
+        document.getElementById('mCart').addEventListener('click', () => document.getElementById('cartBtn').click());
+
+        // ---- search demo ----
+        document.getElementById('searchBtn').addEventListener('click', () => {
+            const q = document.getElementById('searchInput').value.trim();
+            if (!q) {
+                alert('Type something to search (demo)');
+                return;
+            }
+            // In prod: redirect to /search?q=...
+            alert('Search (demo): ' + q);
+        });
+
+        // ---- mobile auth area: show logged-in user summary ----
+        function renderMobileAuth() {
+            const mobileAuth = document.getElementById('mobileAuthArea');
+            const user = getCurrentUser();
+            if (!mobileAuth) return;
+            mobileAuth.innerHTML = '';
+            const el = document.createElement('div');
+            el.style.display = 'flex';
+            el.style.alignItems = 'center';
+            el.style.gap = '8px';
+            el.innerHTML = `<div style="width:36px;height:36px;border-radius:8px;background:#fff;color:#111;display:flex;align-items:center;justify-content:center;font-weight:700">${(user.firstName||user.email||'U').charAt(0).toUpperCase()}</div>
+        <div style="font-size:14px">${escapeHtml(displayNameFor(user))}</div>`;
+            mobileAuth.appendChild(el);
+        }
+
+        // initial render
+        renderProfileArea();
+        renderMobileAuth();
+
+        // expose helpers for backend devs
+        window.__OZYDE = {
+            getCurrentUser,
+            setCurrentUser
+        };
+
+        // Console quicktip:
+        // To set a real user in the browser console:
+        // localStorage.setItem('ozyde_user', JSON.stringify({firstName:'Zola', lastName:'M', email:'z@x.com'}));
+        // then call: window.__OZYDE.setCurrentUser(JSON.parse(localStorage.getItem('ozyde_user')));
+    </script>
+</body>
+
+</html>

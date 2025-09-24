@@ -1,0 +1,836 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Stars Lifestyle Boutique — Wireframe Implementation</title>
+    <style>
+         :root {
+            --bg: #fff;
+            --text: #222;
+            --muted: #7a7a7a;
+            --accent: #111;
+            --max-width: 1000px;
+            --hero-height: 420px;
+        }
+        
+        * {
+            box-sizing: border-box
+        }
+        
+        body {
+            margin: 0;
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1.5;
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+        
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        /* NAV */
+        
+        header {
+            border-bottom: 1px solid #eee;
+            background: #fff;
+        }
+        
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 0;
+            position: relative;
+            /* for mobile dropdown */
+            z-index: 50;
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .logo-box {
+            width: 44px;
+            height: 44px;
+            border: 2px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #bbb;
+            font-weight: 700;
+        }
+        
+        nav {
+            display: block
+        }
+        
+        nav ul {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 18px;
+            list-style: none;
+            align-items: center;
+        }
+        
+        nav a {
+            font-size: 14px;
+            color: var(--muted);
+            display: block;
+            padding: 8px 6px
+        }
+        
+        .btn-signup {
+            background: var(--accent);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        /* Mobile toggle (hidden on desktop) */
+        
+        .mobile-toggle {
+            display: none;
+            background: transparent;
+            border: 0;
+            padding: 8px;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .mobile-toggle .hamburger {
+            width: 22px;
+            height: 14px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .mobile-toggle .hamburger::before,
+        .mobile-toggle .hamburger::after,
+        .mobile-toggle .hamburger div {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #222;
+            transition: transform .25s ease, opacity .2s ease;
+        }
+        
+        .mobile-toggle .hamburger::before {
+            top: 0
+        }
+        
+        .mobile-toggle .hamburger div {
+            top: 6px
+        }
+        
+        .mobile-toggle .hamburger::after {
+            bottom: 0
+        }
+        /* when open, turn into X */
+        
+        .nav.open .mobile-toggle .hamburger::before {
+            transform: translateY(6px) rotate(45deg);
+        }
+        
+        .nav.open .mobile-toggle .hamburger div {
+            opacity: 0
+        }
+        
+        .nav.open .mobile-toggle .hamburger::after {
+            transform: translateY(-6px) rotate(-45deg);
+        }
+        /* HERO */
+        
+        .hero {
+            position: relative;
+            height: var(--hero-height);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+        }
+        /* slideshow images stack
+       changed to focus on top of image so vertical dresses are shown better */
+        
+        .hero .slide {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            /* fill width */
+            background-position: center top;
+            /* focus on top part of image */
+            opacity: 0;
+            transition: opacity 1s ease;
+            filter: grayscale(60%) contrast(95%);
+            transform: scale(1.03);
+        }
+        
+        .hero .slide.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+        /* hero text - transparent box with text shadow and overlay for readability */
+        
+        .hero-inner {
+            position: relative;
+            z-index: 3;
+            max-width: 720px;
+            padding: 40px 20px;
+            background: transparent;
+            border-radius: 8px;
+            box-shadow: none;
+        }
+        
+        .hero h1 {
+            margin: 0 0 8px;
+            font-size: 36px;
+            letter-spacing: 0.2px;
+            color: #fff;
+            text-shadow: 0 6px 18px rgba(0, 0, 0, 0.45)
+        }
+        
+        .hero p.lead {
+            margin: 0 0 18px;
+            color: #fff;
+            font-weight: 500;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.35)
+        }
+        
+        .hero .cta {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap
+        }
+        
+        .btn {
+            padding: 10px 18px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            font-weight: 600;
+            backdrop-filter: blur(4px);
+        }
+        
+        .btn.primary {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent)
+        }
+        
+        .hero .subtext {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 8px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25)
+        }
+        /* subtle gradient overlay to help legibility */
+        
+        .hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.18) 0%, rgba(0, 0, 0, 0.35) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+        /* Reviews */
+        
+        .section {
+            padding: 48px 0
+        }
+        
+        .reviews {
+            display: flex;
+            gap: 18px;
+            align-items: flex-start;
+            justify-content: center;
+        }
+        
+        .review-card {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            max-width: 760px;
+            width: 100%;
+            transition: opacity .6s ease, transform .6s ease;
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        
+        .review-card.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .profile-thumb {
+            width: 120px;
+            height: 120px;
+            border-radius: 6px;
+            background: #eee;
+            flex: 0 0 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid #ddd;
+        }
+        
+        .profile-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block
+        }
+        
+        .review-body {
+            flex: 1
+        }
+        
+        .review-meta {
+            font-weight: 700;
+            margin-bottom: 6px
+        }
+        
+        .review-location {
+            color: var(--muted);
+            font-weight: 600;
+            font-size: 13px
+        }
+        
+        .review-text {
+            color: #333;
+            margin-top: 8px
+        }
+        
+        .stars {
+            margin-top: 10px
+        }
+        /* Collections (circular) */
+        
+        .collections {
+            display: flex;
+            gap: 28px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 28px;
+            flex-wrap: wrap;
+        }
+        
+        .collection {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 6px solid #e6e6e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            font-weight: 600;
+            color: var(--muted);
+            text-align: center;
+            padding: 10px;
+            background-size: cover;
+            background-position: center;
+            transition: transform .25s ease, box-shadow .25s ease;
+        }
+        
+        .collection:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06)
+        }
+        /* How it works */
+        
+        .how {
+            display: flex;
+            gap: 18px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .how .how-btn {
+            background: #111;
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 4px;
+            font-weight: 600;
+            min-width: 120px;
+            text-align: center;
+        }
+        /* FAQ (3 columns) */
+        
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 18px;
+        }
+        
+        .faq-item h4 {
+            margin: 0 0 6px;
+            font-size: 15px
+        }
+        
+        .faq-item p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px
+        }
+        /* Footer */
+        
+        footer {
+            border-top: 1px solid #eee;
+            padding: 36px 0;
+            margin-top: 28px;
+            color: var(--muted);
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+        
+        .socials {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+            align-items: center
+        }
+        
+        .socials a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: #f5f5f5
+        }
+        
+        .small {
+            font-size: 13px;
+            color: var(--muted)
+        }
+        /* Responsive */
+        
+        @media (max-width:900px) {
+             :root {
+                --max-width: 720px;
+                --hero-height: 360px
+            }
+            .faq-grid {
+                grid-template-columns: repeat(2, 1fr)
+            }
+            .footer-grid {
+                grid-template-columns: 1fr 1fr
+            }
+        }
+        
+        @media (max-width:560px) {
+             :root {
+                --max-width: 420px;
+                --hero-height: 320px
+            }
+            nav ul {
+                display: none
+            }
+            /* hidden by default on mobile */
+            .hero h1 {
+                font-size: 26px
+            }
+            .faq-grid {
+                grid-template-columns: 1fr
+            }
+            .profile-thumb {
+                width: 88px;
+                height: 88px;
+                flex: 0 0 88px
+            }
+            .collection {
+                width: 100px;
+                height: 100px
+            }
+            .footer-grid {
+                grid-template-columns: 1fr
+            }
+            /* show mobile toggle button */
+            .mobile-toggle {
+                display: flex
+            }
+            /* mobile menu styling when opened */
+            .nav.open nav ul {
+                display: flex;
+                flex-direction: column;
+                gap: 0;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: #fff;
+                padding: 12px 18px;
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+                border-bottom: 1px solid #eee;
+            }
+            .nav.open nav ul li a {
+                padding: 12px 8px;
+                border-bottom: 1px solid #f4f4f4
+            }
+            .nav.open nav ul li:last-child a {
+                border-bottom: 0
+            }
+            /* make Sign Up look like a block too */
+            .nav.open nav ul li a.btn-signup {
+                display: inline-block;
+                margin-top: 8px
+            }
+        }
+        /* small helpers */
+        
+        .muted {
+            color: var(--muted)
+        }
+        
+        .center {
+            text-align: center
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav" role="banner">
+            <div class="brand">
+                <div class="logo-box" aria-hidden="true">✦</div>
+                <div>Ozyde</div>
+            </div>
+
+            <!-- mobile toggle button -->
+            <button class="mobile-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Toggle navigation">
+        <span class="hamburger"><div></div></span>
+      </button>
+
+            <nav aria-label="Main navigation">
+                <ul id="main-nav">
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <!-- now link to an external page placeholder for signup/login implementation -->
+                    <li><a href="guestnavbar.html">Browse</a></li>
+                    <li><a href="signup.html" class="btn-signup">Sign Up</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero" aria-label="Hero section">
+        <!-- Slides inserted by JS -->
+        <div class="slide" id="slide-0" aria-hidden="true"></div>
+        <div class="slide" id="slide-1" aria-hidden="true"></div>
+        <div class="slide" id="slide-2" aria-hidden="true"></div>
+
+        <div class="hero-inner container">
+            <h1>Be Best Dressed</h1>
+            <p class="lead">Rent our luxury exquisite items that will have you looking and feeling like the best dressed in any occasion</p>
+            <div class="cta">
+                <a href="signup.html" class="btn primary">Sign Up</a>
+                <a href="#" class="btn">View Magazine</a>
+            </div>
+            <div class="subtext">View our Magazine with our best looks and reserve items.</div>
+        </div>
+    </section>
+
+
+    <!-- Shop By Collections -->
+    <section class="section center">
+        <div class="container">
+            <h3>Shop By Collections</h3>
+            <div class="collections" aria-label="Collections">
+                <!-- link to signup placeholder page so your teammate can implement the real page -->
+                <a href="signup.html" class="collection" id="col-1" style="background-image:url('images/collection-wedding.jpg');">Wedding</a>
+                <a href="signup.html" class="collection" id="col-2" style="background-image:url('images/collection-matric.jpg');">Matric Dance</a>
+                <a href="signup.html" class="collection" id="col-3" style="background-image:url('images/collection-bday.jpg');">Birthday</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="section center">
+        <div class="container">
+            <h4>How It Works</h4>
+            <div class="how" role="list">
+                <div class="how-btn" role="listitem">Browse</div>
+                <div class="how-btn" role="listitem">Book</div>
+                <div class="how-btn" role="listitem">Return</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Client Reviews -->
+    <section class="section container center" aria-labelledby="reviews-heading">
+        <h3 id="reviews-heading">Client Reviews</h3>
+
+        <div id="reviews" class="reviews" aria-live="polite">
+            <div class="review-card" id="review-0" role="article" aria-hidden="true">
+                <div class="profile-thumb"><img src="profile1.jpg" alt="Client profile image"></div>
+                <div class="review-body">
+                    <div class="review-meta">Clara Clark <span class="review-location"> — Rivonia, Sandton</span></div>
+                    <div class="review-text">The dress was a show stopper and fit just like a glove! I am extremely impressed with this business — all processes were smooth, keep it up!</div>
+                    <div class="stars" aria-hidden="true">⭐️⭐️⭐️⭐️⭐️</div>
+                </div>
+            </div>
+
+            <div class="review-card" id="review-1" role="article" aria-hidden="true">
+                <div class="profile-thumb"><img src="profile2.jpg" alt="Client profile image"></div>
+                <div class="review-body">
+                    <div class="review-meta">M. Dlamini <span class="review-location"> — Durban</span></div>
+                    <div class="review-text">Amazing collection and timely delivery. The rental process was simple and the dress looked brand new.</div>
+                    <div class="stars" aria-hidden="true">⭐️⭐️⭐️⭐️⭐️</div>
+                </div>
+            </div>
+
+            <div class="review-card" id="review-2" role="article" aria-hidden="true">
+                <div class="profile-thumb"><img src="profile3.jpg" alt="Client profile image"></div>
+                <div class="review-body">
+                    <div class="review-meta">S. Patel <span class="review-location"> — Cape Town</span></div>
+                    <div class="review-text">Perfect fit and customer service was very friendly. Will definitely rent again!</div>
+                    <div class="stars" aria-hidden="true">⭐️⭐️⭐️⭐️⭐️</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section container" aria-labelledby="faq-heading">
+        <h3 id="faq-heading">FAQ</h3>
+        <div class="faq-grid" role="list">
+            <div class="faq-item" role="listitem">
+                <h4>How long can I rent a dress?</h4>
+                <p>Rental durations vary — typical rentals are 3–7 days. You can request longer if needed.</p>
+            </div>
+            <div class="faq-item" role="listitem">
+                <h4>What if the dress doesn't fit?</h4>
+                <p>We offer simple exchange or alteration guidance. Reach out to our support for options.</p>
+            </div>
+            <div class="faq-item" role="listitem">
+                <h4>Are dresses cleaned between rentals?</h4>
+                <p>Yes. All items are professionally cleaned and inspected between rentals for hygiene and quality.</p>
+            </div>
+
+            <div class="faq-item" role="listitem">
+                <h4>Is delivery available nationwide?</h4>
+                <p>We deliver across major cities; some remote areas may have limited service.</p>
+            </div>
+            <div class="faq-item" role="listitem">
+                <h4>Do you accept returns late?</h4>
+                <p>Late returns may incur a small fee. Check our terms for the exact policy.</p>
+            </div>
+            <div class="faq-item" role="listitem">
+                <h4>How do I sign up?</h4>
+                <p>Click the Sign Up button and your team will be able to implement the flow on the separate signup page.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-grid">
+            <div>
+                <strong>Ozyde</strong>
+                <div class="small" style="margin-top:8px">
+                    Address:<br> Randburg, Johannesburg<br> Gauteng, South Africa
+                </div>
+                <div class="socials" aria-label="Social media">
+                    <!-- Inline SVG icons (replace href with real profiles later) -->
+                    <a href="https://www.instagram.com/ozyde_?igsh=NWM0aTd4ZGFmeHVr" aria-label="Instagram" title="Instagram" target="_blank" rel="noopener">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="3" width="18" height="18" rx="5" stroke="#333" stroke-width="1.2" fill="none"/>
+              <circle cx="12" cy="12" r="3.2" stroke="#333" stroke-width="1.2" fill="none"/>
+              <circle cx="17.5" cy="6.5" r="0.6" fill="#333"/>
+            </svg>
+                    </a>
+
+                    <a href="https://www.tiktok.com/@ozyde_designs?_t=ZS-8zlyfPi8HHJ&_r=1" aria-label="TikTok" title="TikTok" target="_blank" rel="noopener">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+              <path d="M17 3v6.2c0 2.5 2 4.5 4.5 4.5V12c-1.8 0-3.2-1.4-3.5-3H17zM9 8.5a5.5 5.5 0 1 0 5.5 5.5V8.5H9z" fill="#333"/>
+            </svg>
+                    </a>
+
+                    <a href="mailto:ozydedesigns@gmail.com" aria-label="Email" title="Email">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="6" width="18" height="12" rx="2" stroke="#333" stroke-width="1.2" fill="none"/>
+              <path d="M4 7.5l8 6 8-6" stroke="#333" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <strong>Quick links</strong>
+                <ul class="small" style="padding-left:0; list-style:none; margin-top:10px; color:var(--muted)">
+                    <li>Returns & Policy</li>
+                    <li>Delivery</li>
+                    <li>Help Center</li>
+                    <li>Contact</li>
+                </ul>
+            </div>
+
+            <div>
+                <strong>Company</strong>
+                <ul class="small" style="padding-left:0; list-style:none; margin-top:10px; color:var(--muted)">
+                    <li>About us</li>
+                    <li>Careers</li>
+                    <li>Press</li>
+                    <li>Terms</li>
+                </ul>
+            </div>
+
+            <div>
+                <strong>Support</strong>
+                <ul class="small" style="padding-left:0; list-style:none; margin-top:10px; color:var(--muted)">
+                    <li>Sizing Guide</li>
+                    <li>Cleaning</li>
+                    <li>Partnerships</li>
+                    <li>Affiliate</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="container small center" style="margin-top:18px;opacity:.8">
+            © 2024 Ozyde Boutique. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        /**********************
+         * Configuration
+         **********************/
+        // If your images are in the same folder as index.html use e.g. 'herodress.jpg'
+        const heroImages = [
+            'herodress.jpg',
+            'herodress2.jpg',
+            'herodress3.jpg'
+        ];
+
+        // Review rotation duration (ms)
+        const reviewInterval = 5000; // 5s
+
+        // Hero rotation duration (ms)
+        const heroInterval = 4000; // 4s
+
+        /**********************
+         * Hero slideshow logic
+         **********************/
+        (function heroSlideshow() {
+            const slides = [
+                document.getElementById('slide-0'),
+                document.getElementById('slide-1'),
+                document.getElementById('slide-2')
+            ];
+
+            for (let i = 0; i < slides.length; i++) {
+                const img = heroImages[i % heroImages.length] || '';
+                slides[i].style.backgroundImage = img ? `url('${img}')` : '';
+            }
+
+            let current = 0;
+            const total = slides.length;
+            slides.forEach(s => s.classList.remove('show'));
+            slides[current].classList.add('show');
+
+            setInterval(() => {
+                slides[current].classList.remove('show');
+                current = (current + 1) % total;
+                slides[current].classList.add('show');
+            }, heroInterval);
+        })();
+
+        /**********************
+         * Reviews rotation logic
+         **********************/
+        (function reviewsCarousel() {
+            const reviewCards = Array.from(document.querySelectorAll('.review-card'));
+            let idx = 0;
+
+            function showIndex(i) {
+                reviewCards.forEach((card, n) => {
+                    if (n === i) {
+                        card.classList.add('show');
+                        card.setAttribute('aria-hidden', 'false');
+                    } else {
+                        card.classList.remove('show');
+                        card.setAttribute('aria-hidden', 'true');
+                    }
+                });
+            }
+            if (reviewCards.length === 0) return;
+            showIndex(idx);
+            setInterval(() => {
+                idx = (idx + 1) % reviewCards.length;
+                showIndex(idx);
+            }, reviewInterval);
+        })();
+
+        /**********************
+         * Mobile menu toggle logic
+         **********************/
+        (function mobileMenu() {
+            const toggle = document.querySelector('.mobile-toggle');
+            const navContainer = document.querySelector('.nav');
+            const mainNav = document.getElementById('main-nav');
+            if (!toggle || !navContainer) return;
+            toggle.addEventListener('click', () => {
+                const expanded = toggle.getAttribute('aria-expanded') === 'true';
+                toggle.setAttribute('aria-expanded', String(!expanded));
+                navContainer.classList.toggle('open');
+            });
+            document.addEventListener('click', (e) => {
+                if (!navContainer.classList.contains('open')) return;
+                if (navContainer.contains(e.target)) return;
+                navContainer.classList.remove('open');
+                toggle.setAttribute('aria-expanded', 'false');
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && navContainer.classList.contains('open')) {
+                    navContainer.classList.remove('open');
+                    toggle.setAttribute('aria-expanded', 'false');
+                    toggle.focus();
+                }
+            });
+            mainNav.querySelectorAll('a').forEach(a => {
+                a.addEventListener('click', () => {
+                    if (navContainer.classList.contains('open')) {
+                        navContainer.classList.remove('open');
+                        toggle.setAttribute('aria-expanded', 'false');
+                    }
+                });
+            });
+        })();
+    </script>
+</body>
+
+</html>
