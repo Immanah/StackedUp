@@ -4,17 +4,16 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Profile — Ozyde Boutique</title>
-
+    <title>Profile — OZYDE</title>
     <style>
          :root {
             --bg: #fff;
-            --text: #222;
-            --muted: #7a7a7a;
+            --nav-bg: #0b0b0b;
+            --muted: #9a9a9a;
             --accent: #111;
             --max-width: 1200px;
-            --chip-bg: #f3f3f3;
-            --chip-border: #e6e6e6;
+            --card-bg: #ffffff;
+            --glass: rgba(255, 255, 255, 0.06);
         }
         
         * {
@@ -24,25 +23,13 @@
         body {
             margin: 0;
             font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-            color: var(--text);
-            background: var(--bg);
-            -webkit-font-smoothing: antialiased
+            color: #111;
+            background: var(--bg)
         }
-        
-        a {
-            color: inherit;
-            text-decoration: none
-        }
-        
-        .container {
-            max-width: var(--max-width);
-            margin: 0 auto;
-            padding: 0 20px
-        }
-        /* ===== Your logged-in navbar (copied) ===== */
+        /* NAVBAR (your requested logged-in navbar) */
         
         .nav-wrap {
-            background: #0b0b0b;
+            background: var(--nav-bg);
             color: #fff;
             position: sticky;
             top: 0;
@@ -66,7 +53,8 @@
             align-items: center;
             font-weight: 800;
             letter-spacing: 1px;
-            font-size: 20px
+            font-size: 20px;
+            cursor: pointer
         }
         
         .logo-badge {
@@ -142,6 +130,7 @@
             justify-content: center;
             font-weight: 700
         }
+        /* dropdown */
         
         .profile-area {
             position: relative
@@ -166,7 +155,7 @@
             background: #111;
             border-radius: 10px;
             padding: 8px 6px;
-            min-width: 180px;
+            min-width: 220px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             display: none
         }
@@ -183,6 +172,7 @@
         .dropdown a:hover {
             background: #1a1a1a
         }
+        /* mobile */
         
         .mobile-toggle {
             display: none;
@@ -205,71 +195,100 @@
                 display: inline-flex
             }
         }
-        /* ===== End navbar styles ===== */
-        /* Page layout */
+        /* Main content */
         
         main {
-            padding: 28px 0
+            max-width: var(--max-width);
+            margin: 28px auto;
+            padding: 0 18px 80px
         }
         
-        .topline {
+        .topbar {
             display: flex;
             align-items: center;
-            justify-content: space-between;
             gap: 12px;
-            margin-bottom: 18px;
-            max-width: var(--max-width);
-            margin-left: auto;
-            margin-right: auto;
-            padding: 0 20px
+            margin-bottom: 18px
         }
         
         .back-btn {
-            display: inline-block;
-            padding: 8px 12px;
+            background: #fff;
+            border: 0;
+            padding: 8px 10px;
             border-radius: 8px;
-            background: #111;
-            color: #fff;
-            text-decoration: none;
-            font-weight: 700
+            cursor: pointer;
+            font-weight: 700;
+            box-shadow: 0 6px 18px rgba(16, 16, 24, 0.06)
         }
         
-        h1 {
+        .page-title {
+            font-size: 20px;
             margin: 0
         }
         
-        .grid {
-            max-width: var(--max-width);
-            margin: 0 auto;
-            padding: 0 20px;
+        .muted {
+            color: var(--muted)
+        }
+        
+        .layout {
             display: grid;
-            grid-template-columns: 1fr 360px;
+            grid-template-columns: 360px 1fr;
             gap: 18px
         }
         
-        @media(max-width:980px) {
-            .grid {
+        @media (max-width:980px) {
+            .layout {
                 grid-template-columns: 1fr
             }
         }
         
         .card {
-            background: #fff;
-            border: 1px solid #f0f0f0;
+            background: var(--card-bg);
             padding: 18px;
-            border-radius: 10px;
-            box-shadow: 0 6px 20px rgba(10, 10, 10, 0.03)
+            border-radius: 12px;
+            border: 1px solid #eee
         }
         
-        form .row {
+        .profile-photo {
+            width: 100%;
+            height: 220px;
+            border-radius: 10px;
+            background: #f6f6f6;
             display: flex;
-            gap: 12px
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            font-weight: 700;
+            margin-bottom: 12px;
+            overflow: hidden
+        }
+        
+        .upload {
+            display: flex;
+            gap: 8px;
+            align-items: center
+        }
+        
+        .btn {
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 0;
+            cursor: pointer
+        }
+        
+        .btn.primary {
+            background: var(--accent);
+            color: #fff
+        }
+        
+        .btn.ghost {
+            background: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.06)
         }
         
         .field {
             display: flex;
             flex-direction: column;
-            margin-bottom: 12px
+            margin-bottom: 10px
         }
         
         label {
@@ -282,31 +301,28 @@
         input[type="email"],
         input[type="tel"],
         input[type="number"],
-        textarea,
-        select {
-            padding: 10px 12px;
+        textarea {
+            padding: 10px;
             border-radius: 8px;
             border: 1px solid #e8e8e8;
-            font-size: 14px;
-            width: 100%;
+            font-size: 14px
         }
         
         textarea {
-            min-height: 84px;
+            min-height: 90px;
             resize: vertical
         }
         
-        .measurements {
+        .measure-grid {
             display: flex;
-            gap: 8px;
-            align-items: center
+            gap: 8px
         }
         
-        .measurements input {
-            width: 100%
+        .measure-grid input {
+            flex: 1
         }
         
-        .chip-list {
+        .chips {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
@@ -314,120 +330,80 @@
         }
         
         .chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            background: #f5f5f5;
             padding: 8px 10px;
             border-radius: 999px;
-            background: var(--chip-bg);
-            border: 1px solid var(--chip-border);
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
             font-weight: 600;
-            color: var(--muted);
-            font-size: 14px;
+            color: #333;
+            border: 1px solid #e6e6e6
         }
         
-        .chip .remove {
-            cursor: pointer;
+        .chip .rm {
             background: transparent;
             border: 0;
-            color: var(--muted);
+            color: #888;
+            cursor: pointer;
             font-weight: 700;
-            padding: 0 6px;
-            border-radius: 6px
+            padding: 0 4px
         }
         
-        .chip.selected {
-            background: var(--accent);
-            color: #fff;
-            border-color: var(--accent)
+        .chip.editable {
+            cursor: pointer
         }
         
-        .add-style {
+        .tools {
             display: flex;
             gap: 8px;
-            margin-top: 10px
+            flex-wrap: wrap;
+            margin-top: 12px
         }
         
-        .add-style input {
-            flex: 1
+        .notice {
+            background: #fff6;
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #ffd66b;
+            color: #111
         }
         
         .actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             justify-content: flex-end;
             margin-top: 12px
         }
         
-        .btn {
-            padding: 10px 14px;
-            border-radius: 8px;
-            border: 0;
-            cursor: pointer;
-            background: var(--accent);
-            color: #fff;
-            font-weight: 700
+        @media (max-width:560px) {
+            .actions {
+                justify-content: stretch;
+                flex-direction: column
+            }
+            .actions .btn {
+                width: 100%
+            }
         }
         
-        .btn.ghost {
-            background: #fff;
-            border: 1px solid rgba(0, 0, 0, 0.06);
-            color: var(--accent)
-        }
-        
-        .hint {
+        .small {
             font-size: 13px;
-            color: var(--muted);
-            margin-top: 6px
-        }
-        
-        .notice {
-            padding: 10px;
-            border-radius: 8px;
-            background: #e8ffef;
-            border-left: 4px solid #2fa46b;
-            color: #075;
-            margin-bottom: 12px
-        }
-        
-        footer {
-            border-top: 1px solid #eee;
-            padding: 36px 0;
-            margin-top: 28px;
             color: var(--muted)
         }
         
-        .footer-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 20px
-        }
-        
-        .socials {
-            display: flex;
-            gap: 12px;
-            margin-top: 8px
-        }
-        
-        .socials a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            border-radius: 6px;
-            background: #f5f5f5
+        .export-area {
+            margin-top: 12px
         }
     </style>
 </head>
 
 <body>
 
-    <!-- ===== logged-in navbar (your provided code) ===== -->
+    <!-- NAVBAR (same logged-in navbar you requested) -->
     <header class="nav-wrap" role="banner">
         <div class="nav" role="navigation" aria-label="Main navigation">
             <div style="display:flex;align-items:center;gap:12px">
-                <div class="logo" style="cursor:pointer" id="brandLink">
+                <div class="logo" id="brandLink">
                     <div class="logo-badge" aria-hidden="true">OZ</div>
                     <div>OZYDE</div>
                 </div>
@@ -452,10 +428,10 @@
                 <!-- profile with dropdown -->
                 <div class="profile-area" id="profileArea">
                     <button class="profile-btn" id="profileBtn" aria-haspopup="true" aria-expanded="false" aria-label="Open account menu">
-            <div class="profile-avatar" aria-hidden="true">A</div>
+            <div class="profile-avatar" aria-hidden="true" id="profileAvatar">A</div>
             <div style="text-align:left">
-              <div style="font-weight:700; font-size:14px">A. Nomvula</div>
-              <div style="font-size:12px; color:#bdbdbd;">Member</div>
+              <div style="font-weight:700; font-size:14px" id="profileNameTop">A. Nomvula</div>
+              <div style="font-size:12px; color:#bdbdbd;" id="profileRole">Member</div>
             </div>
           </button>
 
@@ -484,256 +460,299 @@
             </div>
         </div>
     </header>
-    <!-- ===== end navbar ===== -->
 
     <main>
-        <div class="topline">
-            <a class="back-btn" href="loggedinnavbar.html">← Back to shop</a>
-            <h1>Your profile</h1>
+        <div class="topbar">
+            <button id="backBtn" class="back-btn" aria-label="Go back">← Back</button>
+            <div>
+                <h1 class="page-title">Your Profile</h1>
+                <div class="small muted">Edit your details and preferences</div>
+            </div>
         </div>
 
-        <div class="grid" role="region" aria-label="Profile area">
-            <!-- Left: form -->
-            <div>
-                <form id="profileForm" class="card" autocomplete="off" novalidate>
-                    <div id="savedNotice" style="display:none" class="notice" role="status">Profile saved.</div>
-
-                    <h2 style="margin-top:0">Personal details</h2>
-
-                    <div class="row" style="margin-bottom:6px">
-                        <div class="field" style="flex:1"><label for="firstName">First name</label><input id="firstName" name="firstName" type="text" placeholder="Jane"></div>
-                        <div class="field" style="flex:1"><label for="lastName">Last name</label><input id="lastName" name="lastName" type="text" placeholder="Doe"></div>
-                    </div>
-
-                    <div class="row">
-                        <div class="field" style="flex:1"><label for="email">Email</label><input id="email" name="email" type="email" placeholder="you@example.com"></div>
-                        <div class="field" style="flex:1"><label for="phone">Phone</label><input id="phone" name="phone" type="tel" placeholder="+27 72 000 0000"></div>
-                    </div>
-
-                    <div class="field"><label for="address">Address</label><textarea id="address" name="address" placeholder="Street, Suburb, City"></textarea></div>
-
-                    <h3 style="margin-top:12px">Measurements (cm)</h3>
-                    <div class="measurements" style="margin-top:8px">
-                        <div class="field" style="flex:1"><label for="bust">Bust</label><input id="bust" name="bust" type="number" min="0" placeholder="e.g. 86"></div>
-                        <div class="field" style="flex:1"><label for="waist">Waist</label><input id="waist" name="waist" type="number" min="0" placeholder="e.g. 68"></div>
-                        <div class="field" style="flex:1"><label for="hip">Hip</label><input id="hip" name="hip" type="number" min="0" placeholder="e.g. 94"></div>
-                    </div>
-
-                    <h3 style="margin-top:12px">Preferred styles</h3>
-                    <div class="hint">Select from presets or add your own. Click a chip to toggle preference; click × to remove a custom tag.</div>
-
-                    <!-- chip list -->
-                    <div id="chipContainer" class="chip-list" aria-live="polite" aria-label="Preferred styles"></div>
-
-                    <!-- add new style -->
-                    <div class="add-style">
-                        <input id="newStyleInput" type="text" placeholder="Add a style (e.g. Glittery, Maxi, Matric dance)">
-                        <button type="button" id="addStyleBtn" class="btn.ghost" style="border-radius:8px;padding:10px 12px;background:#fff;border:1px solid #e6e6e6">Add</button>
-                    </div>
-
-                    <div class="actions">
-                        <button type="button" id="resetBtn" class="btn.ghost">Reset</button>
-                        <button type="submit" id="saveBtn" class="btn">Save profile</button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Right: info / quick actions -->
-            <aside>
-                <div class="card">
-                    <h3>Account preferences</h3>
-                    <p class="hint">Update your contact details and preferred styles so we can surface better recommendations.</p>
-
-                    <div style="margin-top:12px">
-                        <button id="signOutBtn" class="btn.ghost" style="width:100%">Sign out</button>
-                    </div>
+        <div class="layout">
+            <!-- left column: avatar + quick info -->
+            <aside class="card" aria-label="Profile card">
+                <div class="profile-photo" id="photoPreview">No photo</div>
+                <div class="upload">
+                    <input type="file" id="photoUpload" accept="image/*">
+                    <button id="removePhoto" class="btn ghost">Remove</button>
                 </div>
 
-                <div class="card" style="margin-top:12px">
-                    <h4>Data (demo)</h4>
-                    <p class="small">This page stores profile data locally for demo. Replace save/load code with your backend endpoint when ready.</p>
-                    <div style="margin-top:10px;">
-                        <button id="exportBtn" class="btn.ghost" style="width:100%">Export profile (copy JSON)</button>
+                <div style="margin-top:12px">
+                    <div style="font-weight:800" id="displayName">A. Nomvula</div>
+                    <div class="small muted" id="displayEmail">ozydedesigns@gmail.com</div>
+                </div>
+
+                <hr style="margin:12px 0; border:0; border-top:1px solid #f1f1f1">
+
+                <div style="font-weight:700;margin-bottom:8px">Preferences</div>
+                <div class="small muted">Preferred styles</div>
+                <div class="chips" id="prefChips"></div>
+
+                <div class="tools">
+                    <input id="newStyleInput" type="text" placeholder="Add style (e.g. Maxi, Glittery)" style="flex:1;padding:8px;border-radius:8px;border:1px solid #e8e8e8">
+                    <button id="addStyleBtn" class="btn">Add</button>
+                </div>
+
+                <div class="export-area">
+                    <div style="font-weight:700;margin-top:12px">Data tools</div>
+                    <div class="small muted">Export/import profile JSON (for backend or migration)</div>
+                    <div style="display:flex;gap:8px;margin-top:8px">
+                        <button id="exportBtn" class="btn ghost">Export JSON</button>
+                        <button id="importBtn" class="btn">Import JSON</button>
+                        <input id="importFile" type="file" accept=".json" style="display:none">
                     </div>
                 </div>
             </aside>
+
+            <!-- right column: editable form -->
+            <section class="card" aria-label="Profile settings">
+                <h2 style="margin-top:0">Account details</h2>
+
+                <form id="profileForm" onsubmit="return false;">
+                    <div class="field">
+                        <label for="firstName">First name</label>
+                        <input id="firstName" type="text" placeholder="First name">
+                    </div>
+
+                    <div class="field">
+                        <label for="lastName">Last name</label>
+                        <input id="lastName" type="text" placeholder="Last name">
+                    </div>
+
+                    <div class="field">
+                        <label for="email">Email</label>
+                        <input id="email" type="email" placeholder="you@example.com">
+                    </div>
+
+                    <div class="field">
+                        <label for="phone">Phone</label>
+                        <input id="phone" type="tel" placeholder="+27 71 123 4567">
+                    </div>
+
+                    <div class="field">
+                        <label for="address">Address</label>
+                        <textarea id="address" placeholder="Street, complex, area"></textarea>
+                    </div>
+
+                    <div style="margin-top:12px;font-weight:700">Measurements (cm)</div>
+                    <div class="measure-grid" style="margin-top:8px">
+                        <div class="field"><label for="bust">Bust</label><input id="bust" type="number" min="0" placeholder="cm"></div>
+                        <div class="field"><label for="waist">Waist</label><input id="waist" type="number" min="0" placeholder="cm"></div>
+                        <div class="field"><label for="hip">Hip</label><input id="hip" type="number" min="0" placeholder="cm"></div>
+                    </div>
+
+                    <div style="margin-top:12px">
+                        <label>Preferred styles (quick edit below)</label>
+                        <div class="small muted">Add styles on the left and edit by clicking a chip.</div>
+                    </div>
+
+                    <div class="actions">
+                        <button id="resetBtn" class="btn ghost" type="button">Reset</button>
+                        <button id="saveBtn" class="btn primary" type="button">Save profile</button>
+                    </div>
+
+                    <div id="statusMsg" style="margin-top:12px"></div>
+                </form>
+            </section>
         </div>
     </main>
 
-    <!-- footer (kept simple) -->
-    <footer>
-        <div class="container footer-grid">
-            <div>
-                <strong>Ozyde</strong>
-                <div class="small" style="margin-top:8px">Address:<br>5 Liebenberg Rd, Noordwyk, Midrand 1687</div>
-                <div class="socials" aria-label="Social media">
-                    <a href="https://www.instagram.com/ozyde_?igsh=NWM0aTd4ZGFmeHVr" target="_blank" rel="noopener" aria-label="Instagram">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="18" height="18" rx="5" stroke="#333" stroke-width="1.2" fill="none"/><circle cx="12" cy="12" r="3.2" stroke="#333" stroke-width="1.2" fill="none"/><circle cx="17.5" cy="6.5" r="0.6" fill="#333"/></svg>
-                    </a>
-                    <a href="https://www.tiktok.com/@ozyde_designs?_t=ZS-8zlyfPi8HHJ&_r=1" target="_blank" rel="noopener" aria-label="TikTok">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17 3v6.2c0 2.5 2 4.5 4.5 4.5V12c-1.8 0-3.2-1.4-3.5-3H17zM9 8.5a5.5 5.5 0 1 0 5.5 5.5V8.5H9z" fill="#333"/></svg>
-                    </a>
-                    <a href="mailto:ozydedesigns@gmail.com" aria-label="Email">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="6" width="18" height="12" rx="2" stroke="#333" stroke-width="1.2" fill="none"/><path d="M4 7.5l8 6 8-6" stroke="#333" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg>
-                    </a>
-                </div>
-            </div>
-
-            <div><strong>Quick links</strong>
-                <ul class="small" style="padding-left:0;list-style:none;margin-top:10px;color:var(--muted)">
-                    <li>Returns & Policy</li>
-                    <li>Delivery</li>
-                    <li>Help Center</li>
-                    <li>Contact</li>
-                </ul>
-            </div>
-
-            <div><strong>Company</strong>
-                <ul class="small" style="padding-left:0;list-style:none;margin-top:10px;color:var(--muted)">
-                    <li>About us</li>
-                    <li>Careers</li>
-                    <li>Press</li>
-                    <li>Terms</li>
-                </ul>
-            </div>
-
-            <div><strong>Support</strong>
-                <ul class="small" style="padding-left:0;list-style:none;margin-top:10px;color:var(--muted)">
-                    <li>Sizing Guide</li>
-                    <li>Cleaning</li>
-                    <li>Partnerships</li>
-                    <li>Affiliate</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="container small" style="margin-top:18px;text-align:center;opacity:.8">© 2024 Ozyde Boutique. All rights reserved.</div>
-    </footer>
-
     <script>
-        /***** Navbar interactivity wiring *****/
-        // mobile toggle
-        const mt = document.getElementById('mobileToggle');
-        const mm = document.getElementById('mobileMenu');
-        mt && mt.addEventListener('click', () => {
-            const open = mm.style.display === 'block';
-            mm.style.display = open ? 'none' : 'block';
-            mt.setAttribute('aria-expanded', String(!open));
-            mm.setAttribute('aria-hidden', String(open));
-        });
-
-        // profile dropdown (toggle on click, close on outside)
-        const profileBtn = document.getElementById('profileBtn');
-        const dropdown = document.getElementById('profileDropdown');
-        const profileArea = document.getElementById('profileArea');
-
-        profileBtn && profileBtn.addEventListener('click', (e) => {
-            const visible = dropdown.style.display === 'block';
-            dropdown.style.display = visible ? 'none' : 'block';
-            dropdown.setAttribute('aria-hidden', String(visible));
-            profileBtn.setAttribute('aria-expanded', String(!visible));
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!profileArea.contains(e.target)) {
-                dropdown.style.display = 'none';
-                dropdown.setAttribute('aria-hidden', 'true');
-                profileBtn && profileBtn.setAttribute('aria-expanded', 'false');
-            }
-        });
-
-        // top icons & mobile icons behaviour
-        document.getElementById('topWishlistBtn').addEventListener('click', () => window.location.href = 'wishlist.html');
-        document.getElementById('topCartBtn').addEventListener('click', () => window.location.href = 'cart.html');
-        document.getElementById('mWishlist').addEventListener('click', () => window.location.href = 'wishlist.html');
-        document.getElementById('mCart').addEventListener('click', () => window.location.href = 'cart.html');
-        document.getElementById('brandLink').addEventListener('click', () => window.location.href = 'loggedinnavbar.html');
-        document.getElementById('mAccountBtn').addEventListener('click', () => window.location.href = 'profile.html');
-
-        document.getElementById('signOutLink') ? .addEventListener('click', (e) => {
-            e.preventDefault();
-            if (!confirm('Sign out?')) return;
-            window.location.href = 'index.html';
-        });
-
-        // demo: search
-        document.getElementById('searchBtn').addEventListener('click', () => {
-            const qStr = document.getElementById('searchInput').value.trim();
-            if (!qStr) {
-                alert('Type something to search (demo)');
-                return;
-            }
-            // replace with real search when ready
-            window.location.href = `search.html?q=${encodeURIComponent(qStr)}`;
-        });
-
-        /***** Profile logic (same as previous) *****/
         (function() {
+            // helper: safe query
+            const q = (sel) => document.querySelector(sel);
+            const qa = (sel) => Array.from(document.querySelectorAll(sel));
+            const exists = (el) => !!el;
+
+            // Safe event helper
+            function on(selOrEl, ev, fn) {
+                if (!selOrEl) return;
+                let el = typeof selOrEl === 'string' ? q(selOrEl) : selOrEl;
+                if (!el) return;
+                el.addEventListener(ev, fn);
+            }
+
+            // NAVBAR wiring (defensive)
+            const mt = q('#mobileToggle');
+            const mm = q('#mobileMenu');
+            on(mt, 'click', () => {
+                const open = mm && mm.style.display === 'block';
+                if (mm) mm.style.display = open ? 'none' : 'block';
+                if (mt) mt.setAttribute('aria-expanded', String(!open));
+                if (mm) mm.setAttribute('aria-hidden', String(open));
+            });
+
+            const profileBtn = q('#profileBtn');
+            const dropdown = q('#profileDropdown');
+            const profileArea = q('#profileArea');
+            on(profileBtn, 'click', () => {
+                if (!dropdown) return;
+                const visible = dropdown.style.display === 'block';
+                dropdown.style.display = visible ? 'none' : 'block';
+                dropdown.setAttribute('aria-hidden', String(visible));
+                profileBtn.setAttribute('aria-expanded', String(!visible));
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!profileArea) return;
+                if (!profileArea.contains(e.target)) {
+                    if (dropdown) {
+                        dropdown.style.display = 'none';
+                        dropdown.setAttribute('aria-hidden', 'true');
+                    }
+                    if (profileBtn) profileBtn.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            // top icon links
+            on('#topWishlistBtn', 'click', () => window.location.href = 'wishlist.html');
+            on('#topCartBtn', 'click', () => window.location.href = 'cart.html');
+            on('#mWishlist', 'click', () => window.location.href = 'wishlist.html');
+            on('#mCart', 'click', () => window.location.href = 'cart.html');
+            on('#mAccountBtn', 'click', () => window.location.href = 'profile.html');
+            on('#brandLink', 'click', () => window.location.href = 'index.html'); // go back to homepage
+
+            on('#searchBtn', 'click', () => {
+                const val = q('#searchInput') && q('#searchInput').value.trim();
+                if (!val) {
+                    alert('Type something to search (demo)');
+                    return;
+                }
+                window.location.href = `search.html?q=${encodeURIComponent(val)}`;
+            });
+
+            on('#signOutLink', 'click', (e) => {
+                e.preventDefault();
+                if (!confirm('Sign out?')) return;
+                // demo: clear profile and go home
+                localStorage.removeItem('ozyde_profile');
+                window.location.href = 'index.html';
+            });
+
+            // Back button
+            on('#backBtn', 'click', () => {
+                if (history.length > 1) history.back();
+                else window.location.href = 'index.html';
+            });
+
+            // ---------- Profile logic ----------
             const STORAGE_KEY = 'ozyde_profile_v1';
 
-            // DOM
-            const form = document.getElementById('profileForm');
-            const savedNotice = document.getElementById('savedNotice');
-            const exportBtn = document.getElementById('exportBtn');
-            const resetBtn = document.getElementById('resetBtn');
-            const signOutBtn = document.getElementById('signOutBtn');
+            // Elements
+            const firstName = q('#firstName');
+            const lastName = q('#lastName');
+            const email = q('#email');
+            const phone = q('#phone');
+            const address = q('#address');
+            const bust = q('#bust');
+            const waist = q('#waist');
+            const hip = q('#hip');
 
-            const fields = {
-                firstName: document.getElementById('firstName'),
-                lastName: document.getElementById('lastName'),
-                email: document.getElementById('email'),
-                phone: document.getElementById('phone'),
-                address: document.getElementById('address'),
-                bust: document.getElementById('bust'),
-                waist: document.getElementById('waist'),
-                hip: document.getElementById('hip')
+            const photoUpload = q('#photoUpload');
+            const photoPreview = q('#photoPreview');
+            const removePhoto = q('#removePhoto');
+
+            const prefChips = q('#prefChips');
+            const newStyleInput = q('#newStyleInput');
+            const addStyleBtn = q('#addStyleBtn');
+
+            const saveBtn = q('#saveBtn');
+            const resetBtn = q('#resetBtn');
+            const exportBtn = q('#exportBtn');
+            const importBtn = q('#importBtn');
+            const importFile = q('#importFile');
+            const importFileInput = importFile;
+
+            const statusMsg = q('#statusMsg');
+            const displayName = q('#displayName');
+            const displayEmail = q('#displayEmail');
+            const profileNameTop = q('#profileNameTop');
+            const profileAvatar = q('#profileAvatar');
+
+            // Default demo profile
+            const DEFAULT = {
+                firstName: 'A.',
+                lastName: 'Nomvula',
+                email: 'ozydedesigns@gmail.com',
+                phone: '+27 74 497 8123',
+                address: '5 Liebenberg Rd, Noordwyk, Midrand 1687',
+                bust: '',
+                waist: '',
+                hip: '',
+                styles: ['Wedding', 'Matric Dance', 'Maxi'],
+                photoDataUrl: ''
             };
 
-            const PRESETS = ['Matric dance', 'Maxi', 'Glittery', 'Cocktail', 'Evening', 'Boho', 'Vintage'];
-            let styles = [];
-            const chipContainer = document.getElementById('chipContainer');
-            const newStyleInput = document.getElementById('newStyleInput');
-            const addStyleBtn = document.getElementById('addStyleBtn');
-
-            function initStyles() {
-                styles = PRESETS.map(s => ({
-                    name: s,
-                    custom: false,
-                    selected: false
-                }));
+            function readProfile() {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    if (!raw) return {...DEFAULT
+                    };
+                    const parsed = JSON.parse(raw);
+                    return Object.assign({}, DEFAULT, parsed);
+                } catch (e) {
+                    console.error('Failed to read profile', e);
+                    return {...DEFAULT
+                    };
+                }
             }
 
-            function renderChips() {
-                chipContainer.innerHTML = '';
+            function saveProfile(profile) {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+                    showStatus('Profile saved', 'ok');
+                } catch (e) {
+                    console.error('Save failed', e);
+                    showStatus('Failed to save profile', 'err');
+                }
+            }
+
+            function showStatus(msg, type) {
+                statusMsg.innerHTML = `<div class="${type==='err' ? 'notice' : ''}">${msg}</div>`;
+                setTimeout(() => {
+                    if (statusMsg.innerHTML) statusMsg.innerHTML = ''
+                }, 2500);
+            }
+
+            // Render chips
+            function renderChips(styles) {
+                prefChips.innerHTML = '';
                 styles.forEach((s, idx) => {
-                    const btn = document.createElement('button');
-                    btn.type = 'button';
-                    btn.className = 'chip' + (s.selected ? ' selected' : '');
-                    btn.setAttribute('data-idx', idx);
-                    btn.setAttribute('aria-pressed', String(!!s.selected));
-                    btn.innerHTML = `<span class="label">${escapeHtml(s.name)}</span>`;
-                    if (s.custom) {
-                        const rem = document.createElement('button');
-                        rem.type = 'button';
-                        rem.className = 'remove';
-                        rem.setAttribute('aria-label', 'Remove style');
-                        rem.textContent = '×';
-                        rem.addEventListener('click', (ev) => {
-                            ev.stopPropagation();
-                            if (!confirm('Remove "' + s.name + '"?')) return;
-                            styles.splice(idx, 1);
-                            renderChips();
-                        });
-                        btn.appendChild(rem);
-                    }
-                    btn.addEventListener('click', () => {
-                        styles[idx].selected = !styles[idx].selected;
-                        renderChips();
+                    const c = document.createElement('div');
+                    c.className = 'chip editable';
+                    c.dataset.idx = String(idx);
+                    c.title = 'Click to edit. Click × to remove.';
+                    c.innerHTML = `<span class="label">${escapeHtml(s)}</span><button class="rm" aria-label="Remove style">×</button>`;
+                    // remove handler
+                    c.querySelector('.rm').addEventListener('click', (ev) => {
+                        ev.stopPropagation();
+                        if (!confirm(`Remove style "${s}"?`)) return;
+                        const profile = readProfile();
+                        profile.styles.splice(idx, 1);
+                        saveProfile(profile);
+                        populate(profile);
                     });
-                    chipContainer.appendChild(btn);
+                    // edit on click
+                    c.addEventListener('click', () => {
+                        const newVal = prompt('Edit style', s);
+                        if (newVal === null) return;
+                        const trimmed = String(newVal).trim();
+                        if (!trimmed) {
+                            alert('Style cannot be empty');
+                            return;
+                        }
+                        const profile = readProfile();
+                        profile.styles[idx] = trimmed;
+                        saveProfile(profile);
+                        populate(profile);
+                    });
+                    prefChips.appendChild(c);
                 });
             }
 
+            // Utility
             function escapeHtml(s) {
                 return String(s).replace(/[&<>"]/g, (c) => ({
                     '&': '&amp;',
@@ -743,148 +762,169 @@
                 }[c]));
             }
 
-            function loadProfile() {
-                initStyles();
-                const raw = localStorage.getItem(STORAGE_KEY);
-                if (!raw) {
-                    renderChips();
-                    return;
+            // Populate form from profile
+            function populate(profile) {
+                if (!profile) profile = readProfile();
+                firstName.value = profile.firstName || '';
+                lastName.value = profile.lastName || '';
+                email.value = profile.email || '';
+                phone.value = profile.phone || '';
+                address.value = profile.address || '';
+                bust.value = profile.bust || '';
+                waist.value = profile.waist || '';
+                hip.value = profile.hip || '';
+                renderChips(Array.isArray(profile.styles) ? profile.styles : []);
+                // photo
+                if (profile.photoDataUrl) {
+                    photoPreview.innerHTML = `<img src="${profile.photoDataUrl}" alt="Profile photo" style="width:100%;height:100%;object-fit:cover">`;
+                } else {
+                    photoPreview.textContent = 'No photo';
                 }
-                try {
-                    const data = JSON.parse(raw);
-                    Object.keys(fields).forEach(k => {
-                        if (data[k] !== undefined) fields[k].value = data[k];
-                        else fields[k].value = '';
-                    });
-                    if (Array.isArray(data.styles)) {
-                        initStyles();
-                        data.styles.forEach(s => {
-                            if (!s || !s.name) return;
-                            const found = styles.find(x => x.name.toLowerCase() === s.name.toLowerCase());
-                            if (found) found.selected = !!s.selected;
-                            else styles.push({
-                                name: s.name,
-                                custom: true,
-                                selected: !!s.selected
-                            });
-                        });
-                    }
-                } catch (e) {
-                    console.warn('Invalid saved profile', e);
-                }
-                renderChips();
+                // display quick info
+                const full = `${profile.firstName || ''} ${profile.lastName || ''}`.trim() || '—';
+                displayName.textContent = full;
+                displayEmail.textContent = profile.email || '';
+                profileNameTop.textContent = full || 'Member';
+                profileAvatar.textContent = (profile.firstName && profile.firstName[0]) ? profile.firstName[0].toUpperCase() : 'A';
             }
 
-            function gatherProfile() {
-                const out = {};
-                Object.keys(fields).forEach(k => {
-                    out[k] = fields[k].value && fields[k].value.trim ? fields[k].value.trim() : fields[k].value;
-                });
-                out.styles = styles.map(s => ({
-                    name: s.name,
-                    selected: !!s.selected,
-                    custom: !!s.custom
-                }));
-                return out;
+            // Collect from form
+            function collectFromForm() {
+                const profile = readProfile();
+                profile.firstName = (firstName.value || '').trim();
+                profile.lastName = (lastName.value || '').trim();
+                profile.email = (email.value || '').trim();
+                profile.phone = (phone.value || '').trim();
+                profile.address = (address.value || '').trim();
+                profile.bust = bust.value ? Number(bust.value) : '';
+                profile.waist = waist.value ? Number(waist.value) : '';
+                profile.hip = hip.value ? Number(hip.value) : '';
+                // styles remain untouched (we control them via chips)
+                return profile;
             }
 
-            function saveProfile() {
-                const p = gatherProfile();
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
-                showSavedNotice();
-            }
-
-            function showSavedNotice() {
-                savedNotice.style.display = '';
-                setTimeout(() => savedNotice.style.display = 'none', 2200);
-            }
-
+            // Add style
             function addStyleFromInput() {
                 const v = (newStyleInput.value || '').trim();
-                if (!v) return;
-                if (styles.some(s => s.name.toLowerCase() === v.toLowerCase())) {
-                    const idx = styles.findIndex(s => s.name.toLowerCase() === v.toLowerCase());
-                    styles[idx].selected = true;
+                if (!v) {
+                    newStyleInput.focus();
+                    return;
+                }
+                const profile = readProfile();
+                profile.styles = profile.styles || [];
+                // prevent duplicates (case-insensitive)
+                if (profile.styles.some(s => s.toLowerCase() === v.toLowerCase())) {
+                    showStatus('Style already added', 'err');
                     newStyleInput.value = '';
-                    renderChips();
                     return;
                 }
-                styles.push({
-                    name: v,
-                    custom: true,
-                    selected: true
-                });
+                profile.styles.push(v);
+                saveProfile(profile);
+                populate(profile);
                 newStyleInput.value = '';
-                renderChips();
+                newStyleInput.focus();
             }
 
-            function exportProfile() {
-                const p = gatherProfile();
-                const text = JSON.stringify(p, null, 2);
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(text).then(() => {
-                        alert('Profile JSON copied to clipboard (demo).');
-                    }).catch(() => {
-                        fallbackCopyText(text);
-                    });
-                } else fallbackCopyText(text);
+            // photo upload
+            if (photoUpload) {
+                photoUpload.addEventListener('change', (e) => {
+                    const f = e.target.files && e.target.files[0];
+                    if (!f) return;
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        const dataUrl = ev.target.result;
+                        const profile = readProfile();
+                        profile.photoDataUrl = dataUrl;
+                        saveProfile(profile);
+                        populate(profile);
+                    };
+                    reader.readAsDataURL(f);
+                });
             }
 
-            function fallbackCopyText(txt) {
-                const ta = document.createElement('textarea');
-                ta.value = txt;
-                ta.style.position = 'fixed';
-                ta.style.left = '-9999px';
-                document.body.appendChild(ta);
-                ta.select();
-                try {
-                    document.execCommand('copy');
-                    alert('Profile JSON copied (fallback).');
-                } catch (e) {
-                    alert('Copy failed. You can manually copy the JSON.');
-                }
-                document.body.removeChild(ta);
-            }
+            if (removePhoto) removePhoto.addEventListener('click', () => {
+                const profile = readProfile();
+                profile.photoDataUrl = '';
+                saveProfile(profile);
+                populate(profile);
+            });
 
-            function resetProfile() {
-                if (confirm('Reset form to saved values?')) {
-                    loadProfile();
-                }
-            }
+            // Add style handlers
+            on(addStyleBtn, 'click', addStyleFromInput);
+            on(newStyleInput, 'keydown', (e) => {
+                if (e.key === 'Enter') addStyleFromInput();
+            });
 
-            function signOut() {
-                if (confirm('Sign out?')) {
-                    window.location.href = 'index.html';
-                }
-            }
-
-            // wire events
-            form.addEventListener('submit', (ev) => {
-                ev.preventDefault();
-                const fn = fields.firstName.value.trim();
-                const ln = fields.lastName.value.trim();
-                const email = fields.email.value.trim();
-                if (!fn || !ln || !email) {
-                    alert('Please provide at least first name, last name and email.');
+            // Save / Reset
+            on(saveBtn, 'click', () => {
+                const p = collectFromForm();
+                // Basic validation
+                if (!p.firstName || !p.lastName || !p.email) {
+                    showStatus('Please complete name and email before saving', 'err');
                     return;
                 }
-                saveProfile();
+                saveProfile(p);
+                populate(p);
             });
 
-            addStyleBtn.addEventListener('click', addStyleFromInput);
-            newStyleInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    addStyleFromInput();
-                }
+            on(resetBtn, 'click', () => {
+                if (!confirm('Reset profile to defaults?')) return;
+                localStorage.removeItem(STORAGE_KEY);
+                populate(readProfile());
+                showStatus('Reset done');
             });
-            exportBtn.addEventListener('click', exportProfile);
-            resetBtn.addEventListener('click', resetProfile);
-            signOutBtn.addEventListener('click', signOut);
 
-            // init
-            initStyles();
-            loadProfile();
+            // Export JSON
+            on(exportBtn, 'click', () => {
+                const profile = readProfile();
+                const blob = new Blob([JSON.stringify(profile, null, 2)], {
+                    type: 'application/json'
+                });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'ozyde_profile.json';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+            });
+
+            // Import JSON
+            on(importBtn, 'click', () => importFileInput && importFileInput.click());
+            if (importFileInput) importFileInput.addEventListener('change', (e) => {
+                const f = e.target.files && e.target.files[0];
+                if (!f) return;
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    try {
+                        const parsed = JSON.parse(ev.target.result);
+                        // basic sanitise: keep only allowed keys
+                        const allowed = ['firstName', 'lastName', 'email', 'phone', 'address', 'bust', 'waist', 'hip', 'styles', 'photoDataUrl'];
+                        const profile = {};
+                        allowed.forEach(k => {
+                            if (k in parsed) profile[k] = parsed[k];
+                        });
+                        // ensure styles array
+                        if (!Array.isArray(profile.styles)) profile.styles = parsed.styles ? [String(parsed.styles)] : [];
+                        saveProfile(profile);
+                        populate(profile);
+                        showStatus('Imported profile');
+                    } catch (err) {
+                        alert('Invalid JSON file');
+                    }
+                };
+                reader.readAsText(f);
+            });
+
+            // Initialize with stored or default
+            populate(readProfile());
+
+            // small helper to keep script quiet if elements missing
+            (function safeguardIDs() {
+                if (!q('#firstName')) console.warn('profile form missing #firstName');
+            })();
+
         })();
     </script>
 </body>
