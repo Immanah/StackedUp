@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Products - Ozyde Boutique</title>
+    <style>
+        /* Ozyde Boutique monochromatic styling */
+        :root {
+            --bg: #fff;
+            --text: #222;
+            --muted: #7a7a7a;
+            --accent: #111;
+            --max-width: 1200px;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e6e6e6;
+            --dark-gray: #333;
+            --shadow: rgba(0, 0, 0, 0.08);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            margin: 0;
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+        
+        /* Header Styles */
+        .header {
+            background: var(--accent);
+            color: #fff;
+            padding: 15px 0;
+            box-shadow: 0 4px 12px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-weight: 800;
+            letter-spacing: 1px;
+            font-size: 20px;
+        }
+        
+        .logo-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-weight: 900;
+            font-size: 16px;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 25px;
+        }
+        
+        .nav a {
+            font-size: 14px;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        
+        .nav a:hover, .nav a.active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-name {
+            font-weight: 600;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        .logout-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 30px 0;
+            background: var(--light-gray);
+        }
+        
+        .page-title {
+            margin: 0 0 30px 0;
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--accent);
+        }
+        
+        /* Add Product Section */
+        .add-product {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .add-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .add-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        
+        /* Search and Filter */
+        .search-filter {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+        }
+        
+        .filter-select {
+            padding: 10px 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            min-width: 150px;
+        }
+        
+        /* Table Styles */
+        .table-wrapper {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px var(--shadow);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .products-table th {
+            background: var(--light-gray);
+            padding: 15px 20px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--accent);
+            border-bottom: 1px solid var(--medium-gray);
+        }
+        
+        .products-table td {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+        
+        .products-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .products-table tr:hover {
+            background: rgba(0, 0, 0, 0.02);
+        }
+        
+        /* Status Badge */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+        
+        .status-available {
+            background: var(--light-gray);
+            color: var(--dark-gray);
+        }
+        
+        .status-out-of-stock {
+            background: var(--light-gray);
+            color: var(--muted);
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .edit-btn {
+            background: var(--light-gray);
+            color: var(--accent);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .edit-btn:hover {
+            background: var(--medium-gray);
+        }
+        
+        .delete-btn {
+            background: var(--light-gray);
+            color: var(--accent);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .delete-btn:hover {
+            background: var(--medium-gray);
+        }
+        
+        /* Footer Styles */
+        footer {
+            border-top: 1px solid var(--medium-gray);
+            padding: 30px 0;
+            color: var(--muted);
+            background: var(--light-gray);
+            margin-top: auto;
+            text-align: center;
+        }
+        
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 10px;
+        }
+        
+        .pagination-btn {
+            padding: 8px 12px;
+            border: 1px solid var(--medium-gray);
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .pagination-btn:hover, .pagination-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header .container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav {
+                order: 2;
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .header-user {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .search-filter {
+                flex-direction: column;
+            }
+            
+            .search-box, .filter-select {
+                min-width: 100%;
+            }
+            
+            .table-wrapper {
+                overflow-x: auto;
+            }
+            
+            .products-table {
+                min-width: 700px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .add-product {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .page-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <div class="logo-badge">OZ</div>
+                <div>OZYDE ADMIN</div>
+            </div>
+            <nav class="nav">
+                <a href="admindashboard.html">Dashboard</a>
+                <a href="adminproducts.html" class="active">Products</a>
+                <a href="adminorders.html">Orders</a>
+                <a href="admincustomers.html">Customers</a>
+                <a href="admininventory.html">Inventory</a>
+                <a href="adminreports.html">Reports</a>
+            </nav>
+            <div class="header-user">
+                <div class="user-info">
+                    <span class="user-name">Admin</span>
+                    <div class="user-avatar">A</div>
+                </div>
+                <button class="logout-btn">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <h1 class="page-title">Manage Products</h1>
+
+            <!-- Search and Filter -->
+            <div class="search-filter">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Search products...">
+                </div>
+                <select class="filter-select">
+                    <option value="">All Categories</option>
+                    <option value="evening">Evening Gowns</option>
+                    <option value="cocktail">Cocktail Dresses</option>
+                    <option value="formal">Formal Wear</option>
+                    <option value="wedding">Wedding Guest</option>
+                </select>
+                <select class="filter-select">
+                    <option value="">All Statuses</option>
+                    <option value="available">Available</option>
+                    <option value="out-of-stock">Out of Stock</option>
+                </select>
+            </div>
+
+            <!-- Add Product Button -->
+            <div class="add-product">
+                <button class="btn add-btn">+ Add New Product</button>
+                <div>
+                    <span>Showing 8 of 156 products</span>
+                </div>
+            </div>
+
+            <!-- Products Table -->
+            <div class="table-wrapper">
+                <table class="products-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Dress Name</th>
+                            <th>Category</th>
+                            <th>Price / Rental</th>
+                            <th>Availability</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>001</td>
+                            <td>Elegant Black Gown</td>
+                            <td>Evening Gowns</td>
+                            <td>R150 / 3 Days</td>
+                            <td><span class="status-badge status-available">Available</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn edit-btn">Edit</button>
+                                    <button class="btn delete-btn">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>002</td>
+                            <td>Red Cocktail Dress</td>
+                            <td>Cocktail</td>
+                            <td>R95 / 3 Days</td>
+                            <td><span class="status-badge status-out-of-stock">Out of Stock</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn edit-btn">Edit</button>
+                                    <button class="btn delete-btn">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>003</td>
+                            <td>Navy Formal Dress</td>
+                            <td>Formal Wear</td>
+                            <td>R120 / 3 Days</td>
+                            <td><span class="status-badge status-available">Available</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn edit-btn">Edit</button>
+                                    <button class="btn delete-btn">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>004</td>
+                            <td>Pink Wedding Guest Dress</td>
+                            <td>Wedding Guest</td>
+                            <td>R85 / 3 Days</td>
+                            <td><span class="status-badge status-available">Available</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn edit-btn">Edit</button>
+                                    <button class="btn delete-btn">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>005</td>
+                            <td>Emerald Green Prom Dress</td>
+                            <td>Prom Dresses</td>
+                            <td>R180 / 3 Days</td>
+                            <td><span class="status-badge status-out-of-stock">Out of Stock</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn edit-btn">Edit</button>
+                                    <button class="btn delete-btn">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>006</td>
+                            <td>White Evening Gown</td>
+                            <td>Evening Gowns</td>
+                            <td>R200 / 3 Days</td>
+                            <td><span class="status-badge status-available">Available</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn edit-btn">Edit</button>
+                                    <button class="btn delete-btn">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>007</td>
+                            <td>Royal Blue Maxi Dress</td>
+                            <td>Cocktail</td>
+                            <td>R110 / 3 Days</td>
+                            <td><span class="status-badge status-available">Available</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn edit-btn">Edit</button>
+                                    <button class="btn delete-btn">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>008</td>
+                            <td>Gold Sequin Party Dress</td>
+                            <td>Evening Gowns</td>
+                            <td>R165 / 3 Days</td>
+                            <td><span class="status-badge status-out-of-stock">Out of Stock</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn edit-btn">Edit</button>
+                                    <button class="btn delete-btn">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <button class="pagination-btn">Previous</button>
+                <button class="pagination-btn active">1</button>
+                <button class="pagination-btn">2</button>
+                <button class="pagination-btn">3</button>
+                <button class="pagination-btn">Next</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 Ozyde Boutique Admin Dashboard. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Simple interactions for the products page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add product button
+            document.querySelector('.add-btn').addEventListener('click', function() {
+                alert('Opening product creation form...');
+                // In a real application, this would open a modal or navigate to a form
+            });
+            
+            // Edit buttons
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const productId = row.cells[0].textContent;
+                    const productName = row.cells[1].textContent;
+                    alert(`Editing product: ${productName} (ID: ${productId})`);
+                    // In a real application, this would open an edit form
+                });
+            });
+            
+            // Delete buttons
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const productId = row.cells[0].textContent;
+                    const productName = row.cells[1].textContent;
+                    
+                    if (confirm(`Are you sure you want to delete "${productName}"?`)) {
+                        alert(`Product "${productName}" has been deleted.`);
+                        // In a real application, this would remove the item from the database
+                    }
+                });
+            });
+            
+            // Search functionality
+            const searchInput = document.querySelector('.search-box input');
+            searchInput.addEventListener('keyup', function() {
+                const searchTerm = this.value.toLowerCase();
+                const rows = document.querySelectorAll('.products-table tbody tr');
+                
+                rows.forEach(row => {
+                    const productName = row.cells[1].textContent.toLowerCase();
+                    if (productName.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Filter functionality
+            const categoryFilter = document.querySelector('.filter-select');
+            categoryFilter.addEventListener('change', function() {
+                const selectedCategory = this.value;
+                const rows = document.querySelectorAll('.products-table tbody tr');
+                
+                rows.forEach(row => {
+                    const category = row.cells[2].textContent.toLowerCase().replace(' ', '-');
+                    if (!selectedCategory || category === selectedCategory) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Logout button
+            document.querySelector('.logout-btn').addEventListener('click', function() {
+                if (confirm('Are you sure you want to log out?')) {
+                    alert('Logging out...');
+                    // In a real application, this would redirect to login page
+                }
+            });
+        });
+    </script>
+</body>
+</html>

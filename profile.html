@@ -1,0 +1,892 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Profile — Ozyde</title>
+
+    <style>
+         :root {
+            --bg: #fff;
+            --text: #222;
+            --muted: #7a7a7a;
+            --accent: #111;
+            --max-width: 1200px;
+            --chip-bg: #f3f3f3;
+            --chip-border: #e6e6e6;
+        }
+        
+        * {
+            box-sizing: border-box
+        }
+        
+        body {
+            margin: 0;
+            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            color: var(--text);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+        
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px
+        }
+        /* ===== Your logged-in navbar (copied) ===== */
+        
+        .nav-wrap {
+            background: #0b0b0b;
+            color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 120;
+            box-shadow: 0 6px 20px rgba(2, 2, 2, 0.12)
+        }
+        
+        .nav {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            justify-content: space-between
+        }
+        
+        .logo {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-weight: 800;
+            letter-spacing: 1px;
+            font-size: 20px
+        }
+        
+        .logo-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #fff2, #fff6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #111;
+            font-weight: 900;
+            font-size: 16px
+        }
+        
+        .search {
+            flex: 1;
+            max-width: 640px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0 12px
+        }
+        
+        .search input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 999px 0 0 999px;
+            border: 0;
+            outline: 0;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #fff
+        }
+        
+        .search button {
+            padding: 10px 12px;
+            border-radius: 0 999px 999px 0;
+            border: 0;
+            background: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+        
+        .icons {
+            display: flex;
+            gap: 14px;
+            align-items: center
+        }
+        
+        .icon-only {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 0;
+            color: #fff;
+            cursor: pointer
+        }
+        
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #222, #111);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700
+        }
+        
+        .profile-area {
+            position: relative
+        }
+        
+        .profile-btn {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: transparent;
+            border: 0;
+            color: #fff;
+            cursor: pointer;
+            padding: 6px 8px;
+            border-radius: 8px
+        }
+        
+        .dropdown {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 10px);
+            background: #111;
+            border-radius: 10px;
+            padding: 8px 6px;
+            min-width: 180px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: none
+        }
+        
+        .dropdown a {
+            display: block;
+            color: #fff;
+            padding: 10px 12px;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 8px
+        }
+        
+        .dropdown a:hover {
+            background: #1a1a1a
+        }
+        
+        .mobile-toggle {
+            display: none;
+            background: transparent;
+            border: 0;
+            color: #fff
+        }
+        
+        .mobile-menu {
+            display: none;
+            padding: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.03)
+        }
+        
+        @media (max-width:880px) {
+            .search {
+                display: none
+            }
+            .mobile-toggle {
+                display: inline-flex
+            }
+        }
+        /* ===== End navbar styles ===== */
+        /* Page layout */
+        
+        main {
+            padding: 28px 0
+        }
+        
+        .topline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 18px;
+            max-width: var(--max-width);
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 20px
+        }
+        
+        .back-btn {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: #111;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 700
+        }
+        
+        h1 {
+            margin: 0
+        }
+        
+        .grid {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 18px
+        }
+        
+        @media(max-width:980px) {
+            .grid {
+                grid-template-columns: 1fr
+            }
+        }
+        
+        .card {
+            background: #fff;
+            border: 1px solid #f0f0f0;
+            padding: 18px;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(10, 10, 10, 0.03)
+        }
+        
+        form .row {
+            display: flex;
+            gap: 12px
+        }
+        
+        .field {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 12px
+        }
+        
+        label {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 6px
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        textarea,
+        select {
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #e8e8e8;
+            font-size: 14px;
+            width: 100%;
+        }
+        
+        textarea {
+            min-height: 84px;
+            resize: vertical
+        }
+        
+        .measurements {
+            display: flex;
+            gap: 8px;
+            align-items: center
+        }
+        
+        .measurements input {
+            width: 100%
+        }
+        
+        .chip-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px
+        }
+        
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 999px;
+            background: var(--chip-bg);
+            border: 1px solid var(--chip-border);
+            font-weight: 600;
+            color: var(--muted);
+            font-size: 14px;
+        }
+        
+        .chip .remove {
+            cursor: pointer;
+            background: transparent;
+            border: 0;
+            color: var(--muted);
+            font-weight: 700;
+            padding: 0 6px;
+            border-radius: 6px
+        }
+        
+        .chip.selected {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent)
+        }
+        
+        .add-style {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px
+        }
+        
+        .add-style input {
+            flex: 1
+        }
+        
+        .actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 12px
+        }
+        
+        .btn {
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 0;
+            cursor: pointer;
+            background: var(--accent);
+            color: #fff;
+            font-weight: 700
+        }
+        
+        .btn.ghost {
+            background: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            color: var(--accent)
+        }
+        
+        .hint {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 6px
+        }
+        
+        .notice {
+            padding: 10px;
+            border-radius: 8px;
+            background: #e8ffef;
+            border-left: 4px solid #2fa46b;
+            color: #075;
+            margin-bottom: 12px
+        }
+        
+        footer {
+            border-top: 1px solid #eee;
+            padding: 36px 0;
+            margin-top: 28px;
+            color: var(--muted)
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 20px
+        }
+        
+        .socials {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px
+        }
+        
+        .socials a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: #f5f5f5
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== logged-in navbar (your provided code) ===== -->
+    <header class="nav-wrap" role="banner">
+        <div class="nav" role="navigation" aria-label="Main navigation">
+            <div style="display:flex;align-items:center;gap:12px">
+                <div class="logo" style="cursor:pointer" id="brandLink">
+                    <div class="logo-badge" aria-hidden="true">OZ</div>
+                    <div>OZYDE</div>
+                </div>
+            </div>
+
+            <div class="search" role="search" aria-label="Site search">
+                <input id="searchInput" type="search" placeholder="Search dresses, designers, collection..." aria-label="Search">
+                <button id="searchBtn" aria-label="Search">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none"><path d="M21 21l-4.35-4.35" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="11" r="6" stroke="#111" stroke-width="2"/></svg>
+        </button>
+            </div>
+
+            <div class="icons" role="group" aria-label="User actions">
+                <button class="icon-only" title="Wishlist" aria-label="Wishlist" id="topWishlistBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20.8 7.2a5 5 0 0 0-7.07 0L12 8.94l-1.73-1.72a5 5 0 1 0-7.07 7.07L12 21.5l8.8-8.8a5 5 0 0 0 0-7.5z" stroke="white" stroke-width="1.2" fill="none"/></svg>
+        </button>
+
+                <button class="icon-only" title="Cart" aria-label="Cart" id="topCartBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 3h2l1 7h13" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20" r="1.5" fill="white"/><circle cx="18" cy="20" r="1.5" fill="white"/></svg>
+        </button>
+
+                <!-- profile with dropdown -->
+                <div class="profile-area" id="profileArea">
+                    <button class="profile-btn" id="profileBtn" aria-haspopup="true" aria-expanded="false" aria-label="Open account menu">
+            <div class="profile-avatar" aria-hidden="true">A</div>
+            <div style="text-align:left">
+              <div style="font-weight:700; font-size:14px">A. Nomvula</div>
+              <div style="font-size:12px; color:#bdbdbd;">Member</div>
+            </div>
+          </button>
+
+                    <div class="dropdown" id="profileDropdown" role="menu" aria-hidden="true">
+                        <a href="profile.html" role="menuitem">My Account</a>
+                        <a href="orders.html" role="menuitem">My Orders</a>
+                        <a href="wishlist.html" role="menuitem">Wishlist</a>
+                        <a href="#" role="menuitem" id="signOutLink">Sign out</a>
+                    </div>
+                </div>
+
+                <button class="mobile-toggle" id="mobileToggle" aria-expanded="false" aria-label="Open menu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 7h18M3 12h18M3 17h18" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+            </div>
+        </div>
+
+        <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+            <div style="margin-bottom:10px">
+                <input id="mobileSearch" type="search" placeholder="Search dresses..." style="width:100%; padding:10px 12px; border-radius:8px; border:0; background:rgba(255,255,255,0.04); color:#fff">
+            </div>
+            <div style="display:flex;gap:10px">
+                <button class="icon-only" aria-label="Wishlist (mobile)" id="mWishlist"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20.8 7.2a5 5 0 0 0-7.07 0L12 8.94l-1.73-1.72a5 5 0 1 0-7.07 7.07L12 21.5l8.8-8.8a5 5 0 0 0 0-7.5z" stroke="white" stroke-width="1.2" fill="none"/></svg></button>
+                <button class="icon-only" aria-label="Cart (mobile)" id="mCart"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 3h2l1 7h13" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20" r="1.5" fill="white"/><circle cx="18" cy="20" r="1.5" fill="white"/></svg></button>
+                <button class="profile-btn" style="background:transparent;border:0;color:#fff" id="mAccountBtn">Account</button>
+            </div>
+        </div>
+    </header>
+    <!-- ===== end navbar ===== -->
+
+    <main>
+        <div class="topline">
+            <a class="back-btn" href="catalog.html">← Back to shop</a>
+            <h1>Your profile</h1>
+        </div>
+
+        <div class="grid" role="region" aria-label="Profile area">
+            <!-- Left: form -->
+            <div>
+                <form id="profileForm" class="card" autocomplete="off" novalidate>
+                    <div id="savedNotice" style="display:none" class="notice" role="status">Profile saved.</div>
+
+                    <h2 style="margin-top:0">Personal details</h2>
+
+                    <div class="row" style="margin-bottom:6px">
+                        <div class="field" style="flex:1"><label for="firstName">First name</label><input id="firstName" name="firstName" type="text" placeholder="Jane"></div>
+                        <div class="field" style="flex:1"><label for="lastName">Last name</label><input id="lastName" name="lastName" type="text" placeholder="Doe"></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="field" style="flex:1"><label for="email">Email</label><input id="email" name="email" type="email" placeholder="you@example.com"></div>
+                        <div class="field" style="flex:1"><label for="phone">Phone</label><input id="phone" name="phone" type="tel" placeholder="+27 72 000 0000"></div>
+                    </div>
+
+                    <div class="field"><label for="address">Address</label><textarea id="address" name="address" placeholder="Street, Suburb, City"></textarea></div>
+
+                    <h3 style="margin-top:12px">Measurements (cm)</h3>
+                    <div class="measurements" style="margin-top:8px">
+                        <div class="field" style="flex:1"><label for="bust">Bust</label><input id="bust" name="bust" type="number" min="0" placeholder="e.g. 86"></div>
+                        <div class="field" style="flex:1"><label for="waist">Waist</label><input id="waist" name="waist" type="number" min="0" placeholder="e.g. 68"></div>
+                        <div class="field" style="flex:1"><label for="hip">Hip</label><input id="hip" name="hip" type="number" min="0" placeholder="e.g. 94"></div>
+                    </div>
+
+                    <h3 style="margin-top:12px">Preferred styles</h3>
+                    <div class="hint">Select from presets or add your own. Click a chip to toggle preference; click × to remove a custom tag.</div>
+
+                    <!-- chip list -->
+                    <div id="chipContainer" class="chip-list" aria-live="polite" aria-label="Preferred styles"></div>
+
+                    <!-- add new style -->
+                    <div class="add-style">
+                        <input id="newStyleInput" type="text" placeholder="Add a style (e.g. Glittery, Maxi, Matric dance)">
+                        <button type="button" id="addStyleBtn" class="btn.ghost" style="border-radius:8px;padding:10px 12px;background:#fff;border:1px solid #e6e6e6">Add</button>
+                    </div>
+
+                    <div class="actions">
+                        <button type="button" id="resetBtn" class="btn.ghost">Reset</button>
+                        <button type="submit" id="saveBtn" class="btn">Save profile</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right: info / quick actions -->
+            <aside>
+                <div class="card">
+                    <h3>Account preferences</h3>
+                    <p class="hint">Update your contact details and preferred styles so we can surface better recommendations.</p>
+
+                    <div style="margin-top:12px">
+                        <button id="signOutBtn" class="btn.ghost" style="width:100%">Sign out</button>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top:12px">
+                    <h4>Data (demo)</h4>
+                    <p class="small">This page stores profile data locally for demo. Replace save/load code with your backend endpoint when ready.</p>
+                    <div style="margin-top:10px;">
+                        <button id="exportBtn" class="btn.ghost" style="width:100%">Export profile (copy JSON)</button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- footer (kept simple) -->
+    <footer>
+        <div class="container footer-grid">
+            <div>
+                <strong>Ozyde</strong>
+                <div class="small" style="margin-top:8px">Address:<br>5 Liebenberg Rd, Noordwyk, Midrand 1687</div>
+                <div class="socials" aria-label="Social media">
+                    <a href="https://www.instagram.com/ozyde_?igsh=NWM0aTd4ZGFmeHVr" target="_blank" rel="noopener" aria-label="Instagram">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="18" height="18" rx="5" stroke="#333" stroke-width="1.2" fill="none"/><circle cx="12" cy="12" r="3.2" stroke="#333" stroke-width="1.2" fill="none"/><circle cx="17.5" cy="6.5" r="0.6" fill="#333"/></svg>
+                    </a>
+                    <a href="https://www.tiktok.com/@ozyde_designs?_t=ZS-8zlyfPi8HHJ&_r=1" target="_blank" rel="noopener" aria-label="TikTok">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17 3v6.2c0 2.5 2 4.5 4.5 4.5V12c-1.8 0-3.2-1.4-3.5-3H17zM9 8.5a5.5 5.5 0 1 0 5.5 5.5V8.5H9z" fill="#333"/></svg>
+                    </a>
+                    <a href="mailto:ozydedesigns@gmail.com" aria-label="Email">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="6" width="18" height="12" rx="2" stroke="#333" stroke-width="1.2" fill="none"/><path d="M4 7.5l8 6 8-6" stroke="#333" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <div><strong>Quick links</strong>
+                <ul class="small" style="padding-left:0;list-style:none;margin-top:10px;color:var(--muted)">
+                    <li>Returns & Policy</li>
+                    <li>Delivery</li>
+                    <li>Help Center</li>
+                    <li>Contact</li>
+                </ul>
+            </div>
+
+            <div><strong>Company</strong>
+                <ul class="small" style="padding-left:0;list-style:none;margin-top:10px;color:var(--muted)">
+                    <li>About us</li>
+                    <li>Careers</li>
+                    <li>Press</li>
+                    <li>Terms</li>
+                </ul>
+            </div>
+
+            <div><strong>Support</strong>
+                <ul class="small" style="padding-left:0;list-style:none;margin-top:10px;color:var(--muted)">
+                    <li>Sizing Guide</li>
+                    <li>Cleaning</li>
+                    <li>Partnerships</li>
+                    <li>Affiliate</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="container small" style="margin-top:18px;text-align:center;opacity:.8">© 2024 Ozyde Boutique. All rights reserved.</div>
+    </footer>
+
+    <script>
+        /***** Navbar interactivity wiring *****/
+        // mobile toggle
+        const mt = document.getElementById('mobileToggle');
+        const mm = document.getElementById('mobileMenu');
+        mt && mt.addEventListener('click', () => {
+            const open = mm.style.display === 'block';
+            mm.style.display = open ? 'none' : 'block';
+            mt.setAttribute('aria-expanded', String(!open));
+            mm.setAttribute('aria-hidden', String(open));
+        });
+
+        // profile dropdown (toggle on click, close on outside)
+        const profileBtn = document.getElementById('profileBtn');
+        const dropdown = document.getElementById('profileDropdown');
+        const profileArea = document.getElementById('profileArea');
+
+        profileBtn && profileBtn.addEventListener('click', (e) => {
+            const visible = dropdown.style.display === 'block';
+            dropdown.style.display = visible ? 'none' : 'block';
+            dropdown.setAttribute('aria-hidden', String(visible));
+            profileBtn.setAttribute('aria-expanded', String(!visible));
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!profileArea.contains(e.target)) {
+                dropdown.style.display = 'none';
+                dropdown.setAttribute('aria-hidden', 'true');
+                profileBtn && profileBtn.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // top icons & mobile icons behaviour
+        document.getElementById('topWishlistBtn').addEventListener('click', () => window.location.href = 'wishlist.html');
+        document.getElementById('topCartBtn').addEventListener('click', () => window.location.href = 'cart.html');
+        document.getElementById('mWishlist').addEventListener('click', () => window.location.href = 'wishlist.html');
+        document.getElementById('mCart').addEventListener('click', () => window.location.href = 'cart.html');
+        document.getElementById('brandLink').addEventListener('click', () => window.location.href = 'loggedinnavbar.html');
+        document.getElementById('mAccountBtn').addEventListener('click', () => window.location.href = 'profile.html');
+
+        document.getElementById('signOutLink') ? .addEventListener('click', (e) => {
+            e.preventDefault();
+            if (!confirm('Sign out?')) return;
+            window.location.href = 'index.html';
+        });
+
+        // demo: search
+        document.getElementById('searchBtn').addEventListener('click', () => {
+            const qStr = document.getElementById('searchInput').value.trim();
+            if (!qStr) {
+                alert('Type something to search (demo)');
+                return;
+            }
+            // replace with real search when ready
+            window.location.href = `search.html?q=${encodeURIComponent(qStr)}`;
+        });
+
+        /***** Profile logic (same as previous) *****/
+        (function() {
+            const STORAGE_KEY = 'ozyde_profile_v1';
+
+            // DOM
+            const form = document.getElementById('profileForm');
+            const savedNotice = document.getElementById('savedNotice');
+            const exportBtn = document.getElementById('exportBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const signOutBtn = document.getElementById('signOutBtn');
+
+            const fields = {
+                firstName: document.getElementById('firstName'),
+                lastName: document.getElementById('lastName'),
+                email: document.getElementById('email'),
+                phone: document.getElementById('phone'),
+                address: document.getElementById('address'),
+                bust: document.getElementById('bust'),
+                waist: document.getElementById('waist'),
+                hip: document.getElementById('hip')
+            };
+
+            const PRESETS = ['Matric dance', 'Maxi', 'Glittery', 'Cocktail', 'Evening', 'Boho', 'Vintage'];
+            let styles = [];
+            const chipContainer = document.getElementById('chipContainer');
+            const newStyleInput = document.getElementById('newStyleInput');
+            const addStyleBtn = document.getElementById('addStyleBtn');
+
+            function initStyles() {
+                styles = PRESETS.map(s => ({
+                    name: s,
+                    custom: false,
+                    selected: false
+                }));
+            }
+
+            function renderChips() {
+                chipContainer.innerHTML = '';
+                styles.forEach((s, idx) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'chip' + (s.selected ? ' selected' : '');
+                    btn.setAttribute('data-idx', idx);
+                    btn.setAttribute('aria-pressed', String(!!s.selected));
+                    btn.innerHTML = `<span class="label">${escapeHtml(s.name)}</span>`;
+                    if (s.custom) {
+                        const rem = document.createElement('button');
+                        rem.type = 'button';
+                        rem.className = 'remove';
+                        rem.setAttribute('aria-label', 'Remove style');
+                        rem.textContent = '×';
+                        rem.addEventListener('click', (ev) => {
+                            ev.stopPropagation();
+                            if (!confirm('Remove "' + s.name + '"?')) return;
+                            styles.splice(idx, 1);
+                            renderChips();
+                        });
+                        btn.appendChild(rem);
+                    }
+                    btn.addEventListener('click', () => {
+                        styles[idx].selected = !styles[idx].selected;
+                        renderChips();
+                    });
+                    chipContainer.appendChild(btn);
+                });
+            }
+
+            function escapeHtml(s) {
+                return String(s).replace(/[&<>"]/g, (c) => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;'
+                }[c]));
+            }
+
+            function loadProfile() {
+                initStyles();
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) {
+                    renderChips();
+                    return;
+                }
+                try {
+                    const data = JSON.parse(raw);
+                    Object.keys(fields).forEach(k => {
+                        if (data[k] !== undefined) fields[k].value = data[k];
+                        else fields[k].value = '';
+                    });
+                    if (Array.isArray(data.styles)) {
+                        initStyles();
+                        data.styles.forEach(s => {
+                            if (!s || !s.name) return;
+                            const found = styles.find(x => x.name.toLowerCase() === s.name.toLowerCase());
+                            if (found) found.selected = !!s.selected;
+                            else styles.push({
+                                name: s.name,
+                                custom: true,
+                                selected: !!s.selected
+                            });
+                        });
+                    }
+                } catch (e) {
+                    console.warn('Invalid saved profile', e);
+                }
+                renderChips();
+            }
+
+            function gatherProfile() {
+                const out = {};
+                Object.keys(fields).forEach(k => {
+                    out[k] = fields[k].value && fields[k].value.trim ? fields[k].value.trim() : fields[k].value;
+                });
+                out.styles = styles.map(s => ({
+                    name: s.name,
+                    selected: !!s.selected,
+                    custom: !!s.custom
+                }));
+                return out;
+            }
+
+            function saveProfile() {
+                const p = gatherProfile();
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
+                showSavedNotice();
+            }
+
+            function showSavedNotice() {
+                savedNotice.style.display = '';
+                setTimeout(() => savedNotice.style.display = 'none', 2200);
+            }
+
+            function addStyleFromInput() {
+                const v = (newStyleInput.value || '').trim();
+                if (!v) return;
+                if (styles.some(s => s.name.toLowerCase() === v.toLowerCase())) {
+                    const idx = styles.findIndex(s => s.name.toLowerCase() === v.toLowerCase());
+                    styles[idx].selected = true;
+                    newStyleInput.value = '';
+                    renderChips();
+                    return;
+                }
+                styles.push({
+                    name: v,
+                    custom: true,
+                    selected: true
+                });
+                newStyleInput.value = '';
+                renderChips();
+            }
+
+            function exportProfile() {
+                const p = gatherProfile();
+                const text = JSON.stringify(p, null, 2);
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        alert('Profile JSON copied to clipboard (demo).');
+                    }).catch(() => {
+                        fallbackCopyText(text);
+                    });
+                } else fallbackCopyText(text);
+            }
+
+            function fallbackCopyText(txt) {
+                const ta = document.createElement('textarea');
+                ta.value = txt;
+                ta.style.position = 'fixed';
+                ta.style.left = '-9999px';
+                document.body.appendChild(ta);
+                ta.select();
+                try {
+                    document.execCommand('copy');
+                    alert('Profile JSON copied (fallback).');
+                } catch (e) {
+                    alert('Copy failed. You can manually copy the JSON.');
+                }
+                document.body.removeChild(ta);
+            }
+
+            function resetProfile() {
+                if (confirm('Reset form to saved values?')) {
+                    loadProfile();
+                }
+            }
+
+            function signOut() {
+                if (confirm('Sign out?')) {
+                    window.location.href = 'index.html';
+                }
+            }
+
+            // wire events
+            form.addEventListener('submit', (ev) => {
+                ev.preventDefault();
+                const fn = fields.firstName.value.trim();
+                const ln = fields.lastName.value.trim();
+                const email = fields.email.value.trim();
+                if (!fn || !ln || !email) {
+                    alert('Please provide at least first name, last name and email.');
+                    return;
+                }
+                saveProfile();
+            });
+
+            addStyleBtn.addEventListener('click', addStyleFromInput);
+            newStyleInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addStyleFromInput();
+                }
+            });
+            exportBtn.addEventListener('click', exportProfile);
+            resetBtn.addEventListener('click', resetProfile);
+            signOutBtn.addEventListener('click', signOut);
+
+            // init
+            initStyles();
+            loadProfile();
+        })();
+    </script>
+</body>
+
+</html>
