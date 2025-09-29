@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dress Catalog — OZYDE </title>
+    <title>Dress Catalog — OZYDE (Logged-in)</title>
     <style>
         /* Ozyde Boutique consistent styling */
         
@@ -204,15 +204,12 @@
             color: var(--muted);
             font-size: 18px;
         }
-        /* User Status Banner */
+        /* User Status Banner (kept in DOM but hidden for logged-in) */
         
         .user-status {
-            background: #f8f9fa;
-            padding: 12px 0;
-            text-align: center;
-            border-bottom: 1px solid #e9ecef;
-            margin-bottom: 20px;
+            display: none;
         }
+        /* hidden entirely for logged-in page */
         
         .user-status.logged-out {
             background: #fff3cd;
@@ -695,7 +692,7 @@
             stroke: #fff;
             fill: #fff;
         }
-        /* Responsive Design */
+        /* Responsive */
         
         @media (max-width: 880px) {
             .search {
@@ -745,14 +742,71 @@
                 grid-template-columns: 1fr;
             }
         }
+        /* Profile Dropdown styles (kept consistent with logged-in design) */
+        
+        .profile-area {
+            position: relative;
+        }
+        
+        .profile-btn {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: transparent;
+            border: 0;
+            color: #fff;
+            cursor: pointer;
+            padding: 6px 8px;
+            border-radius: 8px;
+        }
+        
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #222, #111);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #fff;
+        }
+        
+        .dropdown {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 10px);
+            background: #111;
+            border-radius: 10px;
+            padding: 8px 6px;
+            min-width: 200px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 200;
+        }
+        
+        .dropdown a {
+            display: block;
+            color: #fff;
+            padding: 10px 12px;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 8px;
+        }
+        
+        .dropdown a:hover,
+        .dropdown a:focus {
+            background: #1a1a1a;
+            outline: none;
+        }
     </style>
 </head>
 
 <body>
-    <!-- ===== Navigation Bar ===== -->
+    <!-- ===== Navigation Bar (logged-in) ===== -->
     <header class="nav-wrap" role="banner">
         <div class="nav" role="navigation" aria-label="Main navigation">
-            <div class="logo" id="brandLink">
+            <div class="logo" id="brandLink" onclick="window.location.href='finalhomepage.html'">
                 <div class="logo-badge" aria-hidden="true">✦</div>
                 <div>Ozyde</div>
             </div>
@@ -773,7 +827,6 @@
                     <li><a href="about.html">About</a></li>
                     <li><a href="blog.html">Blog</a></li>
                     <li><a href="contact.html">Contact Us</a></li>
-                    <li><a href="custommade.html">Custom Made</a></li>
                     <li><a href="catalog.html" class="active">Browse</a></li>
                 </ul>
             </nav>
@@ -786,27 +839,39 @@
                     </svg>
                 </a>
 
-                <a href="register.html" class="icon-only" title="Login/Register" aria-label="Login/Register">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-                        <polyline points="10 17 15 12 10 7" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                        <line x1="15" y1="12" x2="3" y2="12" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-                    </svg>
-                </a>
+                <button class="icon-only" title="Wishlist" aria-label="Wishlist" id="wishlistBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20.8 7.2a5 5 0 0 0-7.07 0L12 8.94l-1.73-1.72a5 5 0 1 0-7.07 7.07L12 21.5l8.8-8.8a5 5 0 0 0 0-7.5z" stroke="white" stroke-width="1.2" fill="none"/></svg>
+                </button>
 
-                <a href="help.html" class="icon-only" title="Help" aria-label="Help">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.2" fill="none"/>
-                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-                        <line x1="12" y1="17" x2="12" y2="17" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-                    </svg>
-                </a>
+                <button class="icon-only" title="Cart" aria-label="Cart" id="cartBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 3h2l1 7h13" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20" r="1.5" fill="white"/><circle cx="18" cy="20" r="1.5" fill="white"/></svg>
+                </button>
+
+                <!-- PROFILE AREA (replaces login/register icon) -->
+                <div id="profileArea" class="profile-area" aria-live="polite">
+                    <!-- populated by JS -->
+                </div>
+
+                <button class="mobile-toggle" id="mobileToggle" aria-expanded="false" aria-label="Open menu">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 7h18M3 12h18M3 17h18" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+            <div style="margin-bottom:10px">
+                <input id="mobileSearch" type="search" placeholder="Search dresses..." style="width:100%; padding:10px 12px; border-radius:8px; border:0; background:rgba(255,255,255,0.04); color:#fff">
+            </div>
+            <div style="display:flex;gap:10px;align-items:center">
+                <button class="icon-only" aria-label="Wishlist (mobile)" id="mWishlist"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20.8 7.2a5 5 0 0 0-7.07 0L12 8.94l-1.73-1.72a5 5 0 1 0-7.07 7.07L12 21.5l8.8-8.8a5 5 0 0 0 0-7.5z" stroke="white" stroke-width="1.2" fill="none"/></svg></button>
+                <button class="icon-only" aria-label="Cart (mobile)" id="mCart"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 3h2l1 7h13" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20" r="1.5" fill="white"/><circle cx="18" cy="20" r="1.5" fill="white"/></svg></button>
+                <div id="mobileAuthArea" style="margin-left:6px"></div>
             </div>
         </div>
     </header>
 
-    <!-- User Status Banner -->
-    <div class="user-status logged-out" id="userStatus">
+    <!-- NOTE: user-status element preserved in DOM but hidden via CSS for logged-in -->
+    <div class="user-status logged-out" id="userStatus" aria-hidden="true" style="display:none;">
         <div class="container">
             You are browsing as a guest. <a href="register.html" id="loginLink">Sign in or register</a> to access all features including wishlist and quick checkout.
         </div>
@@ -1068,7 +1133,7 @@
         </section>
     </main>
 
-    <!-- Login Modal -->
+    <!-- Login Modal (kept but will not show while logged-in) -->
     <div class="modal-overlay" id="loginModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1097,7 +1162,6 @@
                                 <circle cx="17.5" cy="6.5" r="0.6" fill="#333"/>
                             </svg>
                         </a>
-                        <!-- Replaced generic SVG with a proper TikTok logo image (keeps layout & sizing identical) -->
                         <a href="https://www.tiktok.com/@ozyde_designs?_t=ZS-8zlyfPi8HHJ&_r=1" target="_blank" rel="noopener" aria-label="TikTok">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/TikTok_logo.svg/1200px-TikTok_logo.svg.png" alt="TikTok" style="width:18px;height:18px;display:block" />
                         </a>
@@ -1152,286 +1216,392 @@
     </footer>
 
     <script>
-        // User authentication state (in a real app, this would come from backend)
-        let isLoggedIn = false; // Change to true to test logged-in state
+        /*******************************************************************************
+         * Logged-in catalog script
+         * - isLoggedIn = true (logged-in view)
+         * - Rent Now -> productdetail.html?id=...
+         * - For you -> foryou.html
+         * - Profile area rendering included (demo user)
+         *******************************************************************************/
 
-        // Wishlist state (in a real app, this would be stored per user)
-        let wishlist = [];
+        // Demo user + login state
+        let isLoggedIn = true; // LOGGED IN: set true as requested
 
-        // DOM elements
-        const userStatus = document.getElementById('userStatus');
-        const loginModal = document.getElementById('loginModal');
-        const closeModal = document.getElementById('closeModal');
-        const goToRegister = document.getElementById('goToRegister');
-        const wishlistButtons = document.querySelectorAll('.wishlist-btn');
-        const quickViewButtons = document.querySelectorAll('.quick-view-btn');
-        const rentButtons = document.querySelectorAll('.rent-btn');
-        const viewToggles = document.querySelectorAll('.view-toggle .toggle');
+        const USER_KEY = 'ozyde_user';
+        const DEMO_USER = {
+            firstName: 'A',
+            lastName: 'Nomvula',
+            email: 'a.nomvula@example.com'
+        };
 
-        // Initialize page based on login status
-        function initializePage() {
-            if (isLoggedIn) {
-                userStatus.classList.remove('logged-out');
-                userStatus.innerHTML = '<div class="container">Welcome back! <a href="wishlist.html">View your wishlist</a> or <a href="#" id="logoutLink">logout</a>.</div>';
+        function getCurrentUser() {
+            try {
+                const raw = localStorage.getItem(USER_KEY);
+                if (!raw) return DEMO_USER;
+                return JSON.parse(raw);
+            } catch (e) {
+                return DEMO_USER;
+            }
+        }
 
-                // Add logout functionality
-                document.getElementById('logoutLink').addEventListener('click', function(e) {
+        function setCurrentUser(user) {
+            if (!user) localStorage.removeItem(USER_KEY);
+            else localStorage.setItem(USER_KEY, JSON.stringify(user));
+            renderProfileArea();
+            renderMobileAuth();
+        }
+
+        // ---- Profile rendering (logged-in) ----
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"]/g, function(c) {
+                return ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;'
+                }[c]);
+            });
+        }
+
+        function capitalize(s) {
+            return s && (s.charAt(0).toUpperCase() + s.slice(1));
+        }
+
+        function displayNameFor(user) {
+            if (!user) return '';
+            const first = user.firstName || '';
+            const last = user.lastName || '';
+            if (first && last) return first.charAt(0).toUpperCase() + '. ' + capitalize(last);
+            if (first) return capitalize(first);
+            if (user.email) return user.email.split('@')[0];
+            return 'Member';
+        }
+
+        function renderProfileArea() {
+            const container = document.getElementById('profileArea');
+            if (!container) return;
+            container.innerHTML = '';
+            const user = getCurrentUser();
+
+            const btn = document.createElement('button');
+            btn.className = 'profile-btn';
+            btn.id = 'profileBtn';
+            btn.setAttribute('aria-haspopup', 'true');
+            btn.setAttribute('aria-expanded', 'false');
+            btn.innerHTML = `
+                <div class="profile-avatar" aria-hidden="true">${escapeHtml((user.firstName||user.email||'U').charAt(0).toUpperCase())}</div>
+                <div style="text-align:left">
+                    <div style="font-weight:700; font-size:14px">${escapeHtml(displayNameFor(user))}</div>
+                    <div style="font-size:12px; color:#bdbdbd;">Member</div>
+                </div>
+            `;
+            container.appendChild(btn);
+
+            const dd = document.createElement('div');
+            dd.className = 'dropdown';
+            dd.id = 'profileDropdown';
+            dd.setAttribute('role', 'menu');
+            dd.setAttribute('aria-hidden', 'true');
+            dd.innerHTML = `
+                <a href="profile.html" role="menuitem">My Account</a>
+                <a href="orders.html" role="menuitem">My Orders</a>
+                <a href="wishlist.html" role="menuitem">Wishlist</a>
+                <a href="#" role="menuitem" id="signOutLink">Sign out</a>
+            `;
+            container.appendChild(dd);
+
+            btn.addEventListener('click', toggleDropdown);
+            btn.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    isLoggedIn = false;
-                    initializePage();
-                });
-            } else {
-                userStatus.classList.add('logged-out');
-                userStatus.innerHTML = '<div class="container">You are browsing as a guest. <a href="register.html" id="loginLink">Sign in or register</a> to access all features including wishlist and quick checkout.</div>';
-            }
-
-            // Update wishlist buttons based on current state
-            updateWishlistButtons();
-        }
-
-        // Show login modal
-        function showLoginModal() {
-            loginModal.classList.add('active');
-        }
-
-        // Hide login modal
-        function hideLoginModal() {
-            loginModal.classList.remove('active');
-        }
-
-        // Toggle wishlist item
-        function toggleWishlist(productId) {
-            if (!isLoggedIn) {
-                showLoginModal();
-                return;
-            }
-
-            const index = wishlist.indexOf(productId);
-            if (index > -1) {
-                // Remove from wishlist
-                wishlist.splice(index, 1);
-            } else {
-                // Add to wishlist
-                wishlist.push(productId);
-            }
-
-            updateWishlistButtons();
-
-            // In a real app, you would save to backend here
-            console.log('Wishlist updated:', wishlist);
-        }
-
-        // Update wishlist button states
-        function updateWishlistButtons() {
-            wishlistButtons.forEach(button => {
-                const productId = button.getAttribute('data-product-id');
-                if (wishlist.includes(productId)) {
-                    button.classList.add('active');
-                } else {
-                    button.classList.remove('active');
+                    toggleDropdown();
                 }
+            });
+
+            const so = dd.querySelector('#signOutLink');
+            if (so) so.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (!confirm('Sign out?')) return;
+                // demo: clear localStorage & reload to guest if desired
+                localStorage.removeItem(USER_KEY);
+                // redirect to guest catalog or home:
+                window.location.href = 'catalog_with_custommade.html';
             });
         }
 
-        // Quick view functionality
-        function quickView(productId) {
-            // Redirect to the product detail page (filename requested: productdetail.html)
-            window.location.href = `productdetail.html?id=${productId}`;
+        function toggleDropdown() {
+            const dd = document.getElementById('profileDropdown');
+            const btn = document.getElementById('profileBtn');
+            if (!dd || !btn) return;
+            const open = dd.style.display === 'block';
+            if (open) closeDropdown();
+            else openDropdown();
         }
 
-        // Rent functionality
-        function rentProduct(productId) {
-            if (!isLoggedIn) {
-                showLoginModal();
-                return;
-            }
-
-            // In a real app, this would add to cart and redirect to checkout
-            alert(`Product ${productId} added to cart. Redirecting to checkout...`);
-            // window.location.href = 'checkout.html';
+        function openDropdown() {
+            const dd = document.getElementById('profileDropdown');
+            const btn = document.getElementById('profileBtn');
+            if (!dd || !btn) return;
+            dd.style.display = 'block';
+            dd.setAttribute('aria-hidden', 'false');
+            btn.setAttribute('aria-expanded', 'true');
+            const firstLink = dd.querySelector('a');
+            if (firstLink) firstLink.focus();
         }
 
-        // Event listeners
+        function closeDropdown() {
+            const dd = document.getElementById('profileDropdown');
+            const btn = document.getElementById('profileBtn');
+            if (!dd || !btn) return;
+            dd.style.display = 'none';
+            dd.setAttribute('aria-hidden', 'true');
+            btn.setAttribute('aria-expanded', 'false');
+        }
+        document.addEventListener('click', function(e) {
+            const profileArea = document.getElementById('profileArea');
+            const dd = document.getElementById('profileDropdown');
+            if (!profileArea) return;
+            if (dd && dd.style.display === 'block' && !profileArea.contains(e.target)) closeDropdown();
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeDropdown();
+        });
+
+        // ---- mobile auth summary ----
+        function renderMobileAuth() {
+            const mobileAuth = document.getElementById('mobileAuthArea');
+            const user = getCurrentUser();
+            if (!mobileAuth) return;
+            mobileAuth.innerHTML = '';
+            const el = document.createElement('div');
+            el.style.display = 'flex';
+            el.style.alignItems = 'center';
+            el.style.gap = '8px';
+            el.innerHTML = `<div style="width:36px;height:36px;border-radius:8px;background:#fff;color:#111;display:flex;align-items:center;justify-content:center;font-weight:700">${escapeHtml((user.firstName||user.email||'U').charAt(0).toUpperCase())}</div>
+                            <div style="font-size:14px">${escapeHtml(displayNameFor(user))}</div>`;
+            mobileAuth.appendChild(el);
+        }
+
+        // ---- small interactive behavior (search, wishlist, quick view, rent, filters) ----
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize page
-            initializePage();
+            // Initial profile render
+            renderProfileArea();
+            renderMobileAuth();
 
-            // Modal event listeners
-            closeModal.addEventListener('click', hideLoginModal);
-            goToRegister.addEventListener('click', function() {
-                hideLoginModal();
-                window.location.href = 'register.html';
+            // Wishlist / Cart buttons behavior
+            document.getElementById('wishlistBtn').addEventListener('click', function() {
+                window.location.href = 'wishlist.html';
+            });
+            document.getElementById('cartBtn').addEventListener('click', function() {
+                window.location.href = 'cart.html';
             });
 
-            // Close modal when clicking outside
-            loginModal.addEventListener('click', function(e) {
-                if (e.target === loginModal) {
-                    hideLoginModal();
+            // Mobile icons
+            const mw = document.getElementById('mWishlist');
+            const mc = document.getElementById('mCart');
+            mw && mw.addEventListener('click', () => document.getElementById('wishlistBtn').click());
+            mc && mc.addEventListener('click', () => document.getElementById('cartBtn').click());
+
+            // Mobile menu toggle
+            const mt = document.getElementById('mobileToggle');
+            const mm = document.getElementById('mobileMenu');
+            mt && mt.addEventListener('click', function() {
+                const open = mm.style.display === 'block';
+                mm.style.display = open ? 'none' : 'block';
+                mt.setAttribute('aria-expanded', String(!open));
+                mm.setAttribute('aria-hidden', String(open));
+            });
+
+            // Search
+            const searchBtn = document.getElementById('searchBtn');
+            const searchInput = document.getElementById('searchInput');
+            searchBtn && searchBtn.addEventListener('click', function() {
+                const q = searchInput.value.trim();
+                if (!q) {
+                    alert('Type something to search (demo)');
+                    return;
                 }
+                alert('Search (demo): ' + q);
             });
 
-            // Wishlist button event listeners
+            // Product interactions
+            const wishlistButtons = document.querySelectorAll('.wishlist-btn');
+            const quickViewButtons = document.querySelectorAll('.quick-view-btn');
+            const rentButtons = document.querySelectorAll('.rent-btn');
+            let wishlist = []; // demo in-memory
+
             wishlistButtons.forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
                     const productId = this.getAttribute('data-product-id');
-                    toggleWishlist(productId);
+                    // Toggle wishlist (logged-in)
+                    if (!isLoggedIn) {
+                        document.getElementById('loginModal').classList.add('active');
+                        return;
+                    }
+                    const idx = wishlist.indexOf(productId);
+                    if (idx > -1) wishlist.splice(idx, 1);
+                    else wishlist.push(productId);
+                    // Visual state:
+                    if (wishlist.includes(productId)) this.classList.add('active');
+                    else this.classList.remove('active');
                 });
             });
 
-            // Quick view button event listeners
             quickViewButtons.forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
                     const productId = this.getAttribute('data-product-id');
-                    quickView(productId);
+                    // Quick view navigates to product detail
+                    window.location.href = `productdetail.html?id=${productId}`;
                 });
             });
 
-            // Rent button event listeners
+            // Rent Now -> product detail (users must select size there)
             rentButtons.forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
                     const productId = this.getAttribute('data-product-id');
-                    rentProduct(productId);
+                    // Redirect to product detail so users can choose size etc.
+                    window.location.href = `productdetail.html?id=${productId}`;
                 });
             });
 
-            // View toggle event listeners (Shop / For you)
+            // View toggle (Shop / For you) — For you goes to foryou.html (logged-in)
+            const viewToggles = document.querySelectorAll('.view-toggle .toggle');
             viewToggles.forEach(toggle => {
                 toggle.addEventListener('click', function() {
                     const view = this.getAttribute('data-view');
-                    // if user clicked 'for-you' and they're not logged in -> show modal
-                    if (view === 'for-you' && !isLoggedIn) {
-                        showLoginModal();
+                    // If For you selected -> navigate to foryou.html
+                    if (view === 'for-you') {
+                        window.location.href = 'foryou.html';
                         return;
                     }
-                    // toggle active class for visuals
+                    // else just toggle visuals for Shop
                     viewToggles.forEach(t => {
                         t.classList.remove('active');
                         t.setAttribute('aria-selected', 'false');
                     });
                     this.classList.add('active');
                     this.setAttribute('aria-selected', 'true');
-
-                    // In a real app you'd filter/sort products server-side / client-side based on profile.
-                    // For now we show a tiny notice in console.
-                    if (view === 'for-you') {
-                        console.log('Switched to: For you (personalized)');
-                    } else {
-                        console.log('Switched to: Shop (all items)');
-                    }
                 });
             });
 
-            // Existing filter functionality (unchanged)
+            // Filters / Sort / Search functionality (kept from original)
             const filterBtn = document.querySelector('.filter-btn');
             const sortSelect = document.getElementById('sort');
-            const searchInput = document.getElementById('searchInput');
-            const searchBtn = document.getElementById('searchBtn');
             const productCards = document.querySelectorAll('.product-card');
 
-            filterBtn.addEventListener('click', function() {
-                applyFilters();
-            });
-
-            sortSelect.addEventListener('change', function() {
+            filterBtn && filterBtn.addEventListener('click', applyFilters);
+            sortSelect && sortSelect.addEventListener('change', function() {
                 const sortValue = this.value;
                 const productsContainer = document.querySelector('.products-grid');
                 const products = Array.from(productCards);
-
                 products.sort((a, b) => {
-                    const priceA = parseInt(a.dataset.price);
-                    const priceB = parseInt(b.dataset.price);
-
+                    const priceA = parseInt(a.dataset.price || 0);
+                    const priceB = parseInt(b.dataset.price || 0);
                     switch (sortValue) {
                         case 'price-low':
                             return priceA - priceB;
                         case 'price-high':
                             return priceB - priceA;
                         case 'popular':
-                            const statusA = a.querySelector('.availability-badge').classList.contains('available');
-                            const statusB = b.querySelector('.availability-badge').classList.contains('available');
-                            return statusB - statusA;
+                            const aAvail = a.querySelector('.availability-badge').classList.contains('available');
+                            const bAvail = b.querySelector('.availability-badge').classList.contains('available');
+                            return (bAvail === true) - (aAvail === true);
                         default:
                             return 0;
                     }
                 });
-
-                products.forEach(product => {
-                    productsContainer.appendChild(product);
-                });
+                products.forEach(p => productsContainer.appendChild(p));
             });
 
-            searchBtn.addEventListener('click', applySearch);
-            searchInput.addEventListener('keypress', function(e) {
+            // Search input behavior
+            searchInput && searchInput.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
-                    applySearch();
+                    const searchTerm = searchInput.value.trim().toLowerCase();
+                    if (!searchTerm) {
+                        productCards.forEach(c => c.style.display = 'block');
+                        return;
+                    }
+                    productCards.forEach(card => {
+                        const title = (card.querySelector('.product-title') && card.querySelector('.product-title').textContent.toLowerCase()) || '';
+                        const designer = (card.querySelector('.product-designer') && card.querySelector('.product-designer').textContent.toLowerCase()) || '';
+                        card.style.display = (title.includes(searchTerm) || designer.includes(searchTerm)) ? 'block' : 'none';
+                    });
                 }
             });
 
-            function applySearch() {
-                const searchTerm = searchInput.value.trim().toLowerCase();
-
+            // Apply search via button as well
+            document.getElementById('searchBtn') && document.getElementById('searchBtn').addEventListener('click', function() {
+                const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
                 if (!searchTerm) {
-                    productCards.forEach(card => {
-                        card.style.display = 'block';
-                    });
+                    productCards.forEach(c => c.style.display = 'block');
                     return;
                 }
-
                 productCards.forEach(card => {
-                    const title = card.querySelector('.product-title').textContent.toLowerCase();
-                    const designer = card.querySelector('.product-designer').textContent.toLowerCase();
-
-                    if (title.includes(searchTerm) || designer.includes(searchTerm)) {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
-                    }
+                    const title = (card.querySelector('.product-title') && card.querySelector('.product-title').textContent.toLowerCase()) || '';
+                    const designer = (card.querySelector('.product-designer') && card.querySelector('.product-designer').textContent.toLowerCase()) || '';
+                    card.style.display = (title.includes(searchTerm) || designer.includes(searchTerm)) ? 'block' : 'none';
                 });
-            }
+            });
 
+            // applyFilters
             function applyFilters() {
                 const category = document.getElementById('category').value;
                 const size = document.getElementById('size').value;
                 const color = document.getElementById('color').value;
                 const price = document.getElementById('price').value;
-
                 productCards.forEach(card => {
                     let show = true;
-
-                    if (category && card.dataset.category !== category) {
-                        show = false;
-                    }
-
-                    if (size && card.dataset.size !== size) {
-                        show = false;
-                    }
-
-                    if (color && card.dataset.color !== color) {
-                        show = false;
-                    }
-
+                    if (category && card.dataset.category !== category) show = false;
+                    if (size && card.dataset.size !== size) show = false;
+                    if (color && card.dataset.color !== color) show = false;
                     if (price) {
                         if (price === '200+') {
-                            if (parseInt(card.dataset.price) < 200) {
-                                show = false;
-                            }
+                            if (parseInt(card.dataset.price) < 200) show = false;
                         } else {
                             const [min, max] = price.split('-').map(Number);
-                            if (parseInt(card.dataset.price) < min || parseInt(card.dataset.price) > max) {
-                                show = false;
-                            }
+                            if (parseInt(card.dataset.price) < min || parseInt(card.dataset.price) > max) show = false;
                         }
                     }
-
                     card.style.display = show ? 'block' : 'none';
                 });
             }
 
-            // Load more button functionality
-            document.querySelector('.load-more-btn').addEventListener('click', function() {
-                alert('Loading more dresses...\n\nIn a real application, this would fetch more products from an API.');
+            // Load more demo
+            const loadMore = document.querySelector('.load-more-btn');
+            loadMore && loadMore.addEventListener('click', function() {
+                alert('Loading more dresses... (demo)');
             });
-        });
+
+            // Modal actions
+            const loginModal = document.getElementById('loginModal');
+            const closeModal = document.getElementById('closeModal');
+            const goToRegister = document.getElementById('goToRegister');
+            closeModal && closeModal.addEventListener('click', function() {
+                loginModal.classList.remove('active');
+            });
+            goToRegister && goToRegister.addEventListener('click', function() {
+                loginModal.classList.remove('active');
+                window.location.href = 'register.html';
+            });
+
+            if (loginModal) loginModal.addEventListener('click', function(e) {
+                if (e.target === loginModal) loginModal.classList.remove('active');
+            });
+
+        }); // DOMContentLoaded end
+
+        // expose helpers for backend devs
+        window.__OZYDE = {
+            getCurrentUser,
+            setCurrentUser
+        };
+
+        // Console quicktip:
+        // localStorage.setItem('ozyde_user', JSON.stringify({firstName:'Zola', lastName:'M', email:'z@x.com'}));
+        // window.__OZYDE.setCurrentUser(JSON.parse(localStorage.getItem('ozyde_user')));
     </script>
 </body>
 
