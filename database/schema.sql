@@ -10,7 +10,7 @@ CREATE TABLE users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE dresses (
+CREATE TABLE product (
     dress_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
     description TEXT,
@@ -24,7 +24,7 @@ CREATE TABLE dresses (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE dress_images (
+CREATE TABLE product_images (
     image_id INT AUTO_INCREMENT PRIMARY KEY,
     dress_id INT,
     image_url VARCHAR(255),
