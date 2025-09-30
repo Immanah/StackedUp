@@ -237,7 +237,7 @@ CREATE TABLE penalties (
     FOREIGN KEY (booking_id) REFERENCES bookings(booking_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- 21. NOTIFICATIONS (optional future use, in-app alerts)
+-- 21. NOTIFICATIONS (in-app alerts)
 CREATE TABLE notifications (
     notification_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
