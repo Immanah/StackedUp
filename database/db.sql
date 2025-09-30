@@ -84,6 +84,7 @@ CREATE TABLE custom_orders (
     sleeve_length DECIMAL(5,2),
     shoulder_width DECIMAL(5,2),
     notes TEXT,
+    image_url VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
@@ -247,3 +248,15 @@ CREATE TABLE notifications (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
+CREATE TABLE blog_posts (
+    post_id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(200),
+    slug VARCHAR(200) UNIQUE,
+    body TEXT,
+    author_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (author_id) REFERENCES users(user_id)
+);
+
