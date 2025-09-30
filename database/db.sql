@@ -64,6 +64,7 @@ CREATE TABLE inventory (
     product_id INT NOT NULL,
     stock_quantity INT NOT NULL DEFAULT 0,
     location VARCHAR(100) DEFAULT 'Main Store',
+    available BOOLEAN DEFAULT TRUE,
     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
