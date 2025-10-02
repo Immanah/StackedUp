@@ -198,17 +198,18 @@ CREATE TABLE wishlist (
     FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- 17. MESSAGES (/inquiries)
 CREATE TABLE messages (
     message_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NULL,
     name VARCHAR(100),
+    email VARCHAR(150),             -- NEW COLUMN
     phone VARCHAR(20),
     message TEXT NOT NULL,
     channel ENUM('whatsapp','contact_form') DEFAULT 'whatsapp',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
+
 
 -- 18. AUDIT LOG
 CREATE TABLE audit_log (
