@@ -484,22 +484,12 @@
             const deliveryVal = document.getElementById('deliveryVal');
             const totalVal = document.getElementById('totalVal');
 
-            function demoCart() {
-                return [{
-                    id: 'c1',
-                    productId: 'p1',
-                    title: 'Ivory Evening Gown',
-                    price: 1119.99,
-                    days: 3,
-                    qty: 1
-                }, {
-                    id: 'c2',
-                    productId: 'p2',
-                    title: 'Red Cocktail Dress',
-                    price: 879.50,
-                    days: 2,
-                    qty: 1
-                }];
+            // Fetch cart from backend (with holds)
+            async function loadCart() {
+                const res = await fetch('api/cart.php', { credentials: 'include' });
+                if (!res.ok) throw new Error('Failed to load cart');
+                const data = await res.json();
+                return data.items || [];
             }
 
             function formatMoney(n) {
@@ -517,7 +507,7 @@
                 }[c]));
             }
 
-            let cartItems = demoCart();
+            let cartItems = [];
 
             function renderCart(items) {
                 itemsCol.innerHTML = '';
@@ -535,6 +525,9 @@
             <div style="flex:1">
               <div class="title">${escapeHtml(it.title)}</div>
               <div class="meta">${it.days} days • R${Number(it.price).toFixed(2)}</div>
+              <div class="meta" data-countdown>
+                <span>Hold expires in: </span><span class="cd" data-exp="${it.holdExpiresAt || 0}"></span>
+              </div>
               <div style="margin-top:10px;display:flex;align-items:center;gap:12px">
                 <div class="qty" aria-label="Quantity controls">
                   <button data-op="dec">−</button>
@@ -547,22 +540,17 @@
             <div style="font-weight:800">${formatMoney(it.price * it.qty)}</div>
           `;
 
-                    el.querySelector('[data-op="inc"]').addEventListener('click', () => {
-                        it.qty++;
-                        updateCartDisplay();
-                    });
-                    el.querySelector('[data-op="dec"]').addEventListener('click', () => {
-                        if (it.qty > 1) it.qty--;
-                        updateCartDisplay();
-                    });
+                    // Rental items are single-qty; disable qty changes
+                    el.querySelector('[data-op="inc"]').addEventListener('click', () => alert('Quantity fixed for rental items'));
+                    el.querySelector('[data-op="dec"]').addEventListener('click', () => alert('Quantity fixed for rental items'));
 
-                    el.querySelector('[data-action="remove"]').addEventListener('click', () => {
+                    el.querySelector('[data-action="remove"]').addEventListener('click', async () => {
                         if (!confirm('Remove item from cart?')) return;
-                        const idx = cartItems.findIndex(x => x.id === it.id);
-                        if (idx !== -1) {
-                            cartItems.splice(idx, 1);
+                        try {
+                            await fetch('api/cart.php?id=' + encodeURIComponent(it.id), { method: 'DELETE', credentials: 'include' });
+                            cartItems = cartItems.filter(x => x.id !== it.id);
                             updateCartDisplay();
-                        }
+                        } catch {}
                     });
 
                     itemsCol.appendChild(el);
@@ -607,8 +595,43 @@
                 window.location.href = 'checkout.html';
             });
 
+            // countdown for holds
+            function startCountdown() {
+                function tick() {
+                    const now = Math.floor(Date.now() / 1000);
+                    document.querySelectorAll('.cd').forEach(el => {
+                        const exp = parseInt(el.getAttribute('data-exp') || '0', 10);
+                        let remain = Math.max(0, exp - now);
+                        const m = Math.floor(remain / 60);
+                        const s = remain % 60;
+                        el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                        if (remain === 0) {
+                            el.closest('.cart-item').querySelector('[data-action="remove"]').textContent = 'Move to wishlist';
+                            el.closest('.cart-item').querySelector('[data-action="remove"]').onclick = async () => {
+                                const title = el.closest('.cart-item').querySelector('.title').textContent;
+                                const item = cartItems.find(ci => ci.title === title);
+                                if (item) {
+                                    // add to wishlist (best-effort)
+                                    try {
+                                        await fetch('api/wishlist.php', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: item.productId, title: item.title, price: item.price }) });
+                                    } catch {}
+                                    try {
+                                        await fetch('api/cart.php?id=' + encodeURIComponent(item.id), { method: 'DELETE', credentials: 'include' });
+                                    } catch {}
+                                    cartItems = cartItems.filter(x => x.id !== item.id);
+                                    updateCartDisplay();
+                                }
+                            };
+                        }
+                    });
+                }
+                setInterval(tick, 1000);
+                tick();
+            }
+
             // init
-            renderCart(cartItems);
+            loadCart().then(items => { cartItems = items; renderCart(cartItems); startCountdown(); })
+                .catch(() => { cartItems = []; renderCart(cartItems); });
         })();
     </script>
 </body>

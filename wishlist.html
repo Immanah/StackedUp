@@ -449,26 +449,10 @@
     </script>
 
     <script>
-        /* Wishlist (demo) — items at platform level (no designer names) */
+        /* Wishlist wired to backend */
         (function() {
             const wishWrap = document.getElementById('wishWrap');
             const wishEmpty = document.getElementById('wishEmpty');
-
-            function demoWishlist() {
-                return [{
-                    id: 'w1',
-                    title: 'Ivory Evening Gown',
-                    price: 1119.99
-                }, {
-                    id: 'w2',
-                    title: 'Red Cocktail Dress',
-                    price: 879.50
-                }, {
-                    id: 'w3',
-                    title: 'Sequin Mini',
-                    price: 599.00
-                }];
-            }
 
             function formatMoney(n) {
                 return 'R' + Number(n).toLocaleString(undefined, {
@@ -485,7 +469,11 @@
                 }[c]));
             }
 
-            const items = demoWishlist();
+            async function loadWishlist() {
+                const res = await fetch('api/wishlist.php', { credentials: 'include' });
+                if (!res.ok) throw new Error('Failed to load wishlist');
+                return await res.json();
+            }
 
             function renderWishlist(items) {
                 wishWrap.innerHTML = '';
@@ -508,19 +496,27 @@
               <button class="btn primary" data-action="add">Add to cart</button>
             </div>
           `;
-                    card.querySelector('[data-action="add"]').addEventListener('click', () => {
-                        alert('Added to cart (demo). Backend should implement POST /api/cart with item id: ' + it.id);
+                    card.querySelector('[data-action="add"]').addEventListener('click', async () => {
+                        try {
+                            await fetch('api/cart.php', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ productId: it.id, title: it.title, price: it.price, days: 3 }) });
+                            window.location.href = 'cart.html';
+                        } catch (e) { alert('Could not add to cart'); }
                     });
-                    card.querySelector('[data-action="remove"]').addEventListener('click', () => {
+                    card.querySelector('[data-action="remove"]').addEventListener('click', async () => {
                         if (!confirm('Remove from wishlist?')) return;
-                        card.remove();
-                        // In real app: call DELETE /api/wishlist/:id
+                        try {
+                            await fetch('api/wishlist.php?id=' + encodeURIComponent(it.id), { method: 'DELETE', credentials: 'include' });
+                            card.remove();
+                            if (!wishWrap.children.length) wishEmpty.style.display = '';
+                        } catch {}
                     });
                     wishWrap.appendChild(card);
                 });
             }
 
-            renderWishlist(items);
+            loadWishlist().then(renderWishlist).catch(() => {
+                wishEmpty.style.display = '';
+            });
         })();
     </script>
 </body>

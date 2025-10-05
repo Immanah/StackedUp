@@ -1113,8 +1113,8 @@
     </footer>
 
     <script>
-        // User authentication state (in a real app, this would come from backend)
-        let isLoggedIn = false; // Change to true to test logged-in state
+        // User authentication state (fetched from backend)
+        let isLoggedIn = false;
         
         // Wishlist state (in a real app, this would be stored per user)
         let wishlist = [];
@@ -1195,27 +1195,23 @@
         
         // Quick view functionality
         function quickView(productId) {
-            // In a real app, this would open a modal with product details
-            // For now, we'll redirect to the product detail page
-            window.location.href = `product-detail.html?id=${productId}`;
+            // Redirect to the product detail page
+            window.location.href = `productdetail.html?id=${productId}`;
         }
         
-        // Rent functionality
+        // Rent functionality -> direct to product detail where user can book
         function rentProduct(productId) {
-            if (!isLoggedIn) {
-                showLoginModal();
-                return;
-            }
-            
-            // In a real app, this would add to cart and redirect to checkout
-            alert(`Product ${productId} added to cart. Redirecting to checkout...`);
-            // window.location.href = 'checkout.html';
+            window.location.href = `productdetail.html?id=${productId}`;
         }
         
         // Event listeners
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize page
-            initializePage();
+            // Determine login state from backend and initialize
+            fetch('api/auth.php?action=me', { credentials: 'include' })
+                .then(r => r.json()).then(data => {
+                    isLoggedIn = !!(data && data.user);
+                    initializePage();
+                }).catch(() => initializePage());
             
             // Modal event listeners
             closeModal.addEventListener('click', hideLoginModal);
@@ -1252,6 +1248,17 @@
                 button.addEventListener('click', function() {
                     const productId = this.getAttribute('data-product-id');
                     rentProduct(productId);
+                });
+            });
+
+            // Make entire product card clickable to open product detail
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Ignore clicks on buttons inside the card
+                    const t = e.target;
+                    if (t.closest('.wishlist-btn') || t.closest('.quick-view-btn') || t.closest('.rent-btn')) return;
+                    const id = this.getAttribute('data-id');
+                    if (id) window.location.href = `productdetail.html?id=${id}`;
                 });
             });
             

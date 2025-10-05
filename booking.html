@@ -557,7 +557,7 @@
             <div class="calendar-container">
                 <div class="calendar-header">
                     <h1>Select Your Rental Dates</h1>
-                    <p>Choose your start and end dates for your dress rental</p>
+                    <p id="productContext">Choose your start and end dates for your dress rental</p>
                 </div>
                 
                 <div class="date-inputs">
@@ -726,6 +726,8 @@
             let startDate = null;
             let endDate = null;
             let isSelectingStart = true;
+            let productId = null;
+            let product = null;
             
             // DOM elements
             const startDateInput = document.getElementById('start-date');
@@ -881,7 +883,51 @@
             // Apply selected dates
             function applyDates() {
                 if (startDate && endDate) {
-                    alert(`Dates selected: ${formatDate(startDate)} to ${formatDate(endDate)}`);
+                    // Persist selection to backend: create booking and add to cart with 30min hold
+                    if (!productId || !product) { alert('Missing product.'); return; }
+                    const payload = {
+                        productId: String(productId),
+                        startDate: startDate.toISOString().slice(0,10),
+                        endDate: endDate.toISOString().slice(0,10)
+                    };
+
+                    // First create a booking record (optional step), then add to cart for hold
+                    fetch('api/auth.php?action=me', { credentials: 'include' })
+                      .then(r => r.json())
+                      .then(me => {
+                        if (!me || !me.user) {
+                          alert('Please sign in to continue.');
+                          window.location.href = 'register.html';
+                          return Promise.reject('noauth');
+                        }
+                        return fetch('api/booking.php', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          credentials: 'include',
+                          body: JSON.stringify(payload)
+                        });
+                      })
+                      .then(r => r.ok ? r.json() : r.json().then(e=>Promise.reject(e)))
+                      .then(() => {
+                        return fetch('api/cart.php', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          credentials: 'include',
+                          body: JSON.stringify({
+                            productId: String(productId),
+                            title: product.title,
+                            price: product.price,
+                            days: product.rentalDays || 3
+                          })
+                        });
+                      })
+                      .then(r => r.ok ? r.json() : r.json().then(e=>Promise.reject(e)))
+                      .then(() => {
+                        window.location.href = 'cart.html';
+                      })
+                      .catch(err => {
+                        if (err !== 'noauth') alert('Could not add to cart: ' + (err.error || 'Unexpected error'));
+                      });
                     calendarModal.classList.remove('active');
                 } else {
                     alert('Please select both start and end dates');
@@ -939,6 +985,19 @@
                     hideCalendarModal();
                 }
             });
+
+            // Load product context
+            const params = new URLSearchParams(window.location.search);
+            productId = params.get('productId');
+            if (productId) {
+                fetch('api/products.php?id=' + encodeURIComponent(productId))
+                  .then(r => r.json()).then(p => {
+                    if (p && !p.error) {
+                        product = p;
+                        document.getElementById('productContext').textContent = `Booking for: ${p.title} — R${p.price}/${p.rentalDays||3} days`;
+                    }
+                  });
+            }
         });
     </script>
 </body>

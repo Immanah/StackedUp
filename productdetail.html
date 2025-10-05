@@ -762,11 +762,11 @@
                     <!-- Product Information -->
                     <div class="product-info">
                         <div class="product-header">
-                            <h1 class="product-title">Elegant Black Evening Gown</h1>
-                            <p class="product-designer">By Versace</p>
+                            <h1 class="product-title" id="pd-title">Elegant Black Evening Gown</h1>
+                            <p class="product-designer" id="pd-designer">By Versace</p>
                             <div class="product-price">
-                                <span class="price">R150</span>
-                                <span class="period">/ 3-day rental</span>
+                                <span class="price" id="pd-price">R150</span>
+                                <span class="period" id="pd-period">/ 3-day rental</span>
                             </div>
                         </div>
 
@@ -841,8 +841,8 @@
 
                         <!-- Book Now Button -->
                         <div class="booking-section">
-                            <button class="book-now-btn" onclick="openBookingCalendar()">
-                                Book Now - R150
+                            <button class="book-now-btn" id="bookNowBtn">
+                                Book Now
                             </button>
                             <p class="booking-note">Select your rental dates in the next step</p>
                         </div>
@@ -936,6 +936,20 @@
         </div>
     </main>
 
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;justify-content:center;align-items:center;z-index:1000;opacity:0;visibility:hidden;transition:all .3s ease;">
+        <div class="modal-content" style="background:#fff;border-radius:12px;padding:30px;max-width:400px;width:90%;transform:scale(.9);transition:transform .3s ease;">
+            <div class="modal-header" style="margin-bottom:20px;text-align:center;">
+                <h3 style="margin:0 0 10px 0;font-size:24px;font-weight:700;color:#111">Sign In Required</h3>
+                <p style="margin:0;color:#7a7a7a">Please sign in to continue to booking</p>
+            </div>
+            <div class="modal-actions" style="display:flex;flex-direction:column;gap:15px;margin-top:25px;">
+                <button class="modal-btn primary" id="goToRegister" style="padding:12px;border-radius:6px;font-weight:600;border:none;background:#111;color:#fff;font-size:16px;cursor:pointer;">Sign In / Register</button>
+                <button class="modal-btn secondary" id="closeModal" style="padding:12px;border-radius:6px;font-weight:600;border:none;background:#f5f5f5;color:#111;font-size:16px;cursor:pointer;">Continue Browsing</button>
+            </div>
+        </div>
+    </div>
+
     <footer>
         <div class="footer-grid">
             <div>
@@ -1007,13 +1021,8 @@
     <script>
         // Image carousel functionality
         function changeImage(thumbnail, newSrc) {
-            // Update main image
             document.getElementById('mainImage').src = newSrc;
-            
-            // Update active thumbnail
-            document.querySelectorAll('.thumbnail').forEach(thumb => {
-                thumb.classList.remove('active');
-            });
+            document.querySelectorAll('.thumbnail').forEach(thumb => { thumb.classList.remove('active'); });
             thumbnail.classList.add('active');
         }
 
@@ -1025,11 +1034,59 @@
             });
         });
 
-        // Book now functionality
-        function openBookingCalendar() {
-            // This would typically open a modal or redirect to booking page
-            alert('Opening booking calendar...\n\nThis would redirect to the booking calendar where customers can select their rental dates.');
-        }
+        // Load product details by id and wire Book Now
+        document.addEventListener('DOMContentLoaded', function() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id') || '1';
+            fetch('api/products.php?id=' + encodeURIComponent(id))
+                .then(r => r.json()).then(p => {
+                    if (!p || p.error) return;
+                    document.getElementById('pd-title').textContent = p.title;
+                    document.getElementById('pd-designer').textContent = 'By ' + (p.designer || '');
+                    document.getElementById('pd-price').textContent = 'R' + p.price;
+                    document.getElementById('pd-period').textContent = '/' + (p.rentalDays || 3) + '-day rental';
+                    const btn = document.getElementById('bookNowBtn');
+                    btn.textContent = 'Book Now - R' + p.price;
+                    btn.addEventListener('click', function() {
+                        // Check login first
+                        fetch('api/auth.php?action=me', { credentials: 'include' })
+                            .then(r => r.json()).then(data => {
+                                if (!data || !data.user) {
+                                    // show modal
+                                    const modal = document.getElementById('loginModal');
+                                    modal.classList.add('active');
+                                    modal.style.opacity = '1';
+                                    modal.style.visibility = 'visible';
+                                    modal.querySelector('.modal-content').style.transform = 'scale(1)';
+                                    return;
+                                }
+                                // carry product id to booking page
+                                window.location.href = `booking.html?productId=${encodeURIComponent(id)}`;
+                            }).catch(() => {
+                                const modal = document.getElementById('loginModal');
+                                modal.classList.add('active');
+                                modal.style.opacity = '1';
+                                modal.style.visibility = 'visible';
+                                modal.querySelector('.modal-content').style.transform = 'scale(1)';
+                            });
+                    });
+                });
+
+            // modal events
+            const loginModal = document.getElementById('loginModal');
+            const closeModal = document.getElementById('closeModal');
+            const goToRegister = document.getElementById('goToRegister');
+            if (closeModal) closeModal.addEventListener('click', () => {
+                loginModal.classList.remove('active');
+                loginModal.style.opacity = '0';
+                loginModal.style.visibility = 'hidden';
+                loginModal.querySelector('.modal-content').style.transform = 'scale(.9)';
+            });
+            if (goToRegister) goToRegister.addEventListener('click', () => {
+                window.location.href = 'register.html';
+            });
+            if (loginModal) loginModal.addEventListener('click', function(e){ if (e.target === loginModal) { closeModal && closeModal.click(); }});
+        });
     </script>
 </body>
 </html>
