@@ -841,7 +841,7 @@
 
                         <!-- Book Now Button -->
                         <div class="booking-section">
-                            <button class="book-now-btn" onclick="openBookingCalendar()">
+                            <button class="book-now-btn" id="bookNowBtn">
                                 Book Now - R150
                             </button>
                             <p class="booking-note">Select your rental dates in the next step</p>
@@ -1004,7 +1004,27 @@
         </div>
     </footer>
 
+    <!-- Login Modal (reused pattern) -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-content" style="max-width:420px">
+            <div class="modal-header" style="text-align:center;margin-bottom:16px">
+                <h3 style="margin:0;color:var(--accent)">Sign In Required</h3>
+                <p style="margin:6px 0 0;color:var(--muted)">Please sign in to book this dress</p>
+            </div>
+            <div class="modal-actions" style="display:flex;flex-direction:column;gap:12px">
+                <button class="modal-btn primary" id="goToRegister">Sign In / Register</button>
+                <button class="modal-btn secondary" id="closeModal">Continue Browsing</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Auth state (sync with catalog via localStorage)
+        let isLoggedIn = false;
+        try {
+            isLoggedIn = localStorage.getItem('ozyde_is_logged_in') === 'true';
+        } catch (e) {}
+
         // Image carousel functionality
         function changeImage(thumbnail, newSrc) {
             // Update main image
@@ -1025,11 +1045,40 @@
             });
         });
 
-        // Book now functionality
-        function openBookingCalendar() {
-            // This would typically open a modal or redirect to booking page
-            alert('Opening booking calendar...\n\nThis would redirect to the booking calendar where customers can select their rental dates.');
+        // Booking flow: if logged in -> booking.html, else show login modal
+        function handleBooking() {
+            if (isLoggedIn) {
+                // Preserve selected product id if present in URL
+                const params = new URLSearchParams(window.location.search);
+                const id = params.get('id') || '';
+                const jump = id ? `?id=${encodeURIComponent(id)}` : '';
+                window.location.href = `booking.html${jump}`;
+            } else {
+                showLoginModal();
+            }
         }
+
+        // Modal helpers
+        const loginModal = document.getElementById('loginModal');
+        const closeModal = document.getElementById('closeModal');
+        const goToRegister = document.getElementById('goToRegister');
+        function showLoginModal() { loginModal.classList.add('active'); }
+        function hideLoginModal() { loginModal.classList.remove('active'); }
+
+        // Initialize events
+        document.addEventListener('DOMContentLoaded', function() {
+            const bookBtn = document.getElementById('bookNowBtn');
+            if (bookBtn) bookBtn.addEventListener('click', handleBooking);
+
+            if (closeModal) closeModal.addEventListener('click', hideLoginModal);
+            if (goToRegister) goToRegister.addEventListener('click', function() {
+                hideLoginModal();
+                window.location.href = 'register.html';
+            });
+            if (loginModal) loginModal.addEventListener('click', function(e) {
+                if (e.target === loginModal) hideLoginModal();
+            });
+        });
     </script>
 </body>
 </html>

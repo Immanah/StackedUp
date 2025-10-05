@@ -1115,6 +1115,11 @@
     <script>
         // User authentication state (in a real app, this would come from backend)
         let isLoggedIn = false; // Change to true to test logged-in state
+        // Restore login state from localStorage
+        try {
+            const storedLogin = localStorage.getItem('ozyde_is_logged_in');
+            if (storedLogin === 'true') isLoggedIn = true;
+        } catch (e) {}
         
         // Wishlist state (in a real app, this would be stored per user)
         let wishlist = [];
@@ -1147,6 +1152,9 @@
             
             // Update wishlist buttons based on current state
             updateWishlistButtons();
+
+            // Persist login state for other pages
+            try { localStorage.setItem('ozyde_is_logged_in', String(isLoggedIn)); } catch (e) {}
         }
         
         // Show login modal
@@ -1197,7 +1205,7 @@
         function quickView(productId) {
             // In a real app, this would open a modal with product details
             // For now, we'll redirect to the product detail page
-            window.location.href = `product-detail.html?id=${productId}`;
+            window.location.href = `productdetail.html?id=${productId}`;
         }
         
         // Rent functionality
@@ -1299,6 +1307,15 @@
                 if (e.key === 'Enter') {
                     applySearch();
                 }
+            });
+
+            // Navigate to product detail when clicking a card (except overlay buttons)
+            productCards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    if (e.target.closest('.wishlist-btn') || e.target.closest('.quick-view-btn') || e.target.closest('.rent-btn')) return;
+                    const id = this.getAttribute('data-id');
+                    if (id) window.location.href = `productdetail.html?id=${id}`;
+                });
             });
             
             function applySearch() {
