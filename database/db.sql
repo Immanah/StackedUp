@@ -262,3 +262,11 @@ CREATE TABLE blog_posts (
     FOREIGN KEY (author_id) REFERENCES users(user_id)
 ) ENGINE=InnoDB;
 
+CREATE TABLE product_sizes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    size VARCHAR(10) NOT NULL,
+    stock INT DEFAULT 0,
+    FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
