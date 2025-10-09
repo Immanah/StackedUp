@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Custom Made — Ozyde</title>
+<style>
+    /* Ozyde Boutique consistent styling - matching catalog */
+    :root {
+        --bg: #fff;
+        --text: #222;
+        --muted: #7a7a7a;
+        --accent: #111;
+        --max-width: 1200px;
+        --chip-bg: #f3f3f3;
+        --chip-border: #e6e6e6;
+        --primary: #111;
+        --success: #2fa46b;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --airbnb-pink: #FF5A5F;
+    }
+    
+    * {
+        box-sizing: border-box;
+    }
+    
+    body {
+        margin: 0;
+        font-family: "Helvetica Neue", Arial, sans-serif;
+        color: var(--text);
+        background: var(--bg);
+        -webkit-font-smoothing: antialiased;
+    }
+    
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+    
+    .container {
+        max-width: var(--max-width);
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    /* Header Styles - matching catalog */
+    .nav-wrap {
+        background: #0b0b0b;
+        color: #fff;
+        position: sticky;
+        top: 0;
+        z-index: 120;
+        box-shadow: 0 6px 20px rgba(2, 2, 2, 0.12);
+    }
+    
+    .nav {
+        max-width: var(--max-width);
+        margin: 0 auto;
+        padding: 10px 18px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        justify-content: space-between;
+    }
+    
+    .logo {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        font-weight: 800;
+        letter-spacing: 1px;
+        font-size: 20px;
+        cursor: pointer;
+    }
+    
+    .logo-badge {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #fff2, #fff6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #111;
+        font-weight: 900;
+        font-size: 16px;
+    }
+    
+    nav ul {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        gap: 18px;
+        list-style: none;
+        align-items: center;
+    }
+    
+    nav a {
+        font-size: 14px;
+        color: #fff;
+        display: block;
+        padding: 8px 6px;
+        transition: color 0.2s ease;
+    }
+    
+    nav a.active {
+        color: #fff;
+        font-weight: 600;
+        border-bottom: 2px solid #fff;
+    }
+    
+    nav a:hover {
+        color: #ddd;
+    }
+    
+    .icons {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+    }
+    
+    .icon-only {
+        display: inline-flex;
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: 0;
+        color: #fff;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+    
+    .icon-only:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Hero Section - matching catalog */
+    .hero {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 60px 0;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .hero-content h1 {
+        margin: 0 0 16px 0;
+        font-size: 36px;
+        font-weight: 800;
+        color: var(--accent);
+    }
+    
+    .hero-content p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 18px;
+    }
+    
+    /* Slideshow */
+    .slideshow {
+        max-width: 920px;
+        margin: 40px auto;
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fafafa;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    
+    .slides {
+        display: flex;
+        transition: transform 0.45s ease;
+    }
+    
+    .slide {
+        min-width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+        background: #fff;
+    }
+    
+    .slide img {
+        max-width: 100%;
+        height: auto;
+        object-fit: contain;
+        border-radius: 8px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    }
+    
+    .slide-controls {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        transform: translateY(-50%);
+        display: flex;
+        justify-content: space-between;
+        padding: 0 20px;
+        pointer-events: none;
+    }
+    
+    .btn-arrow {
+        pointer-events: auto;
+        background: rgba(255, 255, 255, 0.9);
+        border: 0;
+        padding: 12px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        transition: background 0.2s ease;
+    }
+    
+    .btn-arrow:hover {
+        background: rgba(255, 255, 255, 1);
+    }
+    
+    .dots {
+        text-align: center;
+        padding: 16px 0;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+    }
+    
+    .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #ddd;
+        display: inline-block;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+    
+    .dot.active {
+        background: var(--accent);
+    }
+    
+    /* Inquiry form */
+    .card {
+        background: #fff;
+        border: 1px solid #f0f0f0;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        margin: 40px auto;
+        max-width: 920px;
+    }
+    
+    .card h2 {
+        margin-top: 0;
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--accent);
+    }
+    
+    .row {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+    
+    .col {
+        flex: 1;
+        min-width: 220px;
+    }
+    
+    label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: var(--accent);
+    }
+    
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    select,
+    textarea {
+        width: 100%;
+        padding: 12px;
+        border-radius: 6px;
+        border: 1px solid #e6e6e6;
+        font-size: 14px;
+        color: var(--text);
+        background: #fff;
+        transition: border-color 0.2s ease;
+    }
+    
+    input:focus,
+    select:focus,
+    textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+    }
+    
+    textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+    
+    .btn-submit {
+        background: var(--accent);
+        color: #fff;
+        padding: 12px 24px;
+        border-radius: 6px;
+        border: 0;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.2s ease;
+    }
+    
+    .btn-submit:hover {
+        background: #333;
+    }
+    
+    .note {
+        font-size: 14px;
+        color: var(--muted);
+        margin-top: 8px;
+        line-height: 1.4;
+    }
+    
+    .success {
+        background: #e6ffef;
+        border-left: 4px solid var(--success);
+        padding: 16px;
+        border-radius: 8px;
+        margin-top: 16px;
+        color: #125b3a;
+    }
+    
+    .error {
+        background: #fff4f0;
+        border-left: 4px solid var(--warning);
+        padding: 16px;
+        border-radius: 8px;
+        margin-top: 16px;
+        color: #633;
+    }
+    
+    hr {
+        margin: 24px 0;
+        border: none;
+        border-top: 1px solid #eee;
+    }
+    
+    /* Footer Styles - matching catalog */
+    footer {
+        border-top: 1px solid #eee;
+        padding: 36px 0;
+        margin-top: 28px;
+        color: var(--muted);
+        background: #fafafa;
+    }
+    
+    .footer-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 32px;
+    }
+    
+    .footer-grid h4 {
+        margin: 0 0 16px 0;
+        color: var(--accent);
+        font-weight: 600;
+    }
+    
+    .footer-grid ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .footer-grid li {
+        margin-bottom: 8px;
+    }
+    
+    .footer-grid a {
+        color: var(--muted);
+        transition: color 0.2s ease;
+    }
+    
+    .footer-grid a:hover {
+        color: var(--accent);
+    }
+    
+    .socials {
+        display: flex;
+        gap: 12px;
+        margin-top: 16px;
+    }
+    
+    .socials a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+        background: #f5f5f5;
+        transition: all 0.2s ease;
+    }
+    
+    .socials a:hover {
+        background: var(--accent);
+    }
+    
+    .socials a:hover svg path,
+    .socials a:hover svg circle {
+        stroke: #fff;
+        fill: #fff;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 880px) {
+        .row {
+            flex-direction: column;
+        }
+        .slideshow {
+            margin: 20px;
+        }
+        .footer-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+    }
+    
+    @media (max-width: 640px) {
+        .nav {
+            flex-wrap: wrap;
+        }
+        nav ul {
+            order: 2;
+            width: 100%;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        .footer-grid {
+            grid-template-columns: 1fr;
+        }
+        .hero-content h1 {
+            font-size: 28px;
+        }
+        .hero-content p {
+            font-size: 16px;
+        }
+        .card {
+            padding: 20px;
+        }
+    }
+</style>
+</head>
+<body>
+    <!-- ===== Navigation Bar ===== -->
+    <header class="nav-wrap" role="banner">
+        <div class="nav" role="navigation" aria-label="Main navigation">
+            <div class="logo" id="brandLink">
+                <div class="logo-badge" aria-hidden="true">✦</div>
+                <div>Ozyde</div>
+            </div>
+
+            <nav aria-label="Main navigation">
+                <ul id="main-nav">
+                    <li><a href="finalhomepage.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="custommade.html" class="active">Custom Made</a></li>
+                    <li><a href="catalog.html">Browse</a></li>
+                </ul>
+            </nav>
+
+            <div class="icons" role="group" aria-label="User actions">
+                <a href="login_register.php" class="icon-only" title="Login/Register" aria-label="Login/Register">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                        <polyline points="10 17 15 12 10 7" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="15" y1="12" x2="3" y2="12" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </a>
+
+                <a href="help.html" class="icon-only" title="Help" aria-label="Help">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.2" fill="none"/>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                        <line x1="12" y1="17" x2="12" y2="17" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Custom-made Dresses</h1>
+                <p>Tell us what you want — we'll bring your inspiration to life.</p>
+            </div>
+        </div>
+    </section>
+
+    <main class="container">
+        <!-- Slideshow -->
+        <section class="slideshow" aria-roledescription="carousel" aria-label="Custom made dresses carousel">
+            <div class="slides" id="slides">
+                <div class="slide"><img src="https://via.placeholder.com/900x700/fff0f6/333333?text=Custom+Dress+1" alt="Custom Dress 1"></div>
+                <div class="slide"><img src="https://via.placeholder.com/900x700/f0fff5/333333?text=Custom+Dress+2" alt="Custom Dress 2"></div>
+                <div class="slide"><img src="https://via.placeholder.com/900x700/f0f6ff/333333?text=Custom+Dress+3" alt="Custom Dress 3"></div>
+            </div>
+            <div class="slide-controls">
+                <button class="btn-arrow" id="prev" aria-label="Previous slide">◀</button>
+                <button class="btn-arrow" id="next" aria-label="Next slide">▶</button>
+            </div>
+            <div class="dots" id="dots" role="tablist" aria-label="Slide dots"></div>
+        </section>
+
+        <!-- Inquiry form -->
+        <section class="card" aria-labelledby="inquiryTitle">
+            <h2 id="inquiryTitle">Make an Inquiry</h2>
+            <p class="note">Fill in your details and attach reference photos. We'll get back to you with a quote.</p>
+
+            <form id="inquiryForm" enctype="multipart/form-data" novalidate>
+                <div class="row">
+                    <div class="col">
+                        <label for="name">Full name *</label>
+                        <input id="name" name="name" type="text" required placeholder="Jane Doe">
+                    </div>
+                    <div class="col">
+                        <label for="email">Email *</label>
+                        <input id="email" name="email" type="email" required placeholder="you@example.com">
+                    </div>
+                    <div class="col">
+                        <label for="phone">Phone number *</label>
+                        <input id="phone" name="phone" type="tel" required placeholder="+27 82 000 0000">
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row">
+                    <div class="col">
+                        <label for="garment">Garment type</label>
+                        <select id="garment" name="garment">
+                            <option>Dress</option>
+                            <option>Skirt</option>
+                            <option>Top</option>
+                            <option>Two-piece</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="length">Length</label>
+                        <select id="length" name="length">
+                            <option>Short</option>
+                            <option selected>Medium</option>
+                            <option>Long</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="occasion">Occasion (optional)</label>
+                        <input id="occasion" name="occasion" type="text" placeholder="e.g. prom, wedding, formal">
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row">
+                    <div class="col">
+                        <label>Bust (cm)</label>
+                        <input name="bust" type="text" placeholder="e.g. 86">
+                    </div>
+                    <div class="col">
+                        <label>Waist (cm)</label>
+                        <input name="waist" type="text" placeholder="e.g. 70">
+                    </div>
+                    <div class="col">
+                        <label>Hips (cm)</label>
+                        <input name="hips" type="text" placeholder="e.g. 94">
+                    </div>
+                    <div class="col">
+                        <label>Height (cm)</label>
+                        <input name="height" type="text" placeholder="e.g. 165">
+                    </div>
+                </div>
+
+                <hr>
+
+                <label for="inspiration">Inspiration / details *</label>
+                <textarea id="inspiration" name="inspiration" placeholder="Describe colours, fabrics, styles, or paste links to images..." required></textarea>
+
+                <label for="files" style="margin-top: 16px;">Attach reference photos (optional)</label>
+                <input id="files" name="files" type="file" accept="image/*" multiple>
+
+                <div style="margin-top: 20px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+                    <button type="submit" class="btn-submit">Send Inquiry</button>
+                    <div class="note">We will reply to the email you provide — expected response within 48 hours.</div>
+                </div>
+
+                <div id="formResult" aria-live="polite"></div>
+            </form>
+        </section>
+    </main>
+
+    <!-- Footer - matching catalog -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4>Ozyde</h4>
+                    <p>Premium dress rentals for your special occasions. Quality, style, and affordability combined.</p>
+                    <div>Address:<br>5 Liebenberg Rd, Noordwyk, Midrand 1687</div>
+                    <div class="socials" aria-label="Social media">
+                        <a href="https://www.instagram.com/ozyde_?igsh=NWM0aTd4ZGFmeHVr" target="_blank" rel="noopener" aria-label="Instagram">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <rect x="3" y="3" width="18" height="18" rx="5" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <circle cx="12" cy="12" r="3.2" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <circle cx="17.5" cy="6.5" r="0.6" fill="#333"/>
+                            </svg>
+                        </a>
+                        <!-- Replaced generic SVG with a proper TikTok logo image (keeps layout & sizing identical) -->
+                        <a href="https://www.tiktok.com/@ozyde_designs?_t=ZS-8zlyfPi8HHJ&_r=1" target="_blank" rel="noopener" aria-label="TikTok">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/TikTok_logo.svg/1200px-TikTok_logo.svg.png" alt="TikTok" style="width:18px;height:18px;display:block" />
+                        </a>
+                        <a href="mailto:ozydedesigns@gmail.com" aria-label="Email">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <rect x="3" y="6" width="18" height="12" rx="2" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <path d="M4 7.5l8 6 8-6" stroke="#333" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="howitworks.html">How It Works</a></li>
+                        <li><a href="sizingguide.html">Size Guide</a></li>
+                        
+                        <li><a href="#">Returns & Policy</a></li>
+                        <li><a href="#">Delivery</a></li>
+                        <li><a href="help.html">Help Center</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Terms</a></li>
+                        <li><a href="#">Privacy</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="contact.html">Contact</a></li>
+                        
+                        <li><a href="cleaning.html">Cleaning & Care Guide</a></li>
+                        <li><a href="#">Partnerships</a></li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <div style="margin-top:24px;text-align:center;padding-top:24px;border-top:1px solid #e6e6e6;color:var(--muted)">
+                © 2025 Ozyde. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Basic navigation functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Logo click to go home
+            document.getElementById('brandLink').addEventListener('click', function() {
+                window.location.href = 'finalhomepage.html';
+            });
+
+            // Simple carousel
+            const slidesEl = document.getElementById('slides');
+            const slides = Array.from(slidesEl.children);
+            const dotsEl = document.getElementById('dots');
+            let idx = 0;
+
+            function renderDots() {
+                dotsEl.innerHTML = '';
+                slides.forEach((_s, i) => {
+                    const d = document.createElement('button');
+                    d.className = 'dot' + (i === idx ? ' active' : '');
+                    d.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+                    d.addEventListener('click', () => { goTo(i); });
+                    dotsEl.appendChild(d);
+                });
+            }
+
+            function update() {
+                slidesEl.style.transform = `translateX(-${idx * 100}%)`;
+                Array.from(dotsEl.children).forEach((d, i) => d.classList.toggle('active', i === idx));
+            }
+
+            function prev() {
+                idx = (idx - 1 + slides.length) % slides.length;
+                update();
+            }
+
+            function next() {
+                idx = (idx + 1) % slides.length;
+                update();
+            }
+
+            function goTo(i) {
+                idx = i;
+                update();
+            }
+
+            document.getElementById('prev').addEventListener('click', prev);
+            document.getElementById('next').addEventListener('click', next);
+            renderDots();
+            
+            // Autoplay
+            let autoplay = setInterval(() => { next(); }, 6000);
+            document.querySelector('.slideshow').addEventListener('mouseenter', () => clearInterval(autoplay));
+
+            // Form handling
+            document.getElementById('inquiryForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const form = e.target;
+                const resultEl = document.getElementById('formResult');
+                resultEl.innerHTML = '';
+
+                // Required fields validation
+                if (!form.name.value.trim() || !form.email.value.trim() || !form.phone.value.trim() || !form.inspiration.value.trim()) {
+                    resultEl.innerHTML = '<div class="error">Please fill all required fields (name, email, phone, inspiration).</div>';
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('description', form.inspiration.value);
+                formData.append('garment_type', form.garment.value);
+                formData.append('length', form.length.value);
+                formData.append('occasion', form.occasion.value || '');
+                formData.append('bust', form.bust.value || '');
+                formData.append('waist', form.waist.value || '');
+                formData.append('hips', form.hips.value || '');
+                formData.append('height', form.height.value || '');
+
+                if (form.files.files.length > 0) {
+                    for (let i = 0; i < form.files.files.length; i++) {
+                        formData.append('images[]', form.files.files[i]);
+                    }
+                }
+
+                try {
+                    const res = await fetch('submit_custom_order.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await res.json();
+                    if (data.success) {
+                        resultEl.innerHTML = '<div class="success">Thank you — your custom order has been submitted successfully.</div>';
+                        form.reset();
+                    } else if (data.error) {
+                        resultEl.innerHTML = `<div class="error">${data.error}</div>`;
+                    }
+                } catch (err) {
+                    console.error(err);
+                    resultEl.innerHTML = '<div class="error">An error occurred while submitting. Please try again later.</div>';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
