@@ -667,7 +667,7 @@ $wishlist_items = $result->fetch_all(MYSQLI_ASSOC);
                         </svg>
                     </button>
                     <div class="dropdown-menu">
-                        <a href="customerdashboard.php">Customer Dashboard</a>
+                        <a href="customerdashboard.html">Customer Dashboard</a>
                         <a href="wishlist.php">My Wishlist</a>
                         <div class="dropdown-divider"></div>
                         <a href="logout.php" id="logoutLink">Sign Out</a>
@@ -887,4 +887,5 @@ $wishlist_items = $result->fetch_all(MYSQLI_ASSOC);
         });
     </script>
 </body>
+
 </html>
