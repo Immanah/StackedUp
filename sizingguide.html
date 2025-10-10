@@ -1,0 +1,880 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Ozyde — Size Guide</title>
+    <style>
+        /* Ozyde Boutique consistent styling - matching catalog */
+        
+         :root {
+            --bg: #fff;
+            --text: #222;
+            --muted: #7a7a7a;
+            --accent: #111;
+            --max-width: 1200px;
+            --chip-bg: #f3f3f3;
+            --chip-border: #e6e6e6;
+            --primary: #111;
+            --success: #2fa46b;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --airbnb-pink: #FF5A5F;
+            --hero-height: 420px;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1.5;
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        /* Header Styles - matching catalog */
+        
+        .nav-wrap {
+            background: #0b0b0b;
+            color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 120;
+            box-shadow: 0 6px 20px rgba(2, 2, 2, 0.12);
+        }
+        
+        .nav {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-weight: 800;
+            letter-spacing: 1px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .logo-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #fff2, #fff6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #111;
+            font-weight: 900;
+            font-size: 16px;
+        }
+        
+        nav ul {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 18px;
+            list-style: none;
+            align-items: center;
+        }
+        
+        nav a {
+            font-size: 14px;
+            color: #fff;
+            display: block;
+            padding: 8px 6px;
+            transition: color 0.2s ease;
+        }
+        
+        nav a.active {
+            color: #fff;
+            font-weight: 600;
+            border-bottom: 2px solid #fff;
+        }
+        
+        nav a:hover {
+            color: #ddd;
+        }
+        
+        .btn-signup {
+            background: var(--accent);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background 0.2s ease;
+        }
+        
+        .btn-signup:hover {
+            background: #333;
+        }
+        
+        .icons {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+        
+        .icon-only {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 0;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .icon-only:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Sizing Guide Specific Styles */
+        .sizing-guide {
+            padding: 48px 0;
+        }
+        
+        .sizing-guide h1 {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        
+        .sizing-intro {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 32px;
+            color: var(--muted);
+        }
+        
+        .size-tabs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+        
+        .size-tab {
+            padding: 10px 20px;
+            border: 1px solid var(--chip-border);
+            background: var(--chip-bg);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        
+        .size-tab.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .size-tab:hover:not(.active) {
+            background: #e6e6e6;
+        }
+        
+        .size-table-container {
+            overflow-x: auto;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-radius: 8px;
+        }
+        
+        .size-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+        
+        .size-table th {
+            background: var(--accent);
+            color: white;
+            padding: 14px 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .size-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .size-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .size-table tr:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .highlight {
+            background-color: rgba(255, 90, 95, 0.1) !important;
+            font-weight: 600;
+        }
+        
+        .measurement-guide {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+        
+        .measurement-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 20px;
+            background: white;
+        }
+        
+        .measurement-card h3 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .measurement-icon {
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--accent);
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .measurement-image {
+            width: 100%;
+            height: 200px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            font-style: italic;
+        }
+        
+        .tips-section {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 8px;
+            margin-top: 40px;
+        }
+        
+        .tips-section h2 {
+            margin-top: 0;
+            text-align: center;
+        }
+        
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .tip-item {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        
+        .tip-number {
+            background: var(--accent);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        
+        .size-notes {
+            margin-top: 30px;
+            padding: 20px;
+            background: #fff8e6;
+            border-left: 4px solid var(--warning);
+            border-radius: 4px;
+        }
+        
+        /* Footer Styles - matching catalog */
+        
+        footer {
+            border-top: 1px solid #eee;
+            padding: 36px 0;
+            margin-top: 28px;
+            color: var(--muted);
+            background: #fafafa;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 32px;
+        }
+        
+        .footer-grid h4 {
+            margin: 0 0 16px 0;
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        .footer-grid ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-grid li {
+            margin-bottom: 8px;
+        }
+        
+        .footer-grid a {
+            color: var(--muted);
+            transition: color 0.2s ease;
+        }
+        
+        .footer-grid a:hover {
+            color: var(--accent);
+        }
+        
+        .socials {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .socials a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: #f5f5f5;
+            transition: all 0.2s ease;
+        }
+        
+        .socials a:hover {
+            background: var(--accent);
+        }
+        
+        .socials a:hover svg path,
+        .socials a:hover svg circle {
+            stroke: #fff;
+            fill: #fff;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 880px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 24px;
+            }
+            .measurement-guide {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .nav {
+                flex-wrap: wrap;
+            }
+            nav ul {
+                order: 2;
+                width: 100%;
+                justify-content: center;
+                margin-top: 15px;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+            .size-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            .size-tab {
+                width: 100%;
+                max-width: 300px;
+                text-align: center;
+            }
+        }
+        
+        .muted {
+            color: var(--muted)
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ===== Navigation Bar ===== -->
+    <header class="nav-wrap" role="banner">
+        <div class="nav" role="navigation" aria-label="Main navigation">
+            <div class="logo" id="brandLink">
+                <div class="logo-badge" aria-hidden="true">✦</div>
+                <div>Ozyde</div>
+            </div>
+
+            <nav aria-label="Main navigation">
+                <ul id="main-nav">
+                    <li><a href="finalhomepage.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="custommade.html">Custom Made</a></li>
+                    <li><a href="catalog.php">Browse</a></li>
+                   
+                </ul>
+            </nav>
+
+            <div class="icons" role="group" aria-label="User actions">
+                <a href="register.html" class="icon-only" title="Login/Register" aria-label="Login/Register">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                        <polyline points="10 17 15 12 10 7" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="15" y1="12" x2="3" y2="12" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </a>
+
+                <a href="help.html" class="icon-only" title="Help" aria-label="Help">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.2" fill="none"/>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                        <line x1="12" y1="17" x2="12" y2="17" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sizing Guide Content -->
+    <section class="sizing-guide container">
+        <h1>Size Guide</h1>
+        <p class="sizing-intro">Find your perfect fit with our comprehensive sizing guide. Use the tabs below to switch between different sizing systems.</p>
+        
+        <div class="size-tabs">
+            <div class="size-tab active" data-system="metric">Metric (cm)</div>
+            <div class="size-tab" data-system="imperial">Imperial (inches)</div>
+            <div class="size-tab" data-system="international">International</div>
+        </div>
+        
+        <!-- Metric Sizing Table -->
+        <div class="size-table-container" id="metric-table">
+            <table class="size-table">
+                <thead>
+                    <tr>
+                        <th>Size</th>
+                        <th>Bust (cm)</th>
+                        <th>Waist (cm)</th>
+                        <th>Hips (cm)</th>
+                        <th>South Africa</th>
+                        <th>UK/AU</th>
+                        <th>US</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>XS</td>
+                        <td>78-82</td>
+                        <td>60-64</td>
+                        <td>86-90</td>
+                        <td>30</td>
+                        <td>6</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>S</td>
+                        <td>83-87</td>
+                        <td>65-69</td>
+                        <td>91-95</td>
+                        <td>32</td>
+                        <td>8</td>
+                        <td>4</td>
+                    </tr>
+                    <tr class="highlight">
+                        <td>M</td>
+                        <td>88-92</td>
+                        <td>70-74</td>
+                        <td>96-100</td>
+                        <td>34</td>
+                        <td>10</td>
+                        <td>6</td>
+                    </tr>
+                    <tr>
+                        <td>L</td>
+                        <td>93-97</td>
+                        <td>75-79</td>
+                        <td>101-105</td>
+                        <td>36</td>
+                        <td>12</td>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <td>XL</td>
+                        <td>98-102</td>
+                        <td>80-84</td>
+                        <td>106-110</td>
+                        <td>38</td>
+                        <td>14</td>
+                        <td>10</td>
+                    </tr>
+                    <tr>
+                        <td>XXL</td>
+                        <td>103-107</td>
+                        <td>85-89</td>
+                        <td>111-115</td>
+                        <td>40</td>
+                        <td>16</td>
+                        <td>12</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Imperial Sizing Table (Hidden by default) -->
+        <div class="size-table-container" id="imperial-table" style="display: none;">
+            <table class="size-table">
+                <thead>
+                    <tr>
+                        <th>Size</th>
+                        <th>Bust (inches)</th>
+                        <th>Waist (inches)</th>
+                        <th>Hips (inches)</th>
+                        <th>South Africa</th>
+                        <th>UK/AU</th>
+                        <th>US</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>XS</td>
+                        <td>30.7-32.3</td>
+                        <td>23.6-25.2</td>
+                        <td>33.9-35.4</td>
+                        <td>30</td>
+                        <td>6</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>S</td>
+                        <td>32.7-34.3</td>
+                        <td>25.6-27.2</td>
+                        <td>35.8-37.4</td>
+                        <td>32</td>
+                        <td>8</td>
+                        <td>4</td>
+                    </tr>
+                    <tr class="highlight">
+                        <td>M</td>
+                        <td>34.6-36.2</td>
+                        <td>27.6-29.1</td>
+                        <td>37.8-39.4</td>
+                        <td>34</td>
+                        <td>10</td>
+                        <td>6</td>
+                    </tr>
+                    <tr>
+                        <td>L</td>
+                        <td>36.6-38.2</td>
+                        <td>29.5-31.1</td>
+                        <td>39.8-41.3</td>
+                        <td>36</td>
+                        <td>12</td>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <td>XL</td>
+                        <td>38.6-40.2</td>
+                        <td>31.5-33.1</td>
+                        <td>41.7-43.3</td>
+                        <td>38</td>
+                        <td>14</td>
+                        <td>10</td>
+                    </tr>
+                    <tr>
+                        <td>XXL</td>
+                        <td>40.6-42.1</td>
+                        <td>33.5-35.0</td>
+                        <td>43.7-45.3</td>
+                        <td>40</td>
+                        <td>16</td>
+                        <td>12</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- International Sizing Table (Hidden by default) -->
+        <div class="size-table-container" id="international-table" style="display: none;">
+            <table class="size-table">
+                <thead>
+                    <tr>
+                        <th>South Africa</th>
+                        <th>UK/AU</th>
+                        <th>US</th>
+                        <th>EU</th>
+                        <th>FR</th>
+                        <th>IT</th>
+                        <th>JP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>30</td>
+                        <td>6</td>
+                        <td>2</td>
+                        <td>34</td>
+                        <td>36</td>
+                        <td>40</td>
+                        <td>7</td>
+                    </tr>
+                    <tr>
+                        <td>32</td>
+                        <td>8</td>
+                        <td>4</td>
+                        <td>36</td>
+                        <td>38</td>
+                        <td>42</td>
+                        <td>9</td>
+                    </tr>
+                    <tr class="highlight">
+                        <td>34</td>
+                        <td>10</td>
+                        <td>6</td>
+                        <td>38</td>
+                        <td>40</td>
+                        <td>44</td>
+                        <td>11</td>
+                    </tr>
+                    <tr>
+                        <td>36</td>
+                        <td>12</td>
+                        <td>8</td>
+                        <td>40</td>
+                        <td>42</td>
+                        <td>46</td>
+                        <td>13</td>
+                    </tr>
+                    <tr>
+                        <td>38</td>
+                        <td>14</td>
+                        <td>10</td>
+                        <td>42</td>
+                        <td>44</td>
+                        <td>48</td>
+                        <td>15</td>
+                    </tr>
+                    <tr>
+                        <td>40</td>
+                        <td>16</td>
+                        <td>12</td>
+                        <td>44</td>
+                        <td>46</td>
+                        <td>50</td>
+                        <td>17</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="size-notes">
+            <p><strong>Note:</strong> Our sizing is based on standard measurements. If your measurements fall between two sizes, we recommend choosing the larger size for a more comfortable fit. The highlighted row represents our most popular size.</p>
+        </div>
+        
+        <div class="measurement-guide">
+            <div class="measurement-card">
+                <h3><span class="measurement-icon">1</span> How to Measure Your Bust</h3>
+                <div class="measurement-image">[Illustration: Bust measurement]</div>
+                <p>Wrap the measuring tape around the fullest part of your bust, keeping the tape parallel to the floor. Make sure the tape is snug but not tight.</p>
+            </div>
+            
+            <div class="measurement-card">
+                <h3><span class="measurement-icon">2</span> How to Measure Your Waist</h3>
+                <div class="measurement-image">[Illustration: Waist measurement]</div>
+                <p>Find your natural waistline (the narrowest part of your torso) and wrap the measuring tape around it. Keep the tape parallel to the floor.</p>
+            </div>
+            
+            <div class="measurement-card">
+                <h3><span class="measurement-icon">3</span> How to Measure Your Hips</h3>
+                <div class="measurement-image">[Illustration: Hip measurement]</div>
+                <p>Stand with your feet together and wrap the measuring tape around the fullest part of your hips and buttocks. Keep the tape parallel to the floor.</p>
+            </div>
+        </div>
+        
+        <div class="tips-section">
+            <h2>Tips for Finding Your Perfect Fit</h2>
+            <div class="tips-grid">
+                <div class="tip-item">
+                    <div class="tip-number">1</div>
+                    <div>
+                        <strong>Use a flexible tape measure</strong>
+                        <p>For accurate measurements, use a soft, flexible measuring tape rather than a rigid ruler.</p>
+                    </div>
+                </div>
+                
+                <div class="tip-item">
+                    <div class="tip-number">2</div>
+                    <div>
+                        <strong>Wear appropriate undergarments</strong>
+                        <p>Measure while wearing the undergarments you plan to wear with the dress for the most accurate fit.</p>
+                    </div>
+                </div>
+                
+                <div class="tip-item">
+                    <div class="tip-number">3</div>
+                    <div>
+                        <strong>Stand naturally</strong>
+                        <p>Avoid sucking in your stomach or standing unnaturally straight while taking measurements.</p>
+                    </div>
+                </div>
+                
+                <div class="tip-item">
+                    <div class="tip-number">4</div>
+                    <div>
+                        <strong>Get help if needed</strong>
+                        <p>For the most accurate measurements, have someone assist you, especially for hard-to-reach areas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer - matching catalog -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4>Ozyde</h4>
+                    <p>Premium dress rentals for your special occasions. Quality, style, and affordability combined.</p>
+                    <div>Address:<br>5 Liebenberg Rd, Noordwyk, Midrand 1687</div>
+                    <div class="socials" aria-label="Social media">
+                        <a href="https://www.instagram.com/ozyde_?igsh=NWM0aTd4ZGFmeHVr" target="_blank" rel="noopener" aria-label="Instagram">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <rect x="3" y="3" width="18" height="18" rx="5" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <circle cx="12" cy="12" r="3.2" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <circle cx="17.5" cy="6.5" r="0.6" fill="#333"/>
+                            </svg>
+                        </a>
+                        <!-- Replaced generic SVG with a proper TikTok logo image (keeps layout & sizing identical) -->
+                        <a href="https://www.tiktok.com/@ozyde_designs?_t=ZS-8zlyfPi8HHJ&_r=1" target="_blank" rel="noopener" aria-label="TikTok">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/TikTok_logo.svg/1200px-TikTok_logo.svg.png" alt="TikTok" style="width:18px;height:18px;display:block" />
+                        </a>
+                        <a href="mailto:ozydedesigns@gmail.com" aria-label="Email">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <rect x="3" y="6" width="18" height="12" rx="2" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <path d="M4 7.5l8 6 8-6" stroke="#333" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="howitworks.html">How It Works</a></li>
+                        <li><a href="sizingguide.html">Size Guide</a></li>
+                        
+                        <li><a href="#">Returns & Policy</a></li>
+                        <li><a href="#">Delivery</a></li>
+                        <li><a href="help.html">Help Center</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Terms</a></li>
+                        <li><a href="#">Privacy</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="contact.html">Contact</a></li>
+                        
+                        <li><a href="cleaning.html">Cleaning & Care Guide</a></li>
+                        <li><a href="#">Partnerships</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="margin-top:24px;text-align:center;padding-top:24px;border-top:1px solid #e6e6e6;color:var(--muted)">
+                © 2025 Ozyde. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Tab switching functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.size-tab');
+            const tables = {
+                'metric': document.getElementById('metric-table'),
+                'imperial': document.getElementById('imperial-table'),
+                'international': document.getElementById('international-table')
+            };
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Hide all tables
+                    Object.values(tables).forEach(table => {
+                        table.style.display = 'none';
+                    });
+                    
+                    // Show the selected table
+                    const system = this.getAttribute('data-system');
+                    tables[system].style.display = 'block';
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

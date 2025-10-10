@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports & Analytics - Ozyde Boutique</title>
+    <style>
+        /* Ozyde Boutique monochromatic styling */
+        
+         :root {
+            --bg: #fff;
+            --text: #222;
+            --muted: #7a7a7a;
+            --accent: #111;
+            --max-width: 1200px;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e6e6e6;
+            --dark-gray: #333;
+            --shadow: rgba(0, 0, 0, 0.08);
+            /* badge color used by header icons */
+            --badge-bg: #ff4d4f;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            margin: 0;
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+        /* Header - unified (from Orders, preserved) */
+        
+        .header {
+            background: var(--accent);
+            color: #fff;
+            padding: 12px 0;
+            box-shadow: 0 4px 12px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 120;
+        }
+        
+        .header .container {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-weight: 800;
+            letter-spacing: 1px;
+            font-size: 18px;
+        }
+        
+        .logo-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-weight: 900;
+            font-size: 16px;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+        }
+        
+        .nav a {
+            font-size: 14px;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all .18s ease;
+            text-decoration: none;
+        }
+        
+        .nav a:hover,
+        .nav a.active {
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-name {
+            font-weight: 600;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-weight: 800;
+        }
+        
+        .logout-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+        /* icon/button & badge */
+        
+        .icon-btn {
+            position: relative;
+            background: transparent;
+            border: 0;
+            color: #fff;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+        
+        .icon-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--badge-bg);
+            color: #fff;
+            border-radius: 12px;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1;
+        }
+        /* dropdowns (notifications/messages) */
+        
+        .dropdown-list {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: #fff;
+            color: #222;
+            min-width: 320px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            display: none;
+            z-index: 130;
+        }
+        
+        .dropdown-list.visible {
+            display: block;
+        }
+        
+        .dropdown-list header {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f1f1f1;
+            font-weight: 700;
+            background: #fafafa;
+        }
+        
+        .dropdown-list .item {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            align-items: flex-start;
+            border-bottom: 1px solid #f6f6f6;
+        }
+        
+        .dropdown-list .item:last-child {
+            border-bottom: 0;
+        }
+        
+        .dropdown-list .item img {
+            width: 44px;
+            height: 44px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1px solid #eee;
+        }
+        
+        .dropdown-list .item .meta {
+            flex: 1;
+        }
+        
+        .dropdown-list .muted {
+            color: var(--muted);
+            font-size: 13px;
+        }
+        /* Main Content (rest unchanged) */
+        
+        .main-content {
+            flex: 1;
+            padding: 30px 0;
+            background: var(--light-gray);
+        }
+        
+        .page-title {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--accent);
+        }
+        
+        .page-subtitle {
+            color: var(--muted);
+            margin-bottom: 30px;
+        }
+        /* Page Header */
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .header-content {
+            flex: 1;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .filter-select {
+            padding: 10px 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            min-width: 150px;
+            cursor: pointer;
+        }
+        
+        .export-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .export-btn:hover {
+            background: #333;
+        }
+        /* Metrics Section */
+        
+        .metrics-section {
+            margin-bottom: 30px;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px var(--shadow);
+            border: 1px solid var(--medium-gray);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .metric-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .metric-icon.revenue-icon {
+            background: #4a5568;
+        }
+        
+        .metric-icon.orders-icon {
+            background: #718096;
+        }
+        
+        .metric-icon.customers-icon {
+            background: #a0aec0;
+        }
+        
+        .metric-icon.average-icon {
+            background: #cbd5e0;
+            color: var(--accent);
+        }
+        
+        .metric-content {
+            flex: 1;
+        }
+        
+        .metric-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 5px;
+        }
+        
+        .metric-change {
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .metric-change.positive {
+            color: #2d3748;
+        }
+        
+        .metric-change.negative {
+            color: #742a2a;
+        }
+        /* Charts Section */
+        
+        .charts-section {
+            margin-bottom: 30px;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px var(--shadow);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .chart-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .chart-controls {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .chart-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--medium-gray);
+            background: white;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .chart-btn.active,
+        .chart-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .chart-container {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .chart-placeholder {
+            width: 100%;
+            height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+        
+        .chart-bars {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+        
+        .bar {
+            width: 30px;
+            background: var(--accent);
+            border-radius: 3px 3px 0 0;
+            position: relative;
+            transition: height 0.3s ease;
+        }
+        
+        .bar:hover::after {
+            content: attr(data-value);
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: white;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            white-space: nowrap;
+        }
+        
+        .chart-labels {
+            display: flex;
+            justify-content: space-around;
+            font-size: 12px;
+            color: var(--muted);
+        }
+        
+        .pie-chart {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: conic-gradient( #4a5568 0% 45%, #718096 45% 75%, #a0aec0 75% 90%, #cbd5e0 90% 100%);
+            position: relative;
+            margin-right: 20px;
+        }
+        
+        .pie-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+        
+        .active-color {
+            background: #4a5568;
+        }
+        
+        .completed-color {
+            background: #718096;
+        }
+        
+        .pending-color {
+            background: #a0aec0;
+        }
+        
+        .cancelled-color {
+            background: #cbd5e0;
+        }
+        /* Popular Items Section */
+        
+        .popular-items-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .popular-items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .popular-item-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 12px var(--shadow);
+            border: 1px solid var(--medium-gray);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .item-rank {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        
+        .item-image {
+            width: 60px;
+            height: 80px;
+            background: var(--light-gray);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            font-size: 12px;
+        }
+        
+        .item-details {
+            flex: 1;
+        }
+        
+        .item-details h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--accent);
+        }
+        
+        .item-details p {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+        
+        .item-stats {
+            display: flex;
+            gap: 10px;
+            font-size: 11px;
+            color: var(--muted);
+        }
+        
+        .item-performance {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+        }
+        
+        .performance-bar {
+            width: 100px;
+            height: 6px;
+            background: var(--light-gray);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .performance-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 3px;
+        }
+        
+        .performance-value {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        /* Tables Section */
+        
+        .tables-section {
+            margin-bottom: 30px;
+        }
+        
+        .tables-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+        
+        .table-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px var(--shadow);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .table-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .view-all-btn {
+            background: transparent;
+            border: 1px solid var(--medium-gray);
+            color: var(--accent);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .view-all-btn:hover {
+            background: var(--light-gray);
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            background: var(--light-gray);
+            padding: 10px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--accent);
+            border-bottom: 1px solid var(--medium-gray);
+            font-size: 12px;
+        }
+        
+        .data-table td {
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--medium-gray);
+            font-size: 12px;
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .growth {
+            font-weight: 600;
+            font-size: 11px;
+        }
+        
+        .growth.positive {
+            color: #2d3748;
+        }
+        
+        .growth.negative {
+            color: #742a2a;
+        }
+        
+        .insights-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .insight-item {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+        
+        .insight-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        .insight-content {
+            flex: 1;
+        }
+        
+        .insight-content h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--accent);
+        }
+        
+        .insight-content p {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 5px;
+        }
+        
+        .insight-value {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        /* Action Items Section */
+        
+        .action-items-section {
+            margin-bottom: 30px;
+        }
+        
+        .action-items-section h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+        
+        .action-items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .action-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px var(--shadow);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .action-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .action-header h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        .priority-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .priority-badge.high {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .priority-badge.medium {
+            background: #feebcb;
+            color: #744210;
+        }
+        
+        .priority-badge.low {
+            background: #c3dafe;
+            color: #2a4365;
+        }
+        
+        .action-item p {
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 15px;
+        }
+        
+        .action-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .action-btn:hover {
+            background: #333;
+        }
+        /* Footer Styles */
+        
+        footer {
+            border-top: 1px solid var(--medium-gray);
+            padding: 30px 0;
+            color: var(--muted);
+            background: var(--light-gray);
+            margin-top: auto;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-section h4 {
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .footer-section p {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-section ul li {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .footer-section ul li a {
+            color: var(--muted);
+            transition: color 0.2s ease;
+        }
+        
+        .footer-section ul li a:hover {
+            color: var(--accent);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--medium-gray);
+            font-size: 14px;
+        }
+        /* Responsive Design */
+        
+        @media (max-width: 768px) {
+            .header .container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .nav {
+                order: 2;
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            .header-user {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+            }
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .charts-grid,
+            .tables-grid,
+            .popular-items-grid,
+            .action-items-grid {
+                grid-template-columns: 1fr;
+            }
+            .chart-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .pie-chart {
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            .page-title {
+                font-size: 24px;
+            }
+            .header-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .filter-select,
+            .export-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header (copied from Orders with notifications & messages) -->
+    <header class="header">
+        <div class="container" style="position:relative;">
+            <div style="display:flex;align-items:center;gap:18px">
+                <div class="logo">
+                    <div class="logo-badge">OZ</div>
+                    <div>OZYDE ADMIN</div>
+                </div>
+            </div>
+
+            <nav class="nav" aria-label="Admin navigation">
+                <a href="admindashboard.html">Dashboard</a>
+                <a href="adminproducts.html">Products</a>
+                <a href="adminorders.html">Orders</a>
+                <a href="admincustomers.html">Customers</a>
+                <a href="admininventory.html">Inventory</a>
+                <a href="adminreports.html" class="active">Reports</a>
+            </nav>
+
+            <div class="header-user" style="position:relative;">
+                <!-- Notifications icon + dropdown -->
+                <div style="position:relative;">
+                    <button id="notifBtn" class="icon-btn" aria-haspopup="true" aria-expanded="false" title="Notifications" aria-label="Notifications">
+                        <!-- bell icon -->
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14V11c0-3.1-1.6-5.7-4.5-6.5V4a1.5 1.5 0 1 0-3 0v.5C7.6 5.3 6 7.9 6 11v3c0 .5-.2 1-.6 1.4L4 17h11z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="icon-badge" id="notifCount">3</span>
+                    </button>
+
+                    <div class="dropdown-list" id="notifDropdown" role="region" aria-label="Notifications menu">
+                        <header>Notifications</header>
+                        <div class="item">
+                            <img src="thumb-1.jpg" alt="thumb">
+                            <div class="meta">
+                                <div style="font-weight:700">Low stock: Red Evening Gown</div>
+                                <div class="muted">Only 1 left in inventory</div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="thumb-2.jpg" alt="thumb">
+                            <div class="meta">
+                                <div style="font-weight:700">New order received</div>
+                                <div class="muted">#1008 — K. Mthembu</div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="thumb-3.jpg" alt="thumb">
+                            <div class="meta">
+                                <div style="font-weight:700">Customer query</div>
+                                <div class="muted">Question about pickup times</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages icon + dropdown (icon will navigate to adminmessages.html when clicked) -->
+                <div style="position:relative;">
+                    <button id="msgBtn" class="icon-btn" aria-haspopup="true" aria-expanded="false" title="Messages" aria-label="Messages">
+                        <!-- chat icon -->
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="icon-badge" id="msgCount">2</span>
+                    </button>
+
+                    <div class="dropdown-list" id="msgDropdown" role="region" aria-label="Messages menu">
+                        <header>Messages</header>
+                        <div class="item">
+                            <img src="profile1.jpg" alt="user">
+                            <div class="meta">
+                                <div style="font-weight:700">Clara C.</div>
+                                <div class="muted">Hi — is the red gown available on 25th?</div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="profile2.jpg" alt="user">
+                            <div class="meta">
+                                <div style="font-weight:700">M. Dlamini</div>
+                                <div class="muted">Can I change my pickup to evening?</div>
+                            </div>
+                        </div>
+                        <div style="padding:10px;border-top:1px solid #f6f6f6;text-align:center;">
+                            <a href="adminmessages.html" style="font-weight:700;color:var(--accent);text-decoration:none;">View all messages</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="user-info" style="gap:12px;">
+                    <div style="text-align:right">
+                        <div class="user-name">Admin</div>
+                        <div class="small muted" style="font-size:12px">Manager</div>
+                    </div>
+                    <div class="user-avatar" aria-hidden="true">A</div>
+                </div>
+
+                <button class="logout-btn" id="logoutBtn">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Page Header -->
+            <section class="page-header">
+                <div class="header-content">
+                    <h1 class="page-title">Reports & Analytics</h1>
+                    <p class="page-subtitle">Track performance, analyze trends, and make data-driven decisions</p>
+                </div>
+                <div class="header-actions">
+                    <div class="date-filter">
+                        <select id="dateRange" class="filter-select">
+                            <option value="7">Last 7 days</option>
+                            <option value="30" selected>Last 30 days</option>
+                            <option value="90">Last 90 days</option>
+                            <option value="365">Last year</option>
+                            <option value="custom">Custom range</option>
+                        </select>
+                    </div>
+                    <button class="export-btn">Export Data</button>
+                </div>
+            </section>
+
+            <!-- Key Metrics Overview -->
+            <section class="metrics-section">
+                <div class="metrics-grid">
+                    <div class="metric-card revenue">
+                        <div class="metric-icon revenue-icon">R</div>
+                        <div class="metric-content">
+                            <div class="metric-value">R78,450</div>
+                            <div class="metric-label">Total Revenue</div>
+                            <div class="metric-change positive">+12.5% vs last month</div>
+                        </div>
+                    </div>
+                    <div class="metric-card orders">
+                        <div class="metric-icon orders-icon">O</div>
+                        <div class="metric-content">
+                            <div class="metric-value">342</div>
+                            <div class="metric-label">Total Orders</div>
+                            <div class="metric-change positive">+8.3% vs last month</div>
+                        </div>
+                    </div>
+                    <div class="metric-card customers">
+                        <div class="metric-icon customers-icon">C</div>
+                        <div class="metric-content">
+                            <div class="metric-value">89</div>
+                            <div class="metric-label">New Customers</div>
+                            <div class="metric-change negative">-2.1% vs last month</div>
+                        </div>
+                    </div>
+                    <div class="metric-card average">
+                        <div class="metric-icon average-icon">A</div>
+                        <div class="metric-content">
+                            <div class="metric-value">R229</div>
+                            <div class="metric-label">Avg Order Value</div>
+                            <div class="metric-change positive">+5.7% vs last month</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="charts-grid">
+                    <!-- Revenue Chart -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Revenue Trends</h3>
+                            <div class="chart-controls">
+                                <button class="chart-btn active" data-period="daily">Daily</button>
+                                <button class="chart-btn" data-period="weekly">Weekly</button>
+                                <button class="chart-btn" data-period="monthly">Monthly</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-placeholder">
+                                <div class="chart-bars">
+                                    <div class="bar" style="height: 60%;" data-value="R12,400"></div>
+                                    <div class="bar" style="height: 45%;" data-value="R9,200"></div>
+                                    <div class="bar" style="height: 75%;" data-value="R15,600"></div>
+                                    <div class="bar" style="height: 55%;" data-value="R11,300"></div>
+                                    <div class="bar" style="height: 85%;" data-value="R17,800"></div>
+                                    <div class="bar" style="height: 40%;" data-value="R8,100"></div>
+                                    <div class="bar" style="height: 70%;" data-value="R14,500"></div>
+                                </div>
+                                <div class="chart-labels">
+                                    <span>Mon</span>
+                                    <span>Tue</span>
+                                    <span>Wed</span>
+                                    <span>Thu</span>
+                                    <span>Fri</span>
+                                    <span>Sat</span>
+                                    <span>Sun</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Orders Chart -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Order Status Distribution</h3>
+                        </div>
+                        <div class="chart-container">
+                            <div class="pie-chart"></div>
+                            <div class="pie-legend">
+                                <div class="legend-item">
+                                    <div class="legend-color active-color"></div>
+                                    <span>Active Rentals (45%)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color completed-color"></div>
+                                    <span>Completed (30%)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color pending-color"></div>
+                                    <span>Pending (15%)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color cancelled-color"></div>
+                                    <span>Cancelled (10%)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Popular Items Section -->
+            <section class="popular-items-section">
+                <div class="section-header">
+                    <h2>Most Popular Items</h2>
+                    <div class="section-controls">
+                        <select class="filter-select">
+                            <option value="rentals">Most Rented</option>
+                            <option value="revenue">Highest Revenue</option>
+                            <option value="rating">Best Rated</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="popular-items-grid">
+                    <div class="popular-item-card">
+                        <div class="item-rank">1</div>
+                        <div class="item-image">Dress</div>
+                        <div class="item-details">
+                            <h4>Black Evening Gown</h4>
+                            <p>By Versace</p>
+                            <div class="item-stats">
+                                <span class="stat">89 rentals</span>
+                                <span class="stat">R150/rental</span>
+                                <span class="stat">4.9★</span>
+                            </div>
+                        </div>
+                        <div class="item-performance">
+                            <div class="performance-bar">
+                                <div class="performance-fill" style="width: 95%"></div>
+                            </div>
+                            <div class="performance-value">R13,350</div>
+                        </div>
+                    </div>
+
+                    <div class="popular-item-card">
+                        <div class="item-rank">2</div>
+                        <div class="item-image">Dress</div>
+                        <div class="item-details">
+                            <h4>Red Cocktail Dress</h4>
+                            <p>By Dolce & Gabbana</p>
+                            <div class="item-stats">
+                                <span class="stat">76 rentals</span>
+                                <span class="stat">R95/rental</span>
+                                <span class="stat">4.8★</span>
+                            </div>
+                        </div>
+                        <div class="item-performance">
+                            <div class="performance-bar">
+                                <div class="performance-fill" style="width: 80%"></div>
+                            </div>
+                            <div class="performance-value">R7,220</div>
+                        </div>
+                    </div>
+
+                    <div class="popular-item-card">
+                        <div class="item-rank">3</div>
+                        <div class="item-image">Dress</div>
+                        <div class="item-details">
+                            <h4>Navy Formal Dress</h4>
+                            <p>By Calvin Klein</p>
+                            <div class="item-stats">
+                                <span class="stat">64 rentals</span>
+                                <span class="stat">R120/rental</span>
+                                <span class="stat">4.7★</span>
+                            </div>
+                        </div>
+                        <div class="item-performance">
+                            <div class="performance-bar">
+                                <div class="performance-fill" style="width: 75%"></div>
+                            </div>
+                            <div class="performance-value">R7,680</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Detailed Analytics Tables -->
+            <section class="tables-section">
+                <div class="tables-grid">
+                    <!-- Sales by Category -->
+                    <div class="table-card">
+                        <div class="table-header">
+                            <h3>Sales by Category</h3>
+                            <button class="view-all-btn">View All</button>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Orders</th>
+                                        <th>Revenue</th>
+                                        <th>Growth</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Evening Gowns</td>
+                                        <td>156</td>
+                                        <td>R28,450</td>
+                                        <td class="growth positive">+15.2%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Cocktail Dresses</td>
+                                        <td>124</td>
+                                        <td>R18,620</td>
+                                        <td class="growth positive">+8.7%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Formal Wear</td>
+                                        <td>98</td>
+                                        <td>R15,890</td>
+                                        <td class="growth negative">-2.3%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Wedding Guest</td>
+                                        <td>87</td>
+                                        <td>R12,340</td>
+                                        <td class="growth positive">+11.4%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Prom Dresses</td>
+                                        <td>65</td>
+                                        <td>R9,780</td>
+                                        <td class="growth positive">+22.1%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Customer Insights -->
+                    <div class="table-card">
+                        <div class="table-header">
+                            <h3>Customer Insights</h3>
+                            <button class="view-all-btn">View All</button>
+                        </div>
+                        <div class="insights-list">
+                            <div class="insight-item">
+                                <div class="insight-icon">RC</div>
+                                <div class="insight-content">
+                                    <h4>Repeat Customers</h4>
+                                    <p>68% of customers rent more than once</p>
+                                    <div class="insight-value">+5% this month</div>
+                                </div>
+                            </div>
+                            <div class="insight-item">
+                                <div class="insight-icon">RF</div>
+                                <div class="insight-content">
+                                    <h4>Average Rental Frequency</h4>
+                                    <p>Customers rent 2.4 times per year</p>
+                                    <div class="insight-value">+0.3 vs last year</div>
+                                </div>
+                            </div>
+                            <div class="insight-item">
+                                <div class="insight-icon">PS</div>
+                                <div class="insight-content">
+                                    <h4>Peak Rental Season</h4>
+                                    <p>December shows 45% higher bookings</p>
+                                    <div class="insight-value">Holiday events</div>
+                                </div>
+                            </div>
+                            <div class="insight-item">
+                                <div class="insight-icon">MS</div>
+                                <div class="insight-content">
+                                    <h4>Most Requested Size</h4>
+                                    <p>Size M accounts for 32% of all rentals</p>
+                                    <div class="insight-value">Consistent trend</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Action Items -->
+            <section class="action-items-section">
+                <h2>Recommended Actions</h2>
+                <div class="action-items-grid">
+                    <div class="action-item high-priority">
+                        <div class="action-header">
+                            <div class="priority-badge high">High Priority</div>
+                            <h4>Stock Popular Size M Dresses</h4>
+                        </div>
+                        <p>Size M has 85% utilization rate. Consider adding 3-5 more dresses in this size.</p>
+                        <button class="action-btn">Review Inventory</button>
+                    </div>
+                    <div class="action-item medium-priority">
+                        <div class="action-header">
+                            <div class="priority-badge medium">Medium Priority</div>
+                            <h4>Promote Formal Wear Category</h4>
+                        </div>
+                        <p>Formal wear shows declining growth. Launch targeted marketing campaign.</p>
+                        <button class="action-btn">Create Campaign</button>
+                    </div>
+                    <div class="action-item low-priority">
+                        <div class="action-header">
+                            <div class="priority-badge low">Low Priority</div>
+                            <h4>Expand Prom Collection</h4>
+                        </div>
+                        <p>Prom dresses show strong growth (+22%). Consider seasonal expansion.</p>
+                        <button class="action-btn">Plan Expansion</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Ozyde Boutique</h4>
+                    <p>Professional dress rental management system for your boutique business.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Reports</h4>
+                    <ul>
+                        <li><a href="#">Revenue Analytics</a></li>
+                        <li><a href="#">Customer Insights</a></li>
+                        <li><a href="#">Inventory Reports</a></li>
+                        <li><a href="#">Export Data</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li>Report Issues: admin@ozyde.com</li>
+                        <li>Last Data Update: 2 hours ago</li>
+                        <li>Report Generation: Automated</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Ozyde Boutique Admin Dashboard. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple interactions for the reports page + header dropdowns/navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Chart period buttons
+            document.querySelectorAll('.chart-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.chart-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    this.classList.add('active');
+
+                    // In a real application, this would update the chart data
+                    alert(`Switching to ${this.textContent} view`);
+                });
+            });
+
+            // Date range filter
+            const dateRange = document.getElementById('dateRange');
+            if (dateRange) {
+                dateRange.addEventListener('change', function() {
+                    const value = dateRange.value;
+                    if (value === 'custom') {
+                        alert('Opening custom date range selector...');
+                    } else {
+                        alert(`Loading data for the last ${value} days`);
+                    }
+                });
+            }
+
+            // Export button
+            const exportBtn = document.querySelector('.export-btn');
+            if (exportBtn) {
+                exportBtn.addEventListener('click', function() {
+                    alert('Exporting report data...');
+                    // In a real application, this would generate and download a report
+                });
+            }
+
+            // View all buttons
+            document.querySelectorAll('.view-all-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const section = this.closest('.table-card').querySelector('h3').textContent;
+                    alert(`Viewing all data for: ${section}`);
+                    // In a real application, this would expand the table or open a detailed view
+                });
+            });
+
+            // Action buttons
+            document.querySelectorAll('.action-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const action = this.closest('.action-item').querySelector('h4').textContent;
+                    alert(`Taking action: ${action}`);
+                    // In a real application, this would navigate to the relevant section
+                });
+            });
+
+            // Logout button
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function() {
+                    if (confirm('Are you sure you want to log out?')) {
+                        alert('Logging out...');
+                        // In a real application, this would redirect to login page
+                    }
+                });
+            }
+
+            // Bar chart hover effects
+            document.querySelectorAll('.bar').forEach(bar => {
+                bar.addEventListener('mouseover', function() {
+                    this.style.opacity = '0.8';
+                });
+                bar.addEventListener('mouseout', function() {
+                    this.style.opacity = '1';
+                });
+            });
+
+            /* --- Header: notifications & messages behavior (from Orders) --- */
+            const notifBtn = document.getElementById('notifBtn');
+            const msgBtn = document.getElementById('msgBtn');
+            const notifDropdown = document.getElementById('notifDropdown');
+            const msgDropdown = document.getElementById('msgDropdown');
+
+            function closeAllDropdowns() {
+                if (notifDropdown) notifDropdown.classList.remove('visible');
+                if (msgDropdown) msgDropdown.classList.remove('visible');
+                if (notifBtn) notifBtn.setAttribute('aria-expanded', 'false');
+                if (msgBtn) msgBtn.setAttribute('aria-expanded', 'false');
+            }
+
+            if (notifBtn && notifDropdown) {
+                notifBtn.addEventListener('click', (e) => {
+                    const vis = notifDropdown.classList.toggle('visible');
+                    notifBtn.setAttribute('aria-expanded', String(vis));
+                    // ensure other closed
+                    if (msgDropdown) msgDropdown.classList.remove('visible');
+                    if (msgBtn) msgBtn.setAttribute('aria-expanded', 'false');
+                    e.stopPropagation();
+                });
+            }
+
+            // Message button: navigate to adminmessages.html when clicked.
+            // We still keep msgDropdown available via long-press / context menu or via the "View all messages" link inside,
+            // but primary click will go to the messages page as requested.
+            if (msgBtn) {
+                msgBtn.addEventListener('click', (e) => {
+                    // navigate to messages page
+                    window.location.href = 'adminmessages.html';
+                });
+            }
+
+            // Keep dropdown close on outside click/escape (notifications still function as dropdown)
+            document.addEventListener('click', function(e) {
+                const target = e.target;
+                if (notifDropdown && !notifDropdown.contains(target) && notifBtn && !notifBtn.contains(target)) {
+                    notifDropdown.classList.remove('visible');
+                    notifBtn && notifBtn.setAttribute('aria-expanded', 'false');
+                }
+                if (msgDropdown && !msgDropdown.contains(target) && msgBtn && !msgBtn.contains(target)) {
+                    // we keep it hidden unless intentionally shown (primary click navigates)
+                    msgDropdown.classList.remove('visible');
+                    msgBtn && msgBtn.setAttribute('aria-expanded', 'false');
+                }
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeAllDropdowns();
+            });
+            /* --- end header behavior --- */
+        });
+    </script>
+</body>
+
+</html>

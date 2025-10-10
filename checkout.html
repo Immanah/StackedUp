@@ -1,0 +1,1327 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Checkout — OZYDE</title>
+    <style>
+         :root {
+            --bg: #fff;
+            --text: #222;
+            --muted: #7a7a7a;
+            --accent: #111;
+            --card-bg: #0b0b0b;
+            --radius: 14px;
+            --max-width: 1100px;
+            --gold: #c6a04a;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            font-family: Inter, "Helvetica Neue", Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            color: var(--text);
+            background: linear-gradient(180deg, #ffffff 0%, #f5f5f7 100%);
+            padding: 28px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .wrap {
+            width: 100%;
+            max-width: var(--max-width);
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 20px 60px rgba(16, 16, 24, 0.06);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 28px;
+            padding: 28px;
+        }
+        
+        @media (max-width: 980px) {
+            .wrap {
+                grid-template-columns: 1fr;
+                padding: 18px;
+                gap: 18px;
+            }
+        }
+        
+        .left {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        
+        .group {
+            background: #fff;
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+        
+        h2 {
+            margin: 0 0 6px 0;
+            font-size: 20px;
+        }
+        
+        .muted {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        
+        .small {
+            font-size: 13px;
+            color: var(--muted);
+        }
+        
+        .right {
+            padding: 12px 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        
+        label {
+            font-size: 13px;
+            color: var(--muted);
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        select {
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #e8e8e8;
+            font-size: 14px;
+        }
+        
+        .delivery-options {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .opt {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            cursor: pointer;
+            font-weight: 600;
+            background: #fff;
+            color: var(--muted);
+        }
+        
+        .opt.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        
+        .methods {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+        
+        .method {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            cursor: pointer;
+            font-weight: 600;
+            background: #fff;
+            color: var(--muted);
+        }
+        
+        .method.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        
+        .payment-row {
+            display: flex;
+            gap: 18px;
+            align-items: start;
+            flex-wrap: wrap;
+        }
+        
+        .card-preview {
+            width: 320px;
+            border-radius: 12px;
+            padding: 16px;
+            position: sticky;
+            top: 24px;
+            align-self: flex-start;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(30, 30, 30, 0.95));
+            color: #fff;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+        }
+        
+        @media (max-width:980px) {
+            .card-preview {
+                position: static;
+                width: 100%;
+            }
+        }
+        
+        .card-preview .inner {
+            position: relative;
+            min-height: 120px;
+            padding-right: 10px;
+        }
+        
+        .card-bank {
+            position: absolute;
+            right: 16px;
+            top: 12px;
+            font-weight: 700;
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .card-chip {
+            width: 44px;
+            height: 32px;
+            border-radius: 6px;
+            background: linear-gradient(#eee, #bbb);
+            margin-bottom: 12px;
+        }
+        
+        .card-number {
+            font-family: "Courier New", monospace;
+            letter-spacing: 3px;
+            font-size: 18px;
+            margin-top: 8px;
+            padding-right: 68px;
+        }
+        
+        .card-name {
+            text-transform: uppercase;
+            font-size: 12px;
+            margin-top: 12px;
+        }
+        
+        .card-exp {
+            font-size: 13px;
+            opacity: 0.95;
+            padding-right: 68px;
+        }
+        
+        .card-icons {
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            z-index: 5;
+        }
+        
+        .brand-circle {
+            width: 22px;
+            height: 14px;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #fff2, #fff6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            color: #222;
+            font-weight: 700;
+            padding: 2px 4px;
+        }
+        
+        .return-options {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .return-btn {
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: #fff;
+            border: 1px solid #eee;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--muted);
+        }
+        
+        .return-btn.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            align-items: center;
+        }
+        
+        .summary-total {
+            font-weight: 800;
+            font-size: 18px;
+            margin-top: 8px;
+        }
+        
+        .btn {
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 0;
+            cursor: pointer;
+            background: var(--accent);
+            color: #fff;
+            font-weight: 700;
+        }
+        
+        .btn.ghost {
+            background: #fff;
+            color: var(--accent);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+        
+        .thumb {
+            width: 72px;
+            height: 50px;
+            border-radius: 6px;
+            background: #f0f0f0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e6e6e6;
+        }
+        
+        .notice {
+            background: #fff6;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .success {
+            padding: 12px;
+            background: #e8ffef;
+            border-left: 4px solid #2fa46b;
+            border-radius: 8px;
+            color: #075;
+        }
+        
+        .foot-note {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 8px;
+        }
+        /* small glam accents for the page */
+        
+        .glam-line {
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold), #ffd27a);
+            border-radius: 2px;
+            margin: 10px 0;
+        }
+        
+        /* Store Reference Card Styles */
+        .store-ref-card {
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            margin-top: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .store-ref-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--gold), #ffd27a);
+        }
+
+        .ref-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ozyde-logo {
+            font-weight: 800;
+            font-size: 20px;
+            letter-spacing: 1px;
+            color: var(--accent);
+        }
+
+        .logo-accent {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--gold);
+            box-shadow: 0 0 0 2px rgba(198, 160, 74, 0.2);
+        }
+
+        .ref-badge {
+            background: rgba(198, 160, 74, 0.1);
+            color: var(--gold);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid rgba(198, 160, 74, 0.2);
+        }
+
+        .ref-content {
+            margin-bottom: 24px;
+        }
+
+        .ref-number-container {
+            text-align: center;
+            margin-bottom: 24px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .ref-label {
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ref-number {
+            font-family: 'Courier New', monospace;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin: 12px 0;
+            padding: 12px 20px;
+            background: #fff;
+            border-radius: 8px;
+            border: 2px dashed rgba(198, 160, 74, 0.3);
+            display: inline-block;
+        }
+
+        .ref-subtitle {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .deadline-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding: 16px;
+            background: rgba(255, 245, 230, 0.5);
+            border-radius: 10px;
+            border-left: 4px solid var(--gold);
+        }
+
+        .deadline-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .deadline-text {
+            flex: 1;
+        }
+
+        .deadline-label {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        .deadline-date {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 16px;
+        }
+
+        .ref-note {
+            display: flex;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.4;
+        }
+
+        .note-icon {
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        .note-text {
+            flex: 1;
+        }
+
+        .ref-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-action {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .btn-copy {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-copy:hover {
+            background: #000;
+            transform: translateY(-1px);
+        }
+
+        .btn-print {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-print:hover {
+            background: rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .btn-icon {
+            font-size: 16px;
+        }
+
+        /* Animation for copy feedback */
+        @keyframes copied {
+            0% { background: var(--accent); }
+            50% { background: #2fa46b; }
+            100% { background: var(--accent); }
+        }
+
+        .copied {
+            animation: copied 0.5s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="wrap" aria-label="Checkout page">
+
+        <!-- LEFT: order summary & notes -->
+        <section class="left" aria-hidden="false">
+            <div class="group">
+                <h3 style="margin:0 0 8px 0">Order Summary</h3>
+                <div class="small">Items for booking (will use cart if you came from the cart page)</div>
+
+                <!-- Items list (dynamic) -->
+                <div id="itemsList" style="margin-top:12px"></div>
+                
+                <div class="glam-line"></div>
+
+                <div class="summary-row">
+                    <div class="small">Subtotal</div>
+                    <div id="subtotal" class="small">R0.00</div>
+                </div>
+                <div class="summary-row">
+                    <div class="small">VAT (15%)</div>
+                    <div id="vat" class="small">R0.00</div>
+                </div>
+                <div class="summary-row">
+                    <div class="small">Delivery fee</div>
+                    <div id="deliveryFee" class="small">R0.00</div>
+                </div>
+                <div class="summary-row">
+                    <div class="small">Return fee</div>
+                    <div id="returnFee" class="small">R0.00</div>
+                </div>
+                <div class="summary-row">
+                    <div class="small">Deposit (refundable)</div>
+                    <div id="deposit" class="small">R0.00</div>
+                </div>
+
+                <div class="summary-total" id="totalRow">
+                    <div style="display:flex; justify-content:space-between;">
+                        <div>Total</div>
+                        <div id="totalAmount">R0.00</div>
+                    </div>
+                </div>
+
+                <div class="foot-note" style="margin-top:10px">
+                    Deposit returned after inspection if items are returned on time and undamaged.
+                </div>
+            </div>
+
+            <div class="group">
+                <h3>Return instructions</h3>
+                <div class="small">Choose how you'll return items:</div>
+                <ul style="margin-top:10px; padding-left:18px; color:var(--muted)">
+                    <li><strong>Drop-off:</strong> Return to our store within the agreed timeframe.</li>
+                    <li><strong>Pickup:</strong> Schedule a pickup, additional fee may apply.</li>
+                </ul>
+
+                <div style="margin-top:10px">
+                    <div class="small">Return method</div>
+                    <div class="return-options">
+                        <button id="returnDrop" class="return-btn active" data-return="drop">Drop-off (Free)</button>
+                        <button id="returnPickup" class="return-btn" data-return="pickup">Pickup (R120)</button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- RIGHT: forms & payment -->
+        <section class="right" aria-labelledby="checkout-heading">
+            <div>
+                <h2 id="checkout-heading">Checkout</h2>
+                <div class="muted">Complete your details and choose a payment method</div>
+            </div>
+
+            <div class="group" aria-label="Shipping details">
+                <h3 style="margin:0 0 8px 0">Shipping & Contact</h3>
+
+                <div class="grid" style="margin-bottom:8px">
+                    <div class="field"><label for="firstName">First name</label><input id="firstName" type="text" placeholder="Full name"></div>
+                    <div class="field"><label for="lastName">Last name</label><input id="lastName" type="text" placeholder="Surname"></div>
+                </div>
+
+                <div class="grid">
+                    <div class="field"><label for="email">Email</label><input id="email" type="email" placeholder=" "></div>
+                    <div class="field"><label for="phone">Phone</label><input id="phone" type="tel" placeholder="+27 ** *** ****"></div>
+                </div>
+
+                <div class="field"><label for="addr1">Address 1</label><input id="addr1" type="text" placeholder="Street address"></div>
+                <div class="field"><label for="addr2">Address 2 (optional)</label><input id="addr2" type="text" placeholder="Unit / complex"></div>
+
+                <div class="grid">
+                    <div class="field"><label for="city">City</label><input id="city" type="text" placeholder=""></div>
+                    <div class="field"><label for="province">Province</label>
+                        <select id="province">
+                          <option>Gauteng</option><option>Western Cape</option><option>KwaZulu-Natal</option><option>Eastern Cape</option><option>North West</option><option>Mpumalanga</option><option>Northern Cape</option><option>Free State</option><option>Limpopo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <div class="field"><label for="postal">Postal code</label><input id="postal" type="text" placeholder=""></div>
+                    <div class="field"><label for="country">Country</label><input id="country" type="text" value="South Africa" readonly></div>
+                </div>
+
+                <div style="margin-top:8px;">
+                    <div class="small">Delivery options</div>
+                    <div class="delivery-options" role="radiogroup" aria-label="Delivery options">
+                        <button class="opt active" data-delivery="collect" id="optCollect">Collect in store (Free)</button>
+                        <button class="opt" data-delivery="standard" id="optDeliver">Deliver Fee (R250)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- payment & card preview row -->
+            <div class="payment-row">
+                <!-- card preview -->
+                <div class="card-preview" id="cardPreview" aria-hidden="false">
+                    <div class="inner">
+                        <div class="card-bank">OZYDE</div>
+                        <div class="card-chip" aria-hidden="true"></div>
+
+                        <div class="card-number" id="cardNumberPreview">0000 0000 0000 0000</div>
+
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                            <div>
+                                <div style="font-size:10px; opacity:0.85">Card holder</div>
+                                <div class="card-name" id="cardNamePreview">NAME SURNAME</div>
+                            </div>
+                            <div style="text-align:right">
+                                <div style="font-size:10px; opacity:0.85">Expires</div>
+                                <div class="card-exp" id="cardExpiryPreview">MM/YY</div>
+                            </div>
+                        </div>
+
+                        <div class="card-icons" aria-hidden="true" style="right:12px; top:12px;">
+                            <div class="brand-circle" title="Visa">V</div>
+                            <div class="brand-circle" title="Mastercard" style="background:linear-gradient(90deg,#ff5b5b,#ffd66b); color:#fff">M</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- payment fields -->
+                <div style="flex:1; min-width:280px;">
+                    <div class="group">
+                        <h3 style="margin:0 0 8px 0">Payment method</h3>
+                        <div class="muted">Choose a payment option</div>
+                        <div class="methods" role="tablist" aria-label="Payment options" style="margin-top:10px">
+                            <button class="method active" data-method="card" role="tab" aria-selected="true">Card</button>
+                            <button class="method" data-method="store" role="tab" aria-selected="false">Pay in store</button>
+                            <button class="method" data-method="eft" role="tab" aria-selected="false">EFT / Bank transfer</button>
+                        </div>
+
+                        <!-- CARD FORM -->
+                        <div id="method-card" style="margin-top:12px">
+                            <div class="card-form">
+                                <div class="field"><label for="cardNumber">Card number</label><input id="cardNumber" type="text" inputmode="numeric" maxlength="19" placeholder="0000 0000 0000 0000" autocomplete="cc-number" aria-label="Card number"></div>
+
+                                <div class="grid">
+                                    <div class="field"><label for="cardName">Name on card</label><input id="cardName" type="text" placeholder="Name Surname" autocomplete="cc-name"></div>
+                                    <div class="field"><label for="cardExpiry">Expiry (MM/YY)</label><input id="cardExpiry" type="text" maxlength="5" placeholder="MM/YY" autocomplete="cc-exp"></div>
+                                </div>
+                                <div class="grid">
+                                    <div class="field"><label for="cardCvv">CVV</label><input id="cardCvv" type="text" maxlength="3" placeholder="123" autocomplete="cc-csc"></div>
+                                    <div style="display:flex; align-items:end; gap:8px">
+                                        <button id="payCardBtn" class="btn" style="width:100%">Pay <span id="payAmountText">R0.00</span></button>
+                                    </div>
+                                </div>
+                                <div class="foot-note">We use secure payment processing. Card details are not stored.</div>
+                            </div>
+                        </div>
+
+                        <!-- PAY IN STORE -->
+                        <div id="method-store" style="margin-top:12px; display:none">
+                            <div class="notice">
+                                Reserve now and pay in store within <strong>2 days</strong> (by <span id="storeDeadlineStatic"></span>). A reference will be generated for your booking.
+                            </div>
+                            <div style="margin-top:12px; display:flex; gap:8px">
+                                <button id="generateRef" class="btn">Generate payment reference</button>
+                            </div>
+                            <div id="storeResult" style="margin-top:12px"></div>
+                        </div>
+
+                        <!-- EFT -->
+                        <div id="method-eft" style="margin-top:12px; display:none">
+                            <div class="muted">Transfer the total amount to our bank account and upload proof of payment below.</div>
+                            <div class="bank-details" style="margin-top:10px;">
+                                <div style="font-weight:700">Ozyde Rentals (PTY)</div>
+                                <div class="small">Bank: <strong>Standard Back</strong></div>
+                                <div class="small">Account: <strong>10202732310</strong></div>
+                                <div class="small">Branch code: <strong>051001</strong> </div>
+                                <div class="small">Reference: use your <strong>Full name + Surname </strong> </div>
+                            </div>
+
+                            <div style="margin-top:10px">
+                                <label for="proof">Upload proof of payment (jpg/png/pdf)</label>
+                                <input id="proof" type="file" accept=".png,.jpg,.jpeg,.pdf">
+                                <div id="proofPreview" class="upload-preview" style="display:none"></div>
+                                <div style="margin-top:10px; display:flex; gap:8px">
+                                    <button id="submitProof" class="btn" disabled>Submit proof</button>
+                                    <button id="clearProof" class="btn ghost" style="display:none">Clear</button>
+                                </div>
+                                <div id="proofMsg" class="small" style="margin-top:8px"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- finalize -->
+            <div style="display:flex; gap:12px; align-items:center; justify-content:flex-end">
+                <button id="cancelBtn" class="btn ghost">Cancel</button>
+                <button id="finalizeBtn" class="btn">Finalize booking</button>
+            </div>
+
+            <div id="statusArea" style="margin-top:8px"></div>
+        </section>
+
+    </main>
+
+    <script>
+        // Utilities
+        const q = (s) => document.querySelector(s);
+        const qa = (s) => Array.from(document.querySelectorAll(s));
+        const formatR = (n) => 'R' + Number(n).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+        const fmtCardNumber = (v) => {
+            const digits = v.replace(/\D/g, '').slice(0, 16);
+            return digits.replace(/(.{4})/g, '$1 ').trim();
+        };
+        const fmtExpiry = (v) => {
+            const d = v.replace(/\D/g, '').slice(0, 4);
+            if (d.length <= 2) return d;
+            return d.slice(0, 2) + '/' + d.slice(2, 4);
+        };
+        const randRef = (len = 6) => {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let s = 'OZY-';
+            for (let i = 0; i < len; i++) s += chars[Math.floor(Math.random() * chars.length)];
+            return s;
+        };
+        const addDays = (d, days) => {
+            const out = new Date(d);
+            out.setDate(out.getDate() + days);
+            return out;
+        };
+        const formatDateShort = (d) => d.toLocaleDateString(undefined, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+
+        try {
+            const stored = sessionStorage.getItem('cart.php');
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                // parsed expected to be array of cart items with title/price/etc.
+                if (Array.isArray(parsed) && parsed.length) {
+                    // Normalize fields if necessary (price -> Number)
+                    items = parsed.map(it => ({
+                        title: it.title || it.name || 'Item',
+                        days: it.days || it.duration || 1,
+                        price: Number(it.price || 0)
+                    }));
+                }
+            }
+        } catch (e) { /* ignore parse errors and use fallback items */ }
+
+        const VAT = 0.15;
+        const DEPOSIT_PCT = 0.20;
+
+        // State
+        let deliveryFee = 0;
+        let returnFee = 0;
+        let proofFile = null;
+        let activeMethod = 'card';
+
+        // Render items & totals
+        function renderSummary() {
+            const itemsList = q('#itemsList');
+            itemsList.innerHTML = '';
+            let subtotal = 0;
+            items.forEach(it => {
+                subtotal += Number(it.price || 0);
+                const el = document.createElement('div');
+                el.style.display = 'flex';
+                el.style.justifyContent = 'space-between';
+                el.style.marginBottom = '8px';
+                el.innerHTML = `<div><div style="font-weight:700">${it.title}</div><div class="small">${it.days} days</div></div><div style="font-weight:700">${formatR(it.price)}</div>`;
+                itemsList.appendChild(el);
+            });
+
+            const vat = subtotal * VAT;
+            const deposit = subtotal * DEPOSIT_PCT;
+            const total = subtotal + vat + deliveryFee + returnFee;
+
+            q('#subtotal').textContent = formatR(subtotal);
+            q('#vat').textContent = formatR(vat);
+            q('#deposit').textContent = formatR(deposit);
+            q('#deliveryFee').textContent = formatR(deliveryFee);
+            q('#returnFee').textContent = formatR(returnFee);
+            q('#totalAmount').textContent = formatR(total);
+            q('#payAmountText').textContent = formatR(total);
+
+            // expose totals for later booking object creation
+            q('#totalAmount').dataset.value = String(total);
+            q('#subtotal').dataset.value = String(subtotal);
+            q('#vat').dataset.value = String(vat);
+            q('#deposit').dataset.value = String(deposit);
+        }
+        renderSummary();
+
+        // Delivery options wiring
+        const delButtons = [q('#optCollect'), q('#optDeliver')];
+        delButtons.forEach(b => {
+            b.addEventListener('click', () => {
+                delButtons.forEach(x => x.classList.remove('active'));
+                b.classList.add('active');
+                const t = b.dataset.delivery;
+                if (t === 'collect') deliveryFee = 0;
+                else if (t === 'standard') deliveryFee = 250;
+                renderSummary();
+            });
+        });
+
+        // Return options
+        const returnDrop = q('#returnDrop');
+        const returnPickup = q('#returnPickup');
+
+        function setReturnMethod(m) {
+            if (m === 'drop') {
+                returnFee = 0;
+                returnDrop.classList.add('active');
+                returnPickup.classList.remove('active');
+            } else {
+                returnFee = 120;
+                returnPickup.classList.add('active');
+                returnDrop.classList.remove('active');
+            }
+            renderSummary();
+        }
+        returnDrop.addEventListener('click', () => setReturnMethod('drop'));
+        returnPickup.addEventListener('click', () => setReturnMethod('pickup'));
+        setReturnMethod('drop');
+
+        // Payment method toggles
+        qa('.methods .method').forEach(btn => {
+            btn.addEventListener('click', () => {
+                qa('.methods .method').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const m = btn.dataset.method;
+                showMethod(m);
+            });
+        });
+
+        function showMethod(m) {
+            activeMethod = m || 'card';
+            q('#method-card').style.display = (activeMethod === 'card') ? '' : 'none';
+            q('#method-store').style.display = (activeMethod === 'store') ? '' : 'none';
+            q('#method-eft').style.display = (activeMethod === 'eft') ? '' : 'none';
+            q('#statusArea').innerHTML = '';
+        }
+        showMethod('card');
+
+        // Set static store deadline
+        const storeDeadlineStatic = q('#storeDeadlineStatic');
+        if (storeDeadlineStatic) {
+            const dl = addDays(new Date(), 2);
+            storeDeadlineStatic.textContent = formatDateShort(dl);
+        }
+
+        // Card preview bindings
+        const cardNumberInput = q('#cardNumber');
+        const cardNameInput = q('#cardName');
+        const cardExpiryInput = q('#cardExpiry');
+        const cardCvvInput = q('#cardCvv');
+        if (cardNumberInput) {
+            cardNumberInput.addEventListener('input', (e) => {
+                e.target.value = fmtCardNumber(e.target.value);
+                q('#cardNumberPreview').textContent = e.target.value || '0000 0000 0000 0000';
+            });
+        }
+        if (cardNameInput) {
+            cardNameInput.addEventListener('input', (e) => {
+                q('#cardNamePreview').textContent = (e.target.value || 'NAME SURNAME').toUpperCase();
+            });
+        }
+        if (cardExpiryInput) {
+            cardExpiryInput.addEventListener('input', (e) => {
+                e.target.value = fmtExpiry(e.target.value);
+                q('#cardExpiryPreview').textContent = e.target.value || 'MM/YY';
+            });
+        }
+        if (cardCvvInput) {
+            cardCvvInput.addEventListener('focus', () => {
+                q('#cardPreview').style.transform = 'translateY(-2px) scale(1.01)';
+            });
+            cardCvvInput.addEventListener('blur', () => {
+                q('#cardPreview').style.transform = '';
+            });
+        }
+
+        // Card pay (simulate and redirect to success)
+        const payCardBtn = q('#payCardBtn');
+        if (payCardBtn) {
+            payCardBtn.addEventListener('click', (ev) => {
+                ev.preventDefault();
+                const num = (q('#cardNumber') && q('#cardNumber').value.replace(/\s/g, '')) || '';
+                const name = (q('#cardName') && q('#cardName').value.trim()) || '';
+                const exp = (q('#cardExpiry') && q('#cardExpiry').value) || '';
+                const cvv = (q('#cardCvv') && q('#cardCvv').value) || '';
+                const errs = [];
+                if (num.length < 13) errs.push('Enter a valid card number.');
+                if (!name) errs.push('Enter the cardholder name.');
+                if (!/^\d{2}\/\d{2}$/.test(exp)) errs.push('Enter expiry as MM/YY.');
+                if (!/^\d{3}$/.test(cvv)) errs.push('Enter a 3-digit CVV.');
+                if (errs.length) {
+                    q('#statusArea').innerHTML = `<div class="notice" role="alert">${errs.join('<br>')}</div>`;
+                    return;
+                }
+
+                // compute totals again (ensure correct numbers)
+                const subtotal = Number(q('#subtotal').dataset.value || 0);
+                const vat = Number(q('#vat').dataset.value || 0);
+                const deposit = Number(q('#deposit').dataset.value || 0);
+                const total = Number(q('#totalAmount').dataset.value || 0);
+
+                // create booking object to hand off to success page
+                const booking = {
+                    ref: randRef(6),
+                    method: 'card',
+                    items,
+                    subtotal,
+                    vat,
+                    deposit,
+                    deliveryFee,
+                    returnFee,
+                    total,
+                    name: name || (q('#firstName') && q('#firstName').value.trim()) || '',
+                    email: (q('#email') && q('#email').value.trim()) || '',
+                    createdAt: new Date().toISOString()
+                };
+
+                try {
+                    sessionStorage.setItem('ozyde_booking', JSON.stringify(booking));
+                } catch (err) {
+                    console.warn('sessionStorage set failed', err);
+                }
+
+                q('#statusArea').innerHTML = `<div class="success" role="status">Payment successful — booking confirmed. Redirecting to confirmation…</div>`;
+
+                // short delay to let user see the success message, then go to success page
+                setTimeout(() => {
+                    window.location.href = 'success.html';
+                }, 850);
+            });
+        }
+
+        // Pay-in-store: generate ref & deadline (keeps user on page)
+        const genRefBtn = q('#generateRef');
+        if (genRefBtn) {
+            genRefBtn.addEventListener('click', () => {
+                const ref = randRef(6);
+                const deadline = addDays(new Date(), 2);
+                
+                // Get customer name for the slip
+                const firstName = (q('#firstName') && q('#firstName').value.trim()) || '';
+                const lastName = (q('#lastName') && q('#lastName').value.trim()) || '';
+                const customerName = `${firstName} ${lastName}`.trim() || 'Customer';
+                
+                // Create the reference card
+                q('#storeResult').innerHTML = `
+                    <div class="store-ref-card">
+                        <div class="ref-header">
+                            <div class="brand-logo">
+                                <span class="ozyde-logo">OZYDE</span>
+                                <div class="logo-accent"></div>
+                            </div>
+                            <div class="ref-badge">Payment Reference</div>
+                        </div>
+                        
+                        <div class="ref-content">
+                            <div class="ref-number-container">
+                                <div class="ref-label">Your Reference Code</div>
+                                <div class="ref-number" id="refNumberDisplay">${ref}</div>
+                                <div class="ref-subtitle">Present this code when paying in store</div>
+                            </div>
+                            
+                            <div class="deadline-container">
+                                <div class="deadline-icon">📅</div>
+                                <div class="deadline-text">
+                                    <div class="deadline-label">Payment Due By</div>
+                                    <div class="deadline-date">${formatDateShort(deadline)}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="ref-note">
+                                <div class="note-icon">ℹ️</div>
+                                <div class="note-text">If payment is not received by this deadline, your reservation may be cancelled.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="ref-actions">
+                            <button id="copyRefBtn" class="btn-action btn-copy">
+                                <span class="btn-icon">📋</span>
+                                Copy Reference
+                            </button>
+                            <button id="printRef" class="btn-action btn-print">
+                                <span class="btn-icon">🖨️</span>
+                                Print / Save
+                            </button>
+                        </div>
+                    </div>
+                `;
+                q('#printRefBtn').style.display = '';
+
+                // Store booking data
+                const booking = {
+                    ref,
+                    method: 'store',
+                    items,
+                    subtotal: Number(q('#subtotal').dataset.value || 0),
+                    vat: Number(q('#vat').dataset.value || 0),
+                    total: Number(q('#totalAmount').dataset.value || 0),
+                    name: customerName,
+                    email: (q('#email') && q('#email').value.trim()) || '',
+                    createdAt: new Date().toISOString(),
+                    deadline: deadline.toISOString()
+                };
+                try {
+                    sessionStorage.setItem('ozyde_booking', JSON.stringify(booking));
+                } catch (e) {}
+
+                // Set up copy and print buttons
+                setTimeout(() => {
+                    const copyRefBtn = q('#copyRefBtn');
+                    if (copyRefBtn) {
+                        copyRefBtn.addEventListener('click', () => {
+                            if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                                navigator.clipboard.writeText(ref).then(() => {
+                                    // Visual feedback for copy
+                                    copyRefBtn.innerHTML = '<span class="btn-icon">✓</span> Copied!';
+                                    copyRefBtn.classList.add('copied');
+                                    setTimeout(() => {
+                                        copyRefBtn.innerHTML = '<span class="btn-icon">📋</span> Copy Reference';
+                                        copyRefBtn.classList.remove('copied');
+                                    }, 1500);
+                                }).catch(() => {
+                                    fallbackCopy(ref, copyRefBtn);
+                                });
+                            } else fallbackCopy(ref, copyRefBtn);
+                        });
+                    }
+                    
+                    const printRef = q('#printRef');
+                    if (printRef) {
+                        printRef.addEventListener('click', () => {
+                            // Create a slip-like print layout
+                            const printWindow = window.open('', '_blank');
+                            if (printWindow) {
+                                printWindow.document.write(`
+                                    <!DOCTYPE html>
+                                    <html>
+                                    <head>
+                                        <title>OZYDE Payment Slip</title>
+                                        <style>
+                                            @media print {
+                                                @page { margin: 0.5cm; size: auto; }
+                                                body { font-family: Arial, sans-serif; font-size: 14px; line-height: 1.4; }
+                                                .payment-slip { max-width: 8.5cm; margin: 0 auto; padding: 15px; border: 1px solid #000; }
+                                                .header { text-align: center; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+                                                .logo { font-size: 24px; font-weight: bold; letter-spacing: 2px; margin-bottom: 5px; }
+                                                .subtitle { font-size: 12px; color: #666; }
+                                                .section { margin-bottom: 15px; }
+                                                .section-title { font-weight: bold; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 8px; }
+                                                .reference { font-family: monospace; font-size: 18px; font-weight: bold; text-align: center; margin: 10px 0; padding: 8px; background: #f5f5f5; border: 1px dashed #ccc; }
+                                                .total { font-size: 16px; font-weight: bold; text-align: center; margin: 10px 0; }
+                                                .footer { margin-top: 20px; font-size: 10px; color: #666; text-align: center; border-top: 1px solid #ccc; padding-top: 10px; }
+                                                .barcode { text-align: center; margin: 10px 0; font-family: monospace; letter-spacing: 3px; }
+                                            }
+                                        </style>
+                                    </head>
+                                    <body>
+                                        <div class="payment-slip">
+                                            <div class="header">
+                                                <div class="logo">OZYDE</div>
+                                                <div class="subtitle">LUXURY RENTALS</div>
+                                            </div>
+                                            
+                                            <div class="section">
+                                                <div class="section-title">PAYMENT REFERENCE</div>
+                                                <div class="reference">${ref}</div>
+                                            </div>
+                                            
+                                            <div class="section">
+                                                <div class="section-title">CUSTOMER DETAILS</div>
+                                                <div><strong>Name:</strong> ${customerName}</div>
+                                                <div><strong>Date:</strong> ${new Date().toLocaleDateString()}</div>
+                                                <div><strong>Due Date:</strong> ${formatDateShort(deadline)}</div>
+                                            </div>
+                                            
+                                            <div class="section">
+                                                <div class="section-title">ORDER SUMMARY</div>
+                                                ${items.map(item => `<div>${item.title} - ${item.days} days</div>`).join('')}
+                                                <div class="total">TOTAL: ${formatR(Number(q('#totalAmount').dataset.value || 0))}</div>
+                                            </div>
+                                            
+                                            <div class="barcode">
+                                                ||| ${ref} |||
+                                            </div>
+                                            
+                                            <div class="footer">
+                                                <div>Please present this slip when paying in store</div>
+                                                <div>OZYDE Boutique • 123 Fashion District • Johannesburg</div>
+                                                <div>Tel: +27 11 123 4567</div>
+                                            </div>
+                                        </div>
+                                    </body>
+                                    </html>
+                                `);
+                                printWindow.document.close();
+                                
+                                // Wait for content to load then print
+                                setTimeout(() => {
+                                    printWindow.print();
+                                    printWindow.close();
+                                }, 250);
+                            }
+                        });
+                    }
+                }, 50);
+            });
+        }
+
+        function fallbackCopy(text, btn) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+                // Visual feedback for copy
+                btn.innerHTML = '<span class="btn-icon">✓</span> Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerHTML = '<span class="btn-icon">📋</span> Copy Reference';
+                    btn.classList.remove('copied');
+                }, 1500);
+            } catch (e) {
+                alert('Could not copy — please copy manually: ' + text);
+            }
+            document.body.removeChild(ta);
+        }
+
+        // EFT proof upload
+        const proofInput = q('#proof');
+        const proofPreview = q('#proofPreview');
+        const submitProof = q('#submitProof');
+        const clearProofBtn = q('#clearProof');
+        if (proofInput) {
+            proofInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                proofFile = file;
+                proofPreview.style.display = '';
+                proofPreview.innerHTML = '';
+                const thumb = document.createElement('div');
+                thumb.className = 'thumb';
+                if (file.type === 'application/pdf') {
+                    thumb.innerHTML = '<svg width="36" height="36" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="4" fill="#eee"/></svg>';
+                    proofPreview.appendChild(thumb);
+                    const meta = document.createElement('div');
+                    meta.className = 'meta';
+                    meta.innerHTML = `<div>${file.name}</div><div class="small">${Math.round(file.size/1024)} KB</div>`;
+                    proofPreview.appendChild(meta);
+                } else {
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        thumb.innerHTML = `<img src="${ev.target.result}" alt="proof">`;
+                        proofPreview.appendChild(thumb);
+                        const meta = document.createElement('div');
+                        meta.className = 'meta';
+                        meta.innerHTML = `<div>${file.name}</div><div class="small">${Math.round(file.size/1024)} KB</div>`;
+                        proofPreview.appendChild(meta);
+                    };
+                    reader.readAsDataURL(file);
+                }
+                if (submitProof) submitProof.disabled = false;
+                if (clearProofBtn) clearProofBtn.style.display = '';
+                q('#proofMsg').textContent = '';
+            });
+        }
+        if (submitProof) {
+            submitProof.addEventListener('click', () => {
+                if (!proofFile) {
+                    q('#proofMsg').textContent = 'Please upload proof before submitting.';
+                    return;
+                }
+                submitProof.disabled = true;
+                submitProof.textContent = 'Submitting...';
+                setTimeout(() => {
+                    submitProof.textContent = 'Submitted';
+                    q('#statusArea').innerHTML = `<div class="success">Proof received. We will verify and update your booking shortly.</div>`;
+                    q('#proofMsg').textContent = '';
+                }, 900);
+            });
+        }
+        if (clearProofBtn) {
+            clearProofBtn.addEventListener('click', () => {
+                if (proofInput) proofInput.value = '';
+                proofFile = null;
+                proofPreview.style.display = 'none';
+                if (submitProof) submitProof.disabled = true;
+                clearProofBtn.style.display = 'none';
+                q('#proofMsg').textContent = '';
+            });
+        }
+
+        // Finalize booking validation (non-card flows)
+        q('#finalizeBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            const fn = (q('#firstName') && q('#firstName').value.trim()) || '';
+            const ln = (q('#lastName') && q('#lastName').value.trim()) || '';
+            const email = (q('#email') && q('#email').value.trim()) || '';
+            const addr = (q('#addr1') && q('#addr1').value.trim()) || '';
+            if (!fn || !ln || !email || !addr) {
+                q('#statusArea').innerHTML = `<div class="notice">Please complete the shipping details (name, email and address) before finalizing.</div>`;
+                return;
+            }
+            if (activeMethod === 'card') {
+                q('#statusArea').innerHTML = `<div class="notice">Please press <strong>Pay</strong> to complete card payment and confirm your booking.</div>`;
+                return;
+            }
+            if (activeMethod === 'store') {
+                q('#statusArea').innerHTML = `<div class="notice">Generate a payment reference and pay in store within 2 days to confirm your booking.</div>`;
+                return;
+            }
+            if (activeMethod === 'eft') {
+                if (!proofFile) q('#statusArea').innerHTML = `<div class="notice">Please upload EFT proof and submit it to confirm booking.</div>`;
+                else q('#statusArea').innerHTML = `<div class="success">EFT proof submitted. Booking pending verification — we'll confirm soon.</div>`;
+                return;
+            }
+        });
+
+        q('#cancelBtn').addEventListener('click', () => {
+            if (confirm('Cancel checkout and return to shop?')) window.location.href = 'cart.html';
+    
+        });
+
+        q('#finalizeBtn').addEventListener('click', () => {
+            if (confirm('Done Booking?')) window.location.href = 'success.html';
+    
+        });
+
+        // Init done
+        renderSummary();
+    </script>
+</body>
+
+</html>
