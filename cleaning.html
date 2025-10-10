@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Ozyde — Cleaning & Care Guide</title>
+    <style>
+        /* Ozyde Boutique consistent styling - matching catalog */
+        
+         :root {
+            --bg: #fff;
+            --text: #222;
+            --muted: #7a7a7a;
+            --accent: #111;
+            --max-width: 1200px;
+            --chip-bg: #f3f3f3;
+            --chip-border: #e6e6e6;
+            --primary: #111;
+            --success: #2fa46b;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --airbnb-pink: #FF5A5F;
+            --hero-height: 420px;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1.5;
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        /* Header Styles - matching catalog */
+        
+        .nav-wrap {
+            background: #0b0b0b;
+            color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 120;
+            box-shadow: 0 6px 20px rgba(2, 2, 2, 0.12);
+        }
+        
+        .nav {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-weight: 800;
+            letter-spacing: 1px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .logo-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #fff2, #fff6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #111;
+            font-weight: 900;
+            font-size: 16px;
+        }
+        
+        nav ul {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 18px;
+            list-style: none;
+            align-items: center;
+        }
+        
+        nav a {
+            font-size: 14px;
+            color: #fff;
+            display: block;
+            padding: 8px 6px;
+            transition: color 0.2s ease;
+        }
+        
+        nav a.active {
+            color: #fff;
+            font-weight: 600;
+            border-bottom: 2px solid #fff;
+        }
+        
+        nav a:hover {
+            color: #ddd;
+        }
+        
+        .btn-signup {
+            background: var(--accent);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background 0.2s ease;
+        }
+        
+        .btn-signup:hover {
+            background: #333;
+        }
+        
+        .icons {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+        
+        .icon-only {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 0;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .icon-only:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Cleaning Guide Specific Styles */
+        .cleaning-guide {
+            padding: 48px 0;
+        }
+        
+        .cleaning-guide h1 {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        
+        .cleaning-intro {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 32px;
+            color: var(--muted);
+        }
+        
+        .care-tabs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+        
+        .care-tab {
+            padding: 10px 20px;
+            border: 1px solid var(--chip-border);
+            background: var(--chip-bg);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        
+        .care-tab.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .care-tab:hover:not(.active) {
+            background: #e6e6e6;
+        }
+        
+        .fabric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .fabric-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 20px;
+            background: white;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .fabric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+        
+        .fabric-card h3 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--accent);
+        }
+        
+        .fabric-icon {
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--accent);
+            color: white;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .care-instructions {
+            margin: 15px 0;
+        }
+        
+        .instruction-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: flex-start;
+        }
+        
+        .instruction-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 10px;
+            margin-top: 2px;
+        }
+        
+        .do {
+            color: var(--success);
+        }
+        
+        .dont {
+            color: var(--danger);
+        }
+        
+        .stain-removal {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 40px 0;
+        }
+        
+        .stain-removal h2 {
+            margin-top: 0;
+            text-align: center;
+        }
+        
+        .stain-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .stain-item {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .stain-item h4 {
+            margin: 0 0 8px 0;
+            color: var(--accent);
+        }
+        
+        .emergency-tips {
+            background: #fff8e6;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid var(--warning);
+            margin: 30px 0;
+        }
+        
+        .emergency-tips h3 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .warning-icon {
+            color: var(--warning);
+            font-size: 20px;
+        }
+        
+        .storage-guide {
+            margin-top: 40px;
+        }
+        
+        .storage-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .storage-card {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .storage-card h4 {
+            margin: 15px 0 10px;
+            color: var(--accent);
+        }
+        
+        .storage-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            font-size: 24px;
+        }
+        
+        /* Footer Styles - matching catalog */
+        
+        footer {
+            border-top: 1px solid #eee;
+            padding: 36px 0;
+            margin-top: 28px;
+            color: var(--muted);
+            background: #fafafa;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 32px;
+        }
+        
+        .footer-grid h4 {
+            margin: 0 0 16px 0;
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        .footer-grid ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-grid li {
+            margin-bottom: 8px;
+        }
+        
+        .footer-grid a {
+            color: var(--muted);
+            transition: color 0.2s ease;
+        }
+        
+        .footer-grid a:hover {
+            color: var(--accent);
+        }
+        
+        .socials {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .socials a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: #f5f5f5;
+            transition: all 0.2s ease;
+        }
+        
+        .socials a:hover {
+            background: var(--accent);
+        }
+        
+        .socials a:hover svg path,
+        .socials a:hover svg circle {
+            stroke: #fff;
+            fill: #fff;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 880px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 24px;
+            }
+            .fabric-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .nav {
+                flex-wrap: wrap;
+            }
+            nav ul {
+                order: 2;
+                width: 100%;
+                justify-content: center;
+                margin-top: 15px;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+            .care-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            .care-tab {
+                width: 100%;
+                max-width: 300px;
+                text-align: center;
+            }
+            .stain-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .muted {
+            color: var(--muted)
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ===== Navigation Bar ===== -->
+    <header class="nav-wrap" role="banner">
+        <div class="nav" role="navigation" aria-label="Main navigation">
+            <div class="logo" id="brandLink">
+                <div class="logo-badge" aria-hidden="true">✦</div>
+                <div>Ozyde</div>
+            </div>
+
+            <nav aria-label="Main navigation">
+                <ul id="main-nav">
+                    <li><a href="finalhomepage.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="custommade.html">Custom Made</a></li>
+                    <li><a href="catalog.php">Browse</a></li>
+                    
+                    
+                </ul>
+            </nav>
+
+            <div class="icons" role="group" aria-label="User actions">
+                <a href="register.html" class="icon-only" title="Login/Register" aria-label="Login/Register">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                        <polyline points="10 17 15 12 10 7" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="15" y1="12" x2="3" y2="12" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </a>
+
+                <a href="help.html" class="icon-only" title="Help" aria-label="Help">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.2" fill="none"/>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                        <line x1="12" y1="17" x2="12" y2="17" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Cleaning Guide Content -->
+    <section class="cleaning-guide container">
+        <h1>Cleaning & Care Guide</h1>
+        <p class="cleaning-intro">Proper care ensures our luxury dresses maintain their beauty and quality. Follow these guidelines to keep your rental in perfect condition.</p>
+        
+        <div class="care-tabs">
+            <div class="care-tab active" data-category="general">General Care</div>
+            <div class="care-tab" data-category="stain-removal">Stain Removal</div>
+            <div class="care-tab" data-category="storage">Storage Tips</div>
+        </div>
+        
+        <!-- General Care Section -->
+        <div id="general-care">
+            <h2>Fabric-Specific Care Instructions</h2>
+            <div class="fabric-grid">
+                <div class="fabric-card">
+                    <h3><span class="fabric-icon">S</span> Silk & Satin</h3>
+                    <div class="care-instructions">
+                        <div class="instruction-item">
+                            <div class="instruction-icon do">✓</div>
+                            <div>Dry clean only or hand wash gently in cold water</div>
+                        </div>
+                        <div class="instruction-item">
+                            <div class="instruction-icon do">✓</div>
+                            <div>Iron on low heat with a cloth barrier</div>
+                        </div>
+                        <div class="instruction-item">
+                            <div class="instruction-icon dont">✗</div>
+                            <div>Avoid wringing or twisting the fabric</div>
+                        </div>
+                        <div class="instruction-item">
+                            <div class="instruction-icon dont">✗</div>
+                            <div>Never use bleach or harsh detergents</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="fabric-card">
+                    <h3><span class="fabric-icon">L</span> Lace & Embroidery</h3>
+                    <div class="care-instructions">
+                        <div class="instruction-item">
+                            <div class="instruction-icon do">✓</div>
+                            <div>Hand wash in cold water with mild detergent</div>
+                        </div>
+                        <div class="instruction-item">
+                            <div class="instruction-icon do">✓</div>
+                            <div>Lay flat to dry to maintain shape</div>
+                        </div>
+                        <div class="instruction-item">
+                            <div class="instruction-icon dont">✗</div>
+                            <div>Avoid machine washing or drying</div>
+                        </div>
+                        <div class="instruction-item">
+                            <div class="instruction-icon dont">✗</div>
+                            <div>Don't rub or scrub delicate areas</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="fabric-card">
+                    <h3><span class="fabric-icon">C</span> Cotton & Linen</h3>
+                    <div class="care-instructions">
+                        <div class="instruction-item">
+                            <div class="instruction-icon do">✓</div>
+                            <div>Machine wash cold on gentle cycle</div>
+                        </div>
+                        <div class="instruction-item">
+                            <div class="instruction-icon do">✓</div>
+                            <div>Iron while slightly damp for best results</div>
+                        </div>
+                        <div class="instruction-item">
+                            <div class="instruction-icon dont">✗</div>
+                            <div>Avoid high heat in dryer</div>
+                        </div>
+                        <div class="instruction-item">
+                            <div class="instruction-icon dont">✗</div>
+                            <div>Don't use fabric softener on linen</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="fabric-card">
+                    <h3><span class="fabric-icon">B</span> Beaded & Sequined</h3>
+                    <div class="care-instructions">
+                        <div class="instruction-item">
+                            <div class="instruction-icon do">✓</div>
+                            <div>Spot clean only with damp cloth</div>
+                        </div>
+                        <div class="instruction-item">
+                            <div class="instruction-icon do">✓</div>
+                            <div>Store flat or hang with padding</div>
+                        </div>
+                        <div class="instruction-item">
+                            <div class="instruction-icon dont">✗</div>
+                            <div>Never machine wash or dry clean</div>
+                        </div>
+                        <div class="instruction-item">
+                            <div class="instruction-icon dont">✗</div>
+                            <div>Avoid folding to prevent damage</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="emergency-tips">
+                <h3><span class="warning-icon">⚠</span> Emergency Care Tips</h3>
+                <p><strong>For spills and accidents during your rental:</strong></p>
+                <ul>
+                    <li>Blot (don't rub) spills immediately with a clean, dry cloth</li>
+                    <li>For wine spills, sprinkle with salt and let sit before brushing off</li>
+                    <li>For oil-based stains, use cornstarch to absorb before cleaning</li>
+                    <li>Contact us immediately for serious stains - we're here to help!</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Stain Removal Section -->
+        <div id="stain-removal" style="display: none;">
+            <div class="stain-removal">
+                <h2>Common Stain Removal Guide</h2>
+                <div class="stain-grid">
+                    <div class="stain-item">
+                        <h4>Red Wine</h4>
+                        <p>Blot immediately, then pour white wine or club soda on the stain. Rinse with cold water and apply salt. Let sit before brushing off.</p>
+                    </div>
+                    
+                    <div class="stain-item">
+                        <h4>Makeup</h4>
+                        <p>Use a makeup remover wipe or mild dish soap with cold water. Gently dab until stain lifts. Avoid rubbing.</p>
+                    </div>
+                    
+                    <div class="stain-item">
+                        <h4>Food & Grease</h4>
+                        <p>Scrape off excess, then apply cornstarch or talcum powder to absorb oil. Brush off after 15 minutes before washing.</p>
+                    </div>
+                    
+                    <div class="stain-item">
+                        <h4>Grass</h4>
+                        <p>Apply rubbing alcohol or white vinegar to the stain, then rinse with cold water. Wash as usual.</p>
+                    </div>
+                    
+                    <div class="stain-item">
+                        <h4>Blood</h4>
+                        <p>Soak in cold water with salt or hydrogen peroxide. Never use hot water as it sets the stain.</p>
+                    </div>
+                    
+                    <div class="stain-item">
+                        <h4>Ink</h4>
+                        <p>Apply hairspray or rubbing alcohol to the stain, then blot with a clean cloth. Repeat until ink transfers to cloth.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="emergency-tips">
+                <h3><span class="warning-icon"></span> Important Notes</h3>
+                <ul>
+                    <li>Always test cleaning solutions on an inconspicuous area first</li>
+                    <li>For delicate fabrics, consult with us before attempting stain removal</li>
+                    <li>Never use bleach on colored fabrics</li>
+                    <li>When in doubt, professional cleaning is always the safest option</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Storage Section -->
+        <div id="storage" style="display: none;">
+            <div class="storage-guide">
+                <h2>Proper Storage Guidelines</h2>
+                <p>Correct storage preserves the quality and longevity of our luxury dresses between wears.</p>
+                
+                <div class="storage-cards">
+                    <div class="storage-card">
+                        <div class="storage-icon">♻</div>
+                        <h4>Between Events</h4>
+                        <p>Hang dresses on padded hangers in a cool, dry place. Allow fabrics to breathe between wears.</p>
+                    </div>
+                    
+                    <div class="storage-card">
+                        <div class="storage-icon"></div>
+                        <h4>Long-term Storage</h4>
+                        <p>Use breathable garment bags. Avoid plastic which can trap moisture and cause yellowing.</p>
+                    </div>
+                    
+                    <div class="storage-card">
+                        <div class="storage-icon"></div>
+                        <h4>Folding Tips</h4>
+                        <p>Fold along seams to prevent creasing. Use acid-free tissue paper to cushion folds.</p>
+                    </div>
+                </div>
+                
+                <div class="emergency-tips">
+                    <h3><span class="warning-icon"></span> Storage Don'ts</h3>
+                    <ul>
+                        <li>Never store dresses in direct sunlight - causes fading</li>
+                        <li>Avoid damp areas - promotes mold and mildew</li>
+                        <li>Don't overcrowd in closet - can cause permanent wrinkles</li>
+                        <li>Avoid scented sachets directly on fabric - can cause staining</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="emergency-tips" style="background: #e6f7ff; border-left-color: #2fa46b;">
+            <h3>Need Help?</h3>
+            <p>If you have any questions about caring for your rental or encounter any issues, don't hesitate to <a href="contact.html" style="color: var(--accent); text-decoration: underline;">contact our support team</a>. We're here to ensure your Ozyde experience is perfect from start to finish.</p>
+        </div>
+    </section>
+
+    <!-- Footer - matching catalog -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4>Ozyde</h4>
+                    <p>Premium dress rentals for your special occasions. Quality, style, and affordability combined.</p>
+                    <div>Address:<br>5 Liebenberg Rd, Noordwyk, Midrand 1687</div>
+                    <div class="socials" aria-label="Social media">
+                        <a href="https://www.instagram.com/ozyde_?igsh=NWM0aTd4ZGFmeHVr" target="_blank" rel="noopener" aria-label="Instagram">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <rect x="3" y="3" width="18" height="18" rx="5" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <circle cx="12" cy="12" r="3.2" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <circle cx="17.5" cy="6.5" r="0.6" fill="#333"/>
+                            </svg>
+                        </a>
+                        <!-- Replaced generic SVG with a proper TikTok logo image (keeps layout & sizing identical) -->
+                        <a href="https://www.tiktok.com/@ozyde_designs?_t=ZS-8zlyfPi8HHJ&_r=1" target="_blank" rel="noopener" aria-label="TikTok">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/TikTok_logo.svg/1200px-TikTok_logo.svg.png" alt="TikTok" style="width:18px;height:18px;display:block" />
+                        </a>
+                        <a href="mailto:ozydedesigns@gmail.com" aria-label="Email">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <rect x="3" y="6" width="18" height="12" rx="2" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <path d="M4 7.5l8 6 8-6" stroke="#333" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#">How It Works</a></li>
+                        <li><a href="size-guide.html">Size Guide</a></li>
+                        <li><a href="#">Care Instructions</a></li>
+                        <li><a href="#">Returns & Policy</a></li>
+                        <li><a href="#">Delivery</a></li>
+                        <li><a href="#">Help Center</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Terms</a></li>
+                        <li><a href="#">Privacy</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="size-guide.html">Sizing Guide</a></li>
+                        <li><a href="cleaning.html">Cleaning</a></li>
+                        <li><a href="#">Partnerships</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="margin-top:24px;text-align:center;padding-top:24px;border-top:1px solid #e6e6e6;color:var(--muted)">
+                © 2025 Ozyde. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Tab switching functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.care-tab');
+            const sections = {
+                'general': document.getElementById('general-care'),
+                'stain-removal': document.getElementById('stain-removal'),
+                'storage': document.getElementById('storage')
+            };
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Hide all sections
+                    Object.values(sections).forEach(section => {
+                        section.style.display = 'none';
+                    });
+                    
+                    // Show the selected section
+                    const category = this.getAttribute('data-category');
+                    sections[category].style.display = 'block';
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

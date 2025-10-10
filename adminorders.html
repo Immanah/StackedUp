@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Orders - Ozyde Boutique</title>
+    <style>
+        /* Ozyde Boutique monochromatic styling */
+        
+         :root {
+            --bg: #fff;
+            --text: #222;
+            --muted: #7a7a7a;
+            --accent: #111;
+            --max-width: 1200px;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e6e6e6;
+            --dark-gray: #333;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --badge-bg: #ff4d4f;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+        
+        body {
+            margin: 0;
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+        
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%
+        }
+        /* Header - unified */
+        
+        .header {
+            background: var(--accent);
+            color: #fff;
+            padding: 12px 0;
+            box-shadow: 0 4px 12px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 120
+        }
+        
+        .header .container {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            justify-content: space-between
+        }
+        
+        .logo {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-weight: 800;
+            letter-spacing: 1px;
+            font-size: 18px
+        }
+        
+        .logo-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-weight: 900;
+            font-size: 16px
+        }
+        
+        .nav {
+            display: flex;
+            gap: 18px;
+            align-items: center
+        }
+        
+        .nav a {
+            font-size: 14px;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all .18s ease;
+            text-decoration: none
+        }
+        
+        .nav a:hover,
+        .nav a.active {
+            background: rgba(255, 255, 255, 0.08)
+        }
+        
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+        
+        .user-name {
+            font-weight: 600
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-weight: 800
+        }
+        
+        .logout-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.06)
+        }
+        /* icons */
+        
+        .icon-btn {
+            position: relative;
+            background: transparent;
+            border: 0;
+            color: #fff;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center
+        }
+        
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.04)
+        }
+        
+        .icon-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--badge-bg);
+            color: #fff;
+            border-radius: 12px;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1
+        }
+        /* dropdowns for notifications/messages */
+        
+        .dropdown-list {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: #fff;
+            color: #222;
+            min-width: 320px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            display: none;
+            z-index: 130
+        }
+        
+        .dropdown-list.visible {
+            display: block
+        }
+        
+        .dropdown-list header {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f1f1f1;
+            font-weight: 700;
+            background: #fafafa
+        }
+        
+        .dropdown-list .item {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            align-items: flex-start;
+            border-bottom: 1px solid #f6f6f6
+        }
+        
+        .dropdown-list .item:last-child {
+            border-bottom: 0
+        }
+        
+        .dropdown-list .item img {
+            width: 44px;
+            height: 44px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1px solid #eee
+        }
+        
+        .dropdown-list .item .meta {
+            flex: 1
+        }
+        
+        .dropdown-list .muted {
+            color: var(--muted);
+            font-size: 13px
+        }
+        /* Main Content */
+        
+        .main-content {
+            flex: 1;
+            padding: 26px 0;
+            background: var(--light-gray)
+        }
+        
+        .page-title {
+            margin: 0 0 20px 0;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--accent)
+        }
+        
+        .search-filter {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 260px;
+            position: relative
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 8px;
+            font-size: 14px;
+            background: white
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted)
+        }
+        
+        .filter-select {
+            padding: 12px 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 8px;
+            background: white;
+            min-width: 160px
+        }
+        
+        .order-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 18px
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 4px 12px var(--shadow);
+            border: 1px solid var(--medium-gray)
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 6px
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: var(--muted)
+        }
+        /* Table */
+        
+        .table-wrapper {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px var(--shadow);
+            border: 1px solid var(--medium-gray);
+            margin-bottom: 18px
+        }
+        
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse
+        }
+        
+        .orders-table th {
+            background: var(--light-gray);
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--accent);
+            border-bottom: 1px solid var(--medium-gray);
+            font-size: 14px
+        }
+        
+        .orders-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--medium-gray);
+            vertical-align: middle
+        }
+        
+        .orders-table tr:last-child td {
+            border-bottom: 0
+        }
+        
+        .orders-table tr:hover {
+            background: rgba(0, 0, 0, 0.02)
+        }
+        
+        .orders-table .thumb {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            background: #f0f0f0;
+            display: inline-block;
+            object-fit: cover;
+            margin-right: 10px;
+            vertical-align: middle;
+            border: 1px solid #eee
+        }
+        
+        .status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase
+        }
+        
+        .status.pending {
+            background: #fff3cd;
+            color: #856404
+        }
+        
+        .status.approved {
+            background: #d1ecf1;
+            color: #0c5460
+        }
+        
+        .status.completed {
+            background: #d4edda;
+            color: #155724
+        }
+        
+        .status.cancelled {
+            background: #f8d7da;
+            color: #721c24
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px
+        }
+        
+        .btn {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 0;
+            cursor: pointer;
+            font-weight: 700
+        }
+        
+        .view-btn {
+            background: var(--light-gray);
+            color: var(--accent);
+            border: 1px solid var(--medium-gray)
+        }
+        
+        .cancel-btn {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px
+        }
+        
+        .pagination-btn {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--medium-gray);
+            background: white;
+            cursor: pointer
+        }
+        
+        footer {
+            border-top: 1px solid var(--medium-gray);
+            padding: 20px 0;
+            text-align: center;
+            color: var(--muted);
+            background: var(--light-gray);
+            margin-top: auto
+        }
+        
+        @media (max-width:900px) {
+            .header .container {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px
+            }
+            .nav {
+                justify-content: center;
+                flex-wrap: wrap
+            }
+            .orders-table {
+                min-width: 700px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header (unified, with notifications & messages) -->
+    <header class="header">
+        <div class="container" style="position:relative;">
+            <div style="display:flex;align-items:center;gap:18px">
+                <div class="logo">
+                    <div class="logo-badge">OZ</div>
+                    <div>OZYDE ADMIN</div>
+                </div>
+            </div>
+
+            <nav class="nav" aria-label="Admin navigation">
+                <a href="admindashboard.html">Dashboard</a>
+                <a href="adminproducts.html">Products</a>
+                <a href="adminorders.html" class="active">Orders</a>
+                <a href="admincustomers.html">Customers</a>
+                <a href="admininventory.html">Inventory</a>
+                <a href="adminreports.html">Reports</a>
+            </nav>
+
+            <div class="header-user" style="position:relative;">
+                <!-- Notifications icon + dropdown -->
+                <div style="position:relative;">
+                    <button id="notifBtn" class="icon-btn" aria-haspopup="true" aria-expanded="false" title="Notifications" aria-label="Notifications">
+                        <!-- bell icon -->
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14V11c0-3.1-1.6-5.7-4.5-6.5V4a1.5 1.5 0 1 0-3 0v.5C7.6 5.3 6 7.9 6 11v3c0 .5-.2 1-.6 1.4L4 17h11z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="icon-badge" id="notifCount">3</span>
+                    </button>
+
+                    <div class="dropdown-list" id="notifDropdown" role="region" aria-label="Notifications menu">
+                        <header>Notifications</header>
+                        <div class="item">
+                            <img src="thumb-1.jpg" alt="thumb">
+                            <div class="meta">
+                                <div style="font-weight:700">Low stock: Red Evening Gown</div>
+                                <div class="muted">Only 1 left in inventory</div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="thumb-2.jpg" alt="thumb">
+                            <div class="meta">
+                                <div style="font-weight:700">New order received</div>
+                                <div class="muted">#1008 — K. Mthembu</div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="thumb-3.jpg" alt="thumb">
+                            <div class="meta">
+                                <div style="font-weight:700">Customer query</div>
+                                <div class="muted">Question about pickup times</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages icon + dropdown -->
+                <div style="position:relative;">
+                    <button id="msgBtn" class="icon-btn" aria-haspopup="true" aria-expanded="false" title="Messages" aria-label="Messages">
+                        <!-- chat icon -->
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="icon-badge" id="msgCount">2</span>
+                    </button>
+
+                    <div class="dropdown-list" id="msgDropdown" role="region" aria-label="Messages menu">
+                        <header>Messages</header>
+                        <div class="item">
+                            <img src="profile1.jpg" alt="user">
+                            <div class="meta">
+                                <div style="font-weight:700">Clara C.</div>
+                                <div class="muted">Hi — is the red gown available on 25th?</div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="profile2.jpg" alt="user">
+                            <div class="meta">
+                                <div style="font-weight:700">M. Dlamini</div>
+                                <div class="muted">Can I change my pickup to evening?</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="user-info" style="gap:12px;">
+                    <div style="text-align:right">
+                        <div class="user-name">Admin</div>
+                        <div class="small muted" style="font-size:12px">Manager</div>
+                    </div>
+                    <div class="user-avatar" aria-hidden="true">A</div>
+                </div>
+
+                <button class="logout-btn" id="logoutBtn">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main class="main-content">
+        <div class="container">
+            <h1 class="page-title">Customer Orders</h1>
+
+            <!-- Stats -->
+            <div class="order-stats">
+                <div class="stat-card">
+                    <div class="stat-number">156</div>
+                    <div class="stat-label">Total Orders</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">24</div>
+                    <div class="stat-label">Pending Approval</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">89</div>
+                    <div class="stat-label">Active Rentals</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">R42,850</div>
+                    <div class="stat-label">Revenue This Month</div>
+                </div>
+            </div>
+
+            <!-- Search / Filter -->
+            <div class="search-filter">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Search orders by ID, customer, or dress..." id="orderSearch">
+                </div>
+                <select class="filter-select" id="statusFilter">
+                    <option value="">All Orders</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+
+            <!-- Orders Table -->
+            <div class="table-wrapper">
+                <table class="orders-table" aria-describedby="ordersDesc">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Dress</th>
+                            <th>Booking Dates</th>
+                            <th>Total Cost</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#1001</td>
+                            <td>Jane Doe</td>
+                            <td><img src="thumb-1.jpg" alt="Red Evening Gown" class="thumb">Red Evening Gown</td>
+                            <td>12 Sep - 15 Sep 2025</td>
+                            <td>R1,200</td>
+                            <td><span class="status pending">Pending</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn view-btn">View</button>
+                                    <button class="btn cancel-btn">Cancel</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#1002</td>
+                            <td>John Smith</td>
+                            <td><img src="thumb-2.jpg" alt="Black Cocktail Dress" class="thumb">Black Cocktail Dress</td>
+                            <td>18 Sep - 20 Sep 2025</td>
+                            <td>R850</td>
+                            <td><span class="status approved">Approved</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn view-btn">View</button>
+                                    <button class="btn cancel-btn">Cancel</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#1003</td>
+                            <td>Mary Johnson</td>
+                            <td><img src="thumb-3.jpg" alt="Blue Maxi Dress" class="thumb">Blue Maxi Dress</td>
+                            <td>22 Sep - 25 Sep 2025</td>
+                            <td>R1,500</td>
+                            <td><span class="status completed">Completed</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn view-btn">View</button>
+                                    <button class="btn cancel-btn">Cancel</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- additional rows... -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <button class="pagination-btn">Previous</button>
+                <button class="pagination-btn active">1</button>
+                <button class="pagination-btn">2</button>
+                <button class="pagination-btn">3</button>
+                <button class="pagination-btn">Next</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container small" style="padding:12px 0">
+            &copy; 2025 Ozyde Boutique Admin Dashboard. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        // DOM helpers
+        const $ = (s) => document.querySelector(s);
+        const $$ = (s) => Array.from(document.querySelectorAll(s));
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Search functionality
+            const searchInput = document.getElementById('orderSearch');
+            if (searchInput) {
+                searchInput.addEventListener('keyup', function() {
+                    const filter = searchInput.value.toLowerCase();
+                    const rows = document.querySelectorAll('.orders-table tbody tr');
+
+                    rows.forEach(row => {
+                        const orderId = row.cells[0].textContent.toLowerCase();
+                        const customer = row.cells[1].textContent.toLowerCase();
+                        const dress = row.cells[2].textContent.toLowerCase();
+
+                        if (orderId.includes(filter) || customer.includes(filter) || dress.includes(filter)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            }
+
+            // Status filter
+            const statusFilter = document.getElementById('statusFilter');
+            if (statusFilter) {
+                statusFilter.addEventListener('change', function() {
+                    const filterValue = statusFilter.value;
+                    const rows = document.querySelectorAll('.orders-table tbody tr');
+
+                    rows.forEach(row => {
+                        const statusEl = row.cells[5].querySelector('.status');
+                        const status = statusEl ? statusEl.classList[1] : '';
+                        if (filterValue === '' || status === filterValue) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            }
+
+            // View buttons
+            $$('.view-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const orderId = row.cells[0].textContent;
+                    const customer = row.cells[1].textContent;
+                    alert(`Viewing order details for: ${orderId} - ${customer}`);
+                });
+            });
+
+            // Cancel buttons
+            $$('.cancel-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const orderId = row.cells[0].textContent;
+                    const customer = row.cells[1].textContent;
+
+                    if (confirm(`Are you sure you want to cancel order "${orderId}" for ${customer}?`)) {
+                        alert(`Order "${orderId}" has been cancelled.`);
+                        row.cells[5].innerHTML = '<span class="status cancelled">Cancelled</span>';
+                    }
+                });
+            });
+
+            // Logout
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    if (confirm('Are you sure you want to log out?')) {
+                        alert('Logging out...');
+                        // redirect to login in real app
+                    }
+                });
+            }
+
+            // Notifications & messages dropdown toggles
+            const notifBtn = $('#notifBtn');
+            const msgBtn = $('#msgBtn');
+            const notifDropdown = $('#notifDropdown');
+            const msgDropdown = $('#msgDropdown');
+
+            function closeAllDropdowns() {
+                if (notifDropdown) notifDropdown.classList.remove('visible');
+                if (msgDropdown) msgDropdown.classList.remove('visible');
+                if (notifBtn) notifBtn.setAttribute('aria-expanded', 'false');
+                if (msgBtn) msgBtn.setAttribute('aria-expanded', 'false');
+            }
+
+            if (notifBtn && notifDropdown) {
+                notifBtn.addEventListener('click', (e) => {
+                    const vis = notifDropdown.classList.toggle('visible');
+                    notifBtn.setAttribute('aria-expanded', String(vis));
+                    // ensure other closed
+                    if (msgDropdown) msgDropdown.classList.remove('visible');
+                    if (msgBtn) msgBtn.setAttribute('aria-expanded', 'false');
+                    e.stopPropagation();
+                });
+            }
+
+            if (msgBtn && msgDropdown) {
+                msgBtn.addEventListener('click', (e) => {
+                    const vis = msgDropdown.classList.toggle('visible');
+                    msgBtn.setAttribute('aria-expanded', String(vis));
+                    // ensure other closed
+                    if (notifDropdown) notifDropdown.classList.remove('visible');
+                    if (notifBtn) notifBtn.setAttribute('aria-expanded', 'false');
+                    e.stopPropagation();
+                });
+            }
+
+            // close dropdowns on outside click or escape
+            document.addEventListener('click', function(e) {
+                const target = e.target;
+                if (notifDropdown && !notifDropdown.contains(target) && notifBtn && !notifBtn.contains(target)) {
+                    notifDropdown.classList.remove('visible');
+                    notifBtn && notifBtn.setAttribute('aria-expanded', 'false');
+                }
+                if (msgDropdown && !msgDropdown.contains(target) && msgBtn && !msgBtn.contains(target)) {
+                    msgDropdown.classList.remove('visible');
+                    msgBtn && msgBtn.setAttribute('aria-expanded', 'false');
+                }
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeAllDropdowns();
+            });
+        });
+    </script>
+</body>
+
+</html>
