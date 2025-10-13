@@ -1,0 +1,151 @@
+/* === Global Reset === */
+* { box-sizing: border-box; }
+body {
+  font-family: Inter, Segoe UI, Helvetica, Arial, sans-serif;
+  margin: 0;
+  color: #222;
+  background: #f6f6f8;
+}
+
+/* === Layout === */
+.admin-shell {
+  display: flex;
+  min-height: 100vh;
+  background: #f9fafb;
+}
+
+.admin-sidebar {
+  width: 240px;
+  background: #1f2937;
+  color: #f9fafb;
+  padding: 16px;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+  z-index: 999;
+}
+
+.admin-sidebar h2 {
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
+.admin-sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-sidebar a {
+  color: #e5e7eb;
+  text-decoration: none;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.admin-sidebar a:hover {
+  background: #374151;
+}
+
+.admin-main {
+  flex: 1;
+  padding: 20px;
+  overflow-x: hidden;
+  background: #fff;
+}
+
+/* === Cards, Tables, Buttons === */
+.card {
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  margin-bottom: 16px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th, .table td {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.btn {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  background: #111827;
+  color: #fff;
+  cursor: pointer;
+  border: none;
+}
+
+/* === Responsive Sidebar === */
+@media (max-width: 768px) {
+  .admin-shell {
+    flex-direction: column;
+  }
+
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    transform: translateX(-100%);
+  }
+
+  .admin-sidebar.active {
+    transform: translateX(0);
+  }
+
+  .admin-main {
+    padding: 16px;
+  }
+
+  #menuToggle {
+    display: inline-block;
+    cursor: pointer;
+  }
+}
+
+/* === Dark Mode === */
+:root.dark body {
+  background: #1f2937;
+  color: #f3f4f6;
+}
+:root.dark .admin-sidebar {
+  background: #111827;
+  color: #e5e7eb;
+}
+:root.dark .admin-main {
+  background: #1f2937;
+  color: #f3f4f6;
+}
+:root.dark .card {
+  background: #374151;
+  color: #f9fafb;
+}
+:root.dark a {
+  color: #93c5fd;
+}
+
+/* === Stat Boxes === */
+.statBox {
+  flex: 1 1 200px;
+  background: var(--bg2, #f3f4f6);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+  font-size: 14px;
+}
+.statBox div {
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
