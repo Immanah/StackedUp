@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 
@@ -350,8 +349,8 @@
             border-radius: 2px;
             margin: 10px 0;
         }
-        
         /* Store Reference Card Styles */
+        
         .store-ref-card {
             background: #fff;
             border-radius: 16px;
@@ -362,7 +361,7 @@
             position: relative;
             overflow: hidden;
         }
-
+        
         .store-ref-card::before {
             content: '';
             position: absolute;
@@ -372,27 +371,27 @@
             height: 4px;
             background: linear-gradient(90deg, var(--gold), #ffd27a);
         }
-
+        
         .ref-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
         }
-
+        
         .brand-logo {
             display: flex;
             align-items: center;
             gap: 8px;
         }
-
+        
         .ozyde-logo {
             font-weight: 800;
             font-size: 20px;
             letter-spacing: 1px;
             color: var(--accent);
         }
-
+        
         .logo-accent {
             width: 6px;
             height: 6px;
@@ -400,7 +399,7 @@
             background: var(--gold);
             box-shadow: 0 0 0 2px rgba(198, 160, 74, 0.2);
         }
-
+        
         .ref-badge {
             background: rgba(198, 160, 74, 0.1);
             color: var(--gold);
@@ -410,11 +409,11 @@
             font-weight: 600;
             border: 1px solid rgba(198, 160, 74, 0.2);
         }
-
+        
         .ref-content {
             margin-bottom: 24px;
         }
-
+        
         .ref-number-container {
             text-align: center;
             margin-bottom: 24px;
@@ -423,7 +422,7 @@
             border-radius: 12px;
             border: 1px solid rgba(0, 0, 0, 0.05);
         }
-
+        
         .ref-label {
             font-size: 14px;
             color: var(--muted);
@@ -431,7 +430,7 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-
+        
         .ref-number {
             font-family: 'Courier New', monospace;
             font-size: 28px;
@@ -445,12 +444,12 @@
             border: 2px dashed rgba(198, 160, 74, 0.3);
             display: inline-block;
         }
-
+        
         .ref-subtitle {
             font-size: 14px;
             color: var(--muted);
         }
-
+        
         .deadline-container {
             display: flex;
             align-items: center;
@@ -461,28 +460,28 @@
             border-radius: 10px;
             border-left: 4px solid var(--gold);
         }
-
+        
         .deadline-icon {
             font-size: 20px;
             flex-shrink: 0;
         }
-
+        
         .deadline-text {
             flex: 1;
         }
-
+        
         .deadline-label {
             font-size: 13px;
             color: var(--muted);
             margin-bottom: 4px;
         }
-
+        
         .deadline-date {
             font-weight: 700;
             color: var(--accent);
             font-size: 16px;
         }
-
+        
         .ref-note {
             display: flex;
             gap: 12px;
@@ -493,22 +492,22 @@
             color: var(--muted);
             line-height: 1.4;
         }
-
+        
         .note-icon {
             flex-shrink: 0;
             font-size: 14px;
         }
-
+        
         .note-text {
             flex: 1;
         }
-
+        
         .ref-actions {
             display: flex;
             gap: 12px;
             margin-top: 20px;
         }
-
+        
         .btn-action {
             flex: 1;
             display: flex;
@@ -523,39 +522,45 @@
             transition: all 0.2s ease;
             font-size: 14px;
         }
-
+        
         .btn-copy {
             background: var(--accent);
             color: #fff;
         }
-
+        
         .btn-copy:hover {
             background: #000;
             transform: translateY(-1px);
         }
-
+        
         .btn-print {
             background: rgba(0, 0, 0, 0.05);
             color: var(--text);
             border: 1px solid rgba(0, 0, 0, 0.1);
         }
-
+        
         .btn-print:hover {
             background: rgba(0, 0, 0, 0.08);
             transform: translateY(-1px);
         }
-
+        
         .btn-icon {
             font-size: 16px;
         }
-
         /* Animation for copy feedback */
+        
         @keyframes copied {
-            0% { background: var(--accent); }
-            50% { background: #2fa46b; }
-            100% { background: var(--accent); }
+            0% {
+                background: var(--accent);
+            }
+            50% {
+                background: #2fa46b;
+            }
+            100% {
+                background: var(--accent);
+            }
         }
-
+        
         .copied {
             animation: copied 0.5s ease;
         }
@@ -573,7 +578,7 @@
 
                 <!-- Items list (dynamic) -->
                 <div id="itemsList" style="margin-top:12px"></div>
-                
+
                 <div class="glam-line"></div>
 
                 <div class="summary-row">
@@ -1025,16 +1030,16 @@
         const genRefBtn = q('#generateRef');
         if (genRefBtn) {
             genRefBtn.addEventListener('click', () => {
-                const ref = randRef(6);
-                const deadline = addDays(new Date(), 2);
-                
-                // Get customer name for the slip
-                const firstName = (q('#firstName') && q('#firstName').value.trim()) || '';
-                const lastName = (q('#lastName') && q('#lastName').value.trim()) || '';
-                const customerName = `${firstName} ${lastName}`.trim() || 'Customer';
-                
-                // Create the reference card
-                q('#storeResult').innerHTML = `
+                        const ref = randRef(6);
+                        const deadline = addDays(new Date(), 2);
+
+                        // Get customer name for the slip
+                        const firstName = (q('#firstName') && q('#firstName').value.trim()) || '';
+                        const lastName = (q('#lastName') && q('#lastName').value.trim()) || '';
+                        const customerName = `${firstName} ${lastName}`.trim() || 'Customer';
+
+                        // Create the reference card
+                        q('#storeResult').innerHTML = `
                     <div class="store-ref-card">
                         <div class="ref-header">
                             <div class="brand-logo">
@@ -1077,53 +1082,53 @@
                         </div>
                     </div>
                 `;
-                q('#printRefBtn').style.display = '';
+                        q('#printRefBtn').style.display = '';
 
-                // Store booking data
-                const booking = {
-                    ref,
-                    method: 'store',
-                    items,
-                    subtotal: Number(q('#subtotal').dataset.value || 0),
-                    vat: Number(q('#vat').dataset.value || 0),
-                    total: Number(q('#totalAmount').dataset.value || 0),
-                    name: customerName,
-                    email: (q('#email') && q('#email').value.trim()) || '',
-                    createdAt: new Date().toISOString(),
-                    deadline: deadline.toISOString()
-                };
-                try {
-                    sessionStorage.setItem('ozyde_booking', JSON.stringify(booking));
-                } catch (e) {}
+                        // Store booking data
+                        const booking = {
+                            ref,
+                            method: 'store',
+                            items,
+                            subtotal: Number(q('#subtotal').dataset.value || 0),
+                            vat: Number(q('#vat').dataset.value || 0),
+                            total: Number(q('#totalAmount').dataset.value || 0),
+                            name: customerName,
+                            email: (q('#email') && q('#email').value.trim()) || '',
+                            createdAt: new Date().toISOString(),
+                            deadline: deadline.toISOString()
+                        };
+                        try {
+                            sessionStorage.setItem('ozyde_booking', JSON.stringify(booking));
+                        } catch (e) {}
 
-                // Set up copy and print buttons
-                setTimeout(() => {
-                    const copyRefBtn = q('#copyRefBtn');
-                    if (copyRefBtn) {
-                        copyRefBtn.addEventListener('click', () => {
-                            if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
-                                navigator.clipboard.writeText(ref).then(() => {
-                                    // Visual feedback for copy
-                                    copyRefBtn.innerHTML = '<span class="btn-icon">✓</span> Copied!';
-                                    copyRefBtn.classList.add('copied');
-                                    setTimeout(() => {
-                                        copyRefBtn.innerHTML = '<span class="btn-icon">📋</span> Copy Reference';
-                                        copyRefBtn.classList.remove('copied');
-                                    }, 1500);
-                                }).catch(() => {
-                                    fallbackCopy(ref, copyRefBtn);
-                                });
-                            } else fallbackCopy(ref, copyRefBtn);
-                        });
-                    }
-                    
-                    const printRef = q('#printRef');
-                    if (printRef) {
-                        printRef.addEventListener('click', () => {
-                            // Create a slip-like print layout
-                            const printWindow = window.open('', '_blank');
-                            if (printWindow) {
-                                printWindow.document.write(`
+                        // Set up copy and print buttons
+                        setTimeout(() => {
+                                    const copyRefBtn = q('#copyRefBtn');
+                                    if (copyRefBtn) {
+                                        copyRefBtn.addEventListener('click', () => {
+                                            if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                                                navigator.clipboard.writeText(ref).then(() => {
+                                                    // Visual feedback for copy
+                                                    copyRefBtn.innerHTML = '<span class="btn-icon">✓</span> Copied!';
+                                                    copyRefBtn.classList.add('copied');
+                                                    setTimeout(() => {
+                                                        copyRefBtn.innerHTML = '<span class="btn-icon">📋</span> Copy Reference';
+                                                        copyRefBtn.classList.remove('copied');
+                                                    }, 1500);
+                                                }).catch(() => {
+                                                    fallbackCopy(ref, copyRefBtn);
+                                                });
+                                            } else fallbackCopy(ref, copyRefBtn);
+                                        });
+                                    }
+
+                                    const printRef = q('#printRef');
+                                    if (printRef) {
+                                        printRef.addEventListener('click', () => {
+                                                    // Create a slip-like print layout
+                                                    const printWindow = window.open('', '_blank');
+                                                    if (printWindow) {
+                                                        printWindow.document.write(`
                                     <!DOCTYPE html>
                                     <html>
                                     <head>

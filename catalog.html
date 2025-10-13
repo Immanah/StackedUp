@@ -745,6 +745,87 @@
                 grid-template-columns: 1fr;
             }
         }
+        /* Mobile Filter Toggle Button */
+        
+        .mobile-filter-toggle {
+            display: none;
+            margin-bottom: 20px;
+        }
+        
+        .filter-toggle-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        /* Mobile Filter Overlay */
+        
+        .mobile-filter-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .mobile-filter-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+        /* Mobile Filter Sidebar */
+        
+        @media (max-width: 880px) {
+            .mobile-filter-toggle {
+                display: block;
+            }
+            .filter-sidebar {
+                position: fixed;
+                top: 0;
+                left: -100%;
+                width: 320px;
+                height: 100vh;
+                z-index: 999;
+                transition: left 0.3s ease;
+                overflow-y: auto;
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            }
+            .filter-sidebar.active {
+                left: 0;
+            }
+            .filters-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* Close button for mobile filter */
+        
+        .filter-close-btn {
+            display: none;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--muted);
+        }
+        
+        @media (max-width: 880px) {
+            .filter-close-btn {
+                display: block;
+            }
+        }
     </style>
 </head>
 
@@ -1452,6 +1533,46 @@
                 alert('Loading more dresses...\n\nIn a real application, this would fetch more products from an API.');
             });
         });
+        // Mobile filter toggle
+        const mobileFilterToggle = document.getElementById('mobileFilterToggle');
+        const filterSidebar = document.getElementById('filterSidebar');
+        const mobileFilterOverlay = document.getElementById('mobileFilterOverlay');
+        const filterCloseBtn = document.querySelector('.filter-close-btn');
+
+        if (mobileFilterToggle) {
+            mobileFilterToggle.addEventListener('click', function() {
+                filterSidebar.classList.add('active');
+                mobileFilterOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+        }
+
+        if (mobileFilterOverlay) {
+            mobileFilterOverlay.addEventListener('click', function() {
+                closeMobileFilter();
+            });
+        }
+
+        if (filterCloseBtn) {
+            filterCloseBtn.addEventListener('click', function() {
+                closeMobileFilter();
+            });
+        }
+
+        function closeMobileFilter() {
+            filterSidebar.classList.remove('active');
+            mobileFilterOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Close mobile filter when applying filters on mobile
+        function applyFilters() {
+            updateActiveFilters();
+            if (window.innerWidth <= 880) {
+                closeMobileFilter();
+            }
+            document.getElementById('filterForm').submit();
+        }
     </script>
 </body>
 

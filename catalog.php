@@ -487,6 +487,58 @@ function esc($s) {
             font-size: 14px;
         }
 
+        /* Mobile Filter Toggle Button */
+        .mobile-filter-toggle {
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        .filter-toggle-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Mobile Filter Overlay */
+        .mobile-filter-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .mobile-filter-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Close button for mobile filter */
+        .filter-close-btn {
+            display: none;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--muted);
+            z-index: 1000;
+        }
+
         .products-section { margin-bottom:60px; }
         .section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; gap:12px; }
         .section-header h2 { margin:0; font-size:24px; font-weight:700; color:var(--accent); }
@@ -535,19 +587,44 @@ function esc($s) {
         .modal-btn.secondary { background:#f5f5f5; color:var(--accent); }
         footer { border-top:1px solid #eee; padding:36px 0; margin-top:28px; color:var(--muted); background:#fafafa; }
         .footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:32px; }
-        @media (max-width:880px) {
+        
+        /* Mobile Responsive */
+        @media (max-width: 880px) {
+            .mobile-filter-toggle {
+                display: block;
+            }
+            
+            .filter-sidebar {
+                position: fixed;
+                top: 0;
+                left: -100%;
+                width: 320px;
+                height: 100vh;
+                z-index: 999;
+                transition: left 0.3s ease;
+                overflow-y: auto;
+                box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            }
+            
+            .filter-sidebar.active {
+                left: 0;
+            }
+            
+            .filter-close-btn {
+                display: block;
+            }
+            
             .filters-container {
                 grid-template-columns: 1fr;
             }
-            .filter-sidebar {
-                position: static;
-            }
+            
             .search { order:3; max-width:100%; margin:15px 0 0 0; }
             .section-header { flex-direction:column; align-items:flex-start; gap:15px; }
             .products-grid { grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:20px; }
             .footer-grid { grid-template-columns:1fr 1fr; gap:24px; }
         }
-        @media (max-width:640px) {
+        
+        @media (max-width: 640px) {
             .nav { flex-wrap:wrap; }
             nav ul { order:2; width:100%; justify-content:center; margin-top:15px; }
             .products-grid { grid-template-columns:1fr; }
@@ -623,7 +700,7 @@ function esc($s) {
                         </svg>
                     </button>
                     <div class="dropdown-menu">
-                        <a href="customerdashboard.html">Customer Dashboard</a>
+                        <a href="customerdashboard.php">Customer Dashboard</a>
                         <a href="my-account.html">My Account</a>
                         <div class="dropdown-divider"></div>
                         <a href="#" id="logoutLink">Sign Out</a>
@@ -659,9 +736,21 @@ function esc($s) {
         </section>
 
         <div class="container">
+            <!-- Mobile Filter Toggle -->
+            <div class="mobile-filter-toggle">
+                <button class="filter-toggle-btn" id="mobileFilterToggle">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    Filters
+                </button>
+            </div>
+
             <div class="filters-container">
                 <!-- Filter Sidebar -->
-                <aside class="filter-sidebar">
+                <aside class="filter-sidebar" id="filterSidebar">
+                    <button class="filter-close-btn" id="filterCloseBtn">×</button>
+                    
                     <div class="filter-header">
                         <h3>FILTERED</h3>
                         <button class="clear-filters" id="clearFilters">CLEAR</button>
@@ -846,6 +935,9 @@ function esc($s) {
         </div>
     </main>
 
+    <!-- Mobile Filter Overlay -->
+    <div class="mobile-filter-overlay" id="mobileFilterOverlay"></div>
+
     <!-- Login Modal -->
     <div class="modal-overlay" id="loginModal" aria-hidden="true">
         <div class="modal-content">
@@ -932,6 +1024,36 @@ function esc($s) {
     </footer>
 
     <script>
+        // Mobile filter toggle
+        const mobileFilterToggle = document.getElementById('mobileFilterToggle');
+        const filterSidebar = document.getElementById('filterSidebar');
+        const mobileFilterOverlay = document.getElementById('mobileFilterOverlay');
+        const filterCloseBtn = document.getElementById('filterCloseBtn');
+
+        function openMobileFilter() {
+            filterSidebar.classList.add('active');
+            mobileFilterOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileFilter() {
+            filterSidebar.classList.remove('active');
+            mobileFilterOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        if (mobileFilterToggle) {
+            mobileFilterToggle.addEventListener('click', openMobileFilter);
+        }
+
+        if (mobileFilterOverlay) {
+            mobileFilterOverlay.addEventListener('click', closeMobileFilter);
+        }
+
+        if (filterCloseBtn) {
+            filterCloseBtn.addEventListener('click', closeMobileFilter);
+        }
+
         // Price Range Slider
         const priceSlider = document.getElementById('priceSlider');
         const minThumb = document.getElementById('minThumb');
@@ -1062,6 +1184,9 @@ function esc($s) {
         // Filter form handling
         function applyFilters() {
             updateActiveFilters();
+            if (window.innerWidth <= 880) {
+                closeMobileFilter();
+            }
             document.getElementById('filterForm').submit();
         }
         
