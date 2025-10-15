@@ -22,6 +22,7 @@
       <a href="categories_list.php">Categories</a>
       <a href="orders_list.php">Orders</a>
       <a href="customers_list.php">Customers</a>
+      <a href="custom_orders_list.php">Custom Orders</a>
       <a href="messages_list.php">Messages</a>
       <a href="posts_list.php">Blog / News</a>
       <a href="faqs_list.php">FAQs</a>
