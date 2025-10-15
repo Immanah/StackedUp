@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'db.php'; // your database connection
+include 'db.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
@@ -16,28 +16,25 @@ $sql = "SELECT
             p.name AS product_name, 
             p.image, 
             p.price, 
-            c.size,
-            c.quantity,
-            c.start_date,
-            c.end_date
+            c.size, 
+            c.start_date, 
+            c.end_date,
+            c.quantity
         FROM cart c
         JOIN products p ON c.product_id = p.product_id
         WHERE c.user_id = $user_id";
 
 $result = $conn->query($sql);
 $cart_items = [];
-$subtotal = 0;
+$items = []; // For JavaScript
 
 if ($result && $result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        // Calculate rental days
+        // Calculate days rented
         $start = new DateTime($row['start_date']);
         $end = new DateTime($row['end_date']);
         $days = $start->diff($end)->days;
         $days = max(1, $days);
-
-        $item_total = $row['price'];
-        $subtotal += $item_total;
 
         $cart_items[] = [
             'cart_id' => $row['cart_id'],
@@ -47,22 +44,40 @@ if ($result && $result->num_rows > 0) {
             'price' => (float)$row['price'],
             'size' => $row['size'],
             'quantity' => (int)$row['quantity'],
-            'days' => $days,
             'start_date' => $row['start_date'],
-            'end_date' => $row['end_date']
+            'end_date' => $row['end_date'],
+            'days' => $days,
+        ];
+        
+        // Also create items array for JavaScript
+        $items[] = [
+            'title' => $row['product_name'],
+            'days' => $days,
+            'price' => (float)$row['price']
         ];
     }
 }
 
-// Calculate totals
-$vat = $subtotal * 0.15;
-$deposit = 800; // Fixed deposit
-$delivery_fee = 0; // Default to collect
-$return_fee = 0; // Default to drop-off
-$total = $subtotal + $vat + $delivery_fee + $return_fee + $deposit;
+// If cart is empty, redirect back to cart
+if (empty($cart_items)) {
+    header("Location: cart.php");
+    exit;
+}
+
+// Calculate PHP totals
+$subtotal = 0;
+foreach ($cart_items as $item) {
+    $subtotal += $item['price'];
+}
+
+$deposit = 800; // Fixed deposit as in your cart
+$deliveryFee = 0;
+$returnFee = 0;
+$total = $subtotal + $deposit;
 
 $conn->close();
 ?>
+
 <!doctype html>
 <html lang="en">
 
@@ -71,8 +86,7 @@ $conn->close();
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Checkout — OZYDE</title>
     <style>
-        /* Your existing CSS styles remain the same */
-        :root {
+         :root {
             --bg: #fff;
             --text: #222;
             --muted: #7a7a7a;
@@ -407,6 +421,7 @@ $conn->close();
             color: var(--muted);
             margin-top: 8px;
         }
+        /* small glam accents for the page */
         
         .glam-line {
             height: 2px;
@@ -635,80 +650,50 @@ $conn->close();
                 <h3 style="margin:0 0 8px 0">Order Summary</h3>
                 <div class="small">Items from your cart</div>
 
-                <!-- Items list (dynamic from PHP) -->
+                <!-- Items list (dynamic) -->
                 <div id="itemsList" style="margin-top:12px">
-                    <?php if (empty($cart_items)): ?>
-                        <div class="notice">Your cart is empty. <a href="catalog.php">Continue shopping</a></div>
-                    <?php else: ?>
-                        <?php foreach ($cart_items as $item): ?>
-                            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                                <div>
-                                    <div style="font-weight:700"><?= htmlspecialchars($item['name']) ?></div>
-                                    <div class="small">Size: <?= htmlspecialchars($item['size']) ?> • <?= $item['days'] ?> days</div>
-                                    <div class="small"><?= date('M j', strtotime($item['start_date'])) ?> - <?= date('M j, Y', strtotime($item['end_date'])) ?></div>
-                                </div>
-                                <div style="font-weight:700">R<?= number_format($item['price'], 2) ?></div>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+                    <?php foreach ($cart_items as $item): ?>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                        <div>
+                            <div style="font-weight:700"><?php echo htmlspecialchars($item['name']); ?></div>
+                            <div class="small"><?php echo $item['days']; ?> days</div>
+                        </div>
+                        <div style="font-weight:700">R<?php echo number_format($item['price'], 2); ?></div>
+                    </div>
+                    <?php endforeach; ?>
                 </div>
                 
-                <?php if (!empty($cart_items)): ?>
                 <div class="glam-line"></div>
 
                 <div class="summary-row">
                     <div class="small">Subtotal</div>
-                    <div id="subtotal" class="small">R<?= number_format($subtotal, 2) ?></div>
+                    <div id="subtotal" class="small">R<?php echo number_format($subtotal, 2); ?></div>
                 </div>
-                <div class="summary-row">
-                    <div class="small">VAT (15%)</div>
-                    <div id="vat" class="small">R<?= number_format($vat, 2) ?></div>
-                </div>
+                
                 <div class="summary-row">
                     <div class="small">Delivery fee</div>
-                    <div id="deliveryFee" class="small">R<?= number_format($delivery_fee, 2) ?></div>
+                    <div id="deliveryFee" class="small">R0.00</div>
                 </div>
                 <div class="summary-row">
                     <div class="small">Return fee</div>
-                    <div id="returnFee" class="small">R<?= number_format($return_fee, 2) ?></div>
+                    <div id="returnFee" class="small">R0.00</div>
                 </div>
                 <div class="summary-row">
                     <div class="small">Deposit (refundable)</div>
-                    <div id="deposit" class="small">R<?= number_format($deposit, 2) ?></div>
+                    <div id="deposit" class="small">R<?php echo number_format($deposit, 2); ?></div>
                 </div>
 
                 <div class="summary-total" id="totalRow">
                     <div style="display:flex; justify-content:space-between;">
                         <div>Total</div>
-                        <div id="totalAmount">R<?= number_format($total, 2) ?></div>
+                        <div id="totalAmount">R<?php echo number_format($total, 2); ?></div>
                     </div>
                 </div>
 
                 <div class="foot-note" style="margin-top:10px">
                     Deposit returned after inspection if items are returned on time and undamaged.
                 </div>
-                <?php endif; ?>
             </div>
-
-            <?php if (!empty($cart_items)): ?>
-            <div class="group">
-                <h3>Return instructions</h3>
-                <div class="small">Choose how you'll return items:</div>
-                <ul style="margin-top:10px; padding-left:18px; color:var(--muted)">
-                    <li><strong>Drop-off:</strong> Return to our store within the agreed timeframe.</li>
-                    <li><strong>Pickup:</strong> Schedule a pickup, additional fee may apply.</li>
-                </ul>
-
-                <div style="margin-top:10px">
-                    <div class="small">Return method</div>
-                    <div class="return-options">
-                        <button id="returnDrop" class="return-btn active" data-return="drop">Drop-off (Free)</button>
-                        <button id="returnPickup" class="return-btn" data-return="pickup">Pickup (R120)</button>
-                    </div>
-                </div>
-            </div>
-            <?php endif; ?>
-
         </section>
 
         <!-- RIGHT: forms & payment -->
@@ -718,38 +703,34 @@ $conn->close();
                 <div class="muted">Complete your details and choose a payment method</div>
             </div>
 
-            <?php if (empty($cart_items)): ?>
-                <div class="group">
-                    <div class="notice">Your cart is empty. <a href="catalog.php">Continue shopping</a> to add items.</div>
-                </div>
-            <?php else: ?>
             <div class="group" aria-label="Shipping details">
                 <h3 style="margin:0 0 8px 0">Shipping & Contact</h3>
 
                 <div class="grid" style="margin-bottom:8px">
-                    <div class="field"><label for="firstName">First name</label><input id="firstName" type="text" placeholder="Full name"></div>
-                    <div class="field"><label for="lastName">Last name</label><input id="lastName" type="text" placeholder="Surname"></div>
+                    <div class="field"><label for="firstName">First name</label><input id="firstName" type="text" placeholder="Full name" required></div>
+                    <div class="field"><label for="lastName">Last name</label><input id="lastName" type="text" placeholder="Surname" required></div>
                 </div>
 
                 <div class="grid">
-                    <div class="field"><label for="email">Email</label><input id="email" type="email" placeholder=" "></div>
-                    <div class="field"><label for="phone">Phone</label><input id="phone" type="tel" placeholder="+27 ** *** ****"></div>
+                    <div class="field"><label for="email">Email</label><input id="email" type="email" placeholder=" " required></div>
+                    <div class="field"><label for="phone">Phone</label><input id="phone" type="tel" placeholder="+27 ** *** ****" required></div>
                 </div>
 
-                <div class="field"><label for="addr1">Address 1</label><input id="addr1" type="text" placeholder="Street address"></div>
+                <div class="field"><label for="addr1">Address 1</label><input id="addr1" type="text" placeholder="Street address" required></div>
                 <div class="field"><label for="addr2">Address 2 (optional)</label><input id="addr2" type="text" placeholder="Unit / complex"></div>
 
                 <div class="grid">
-                    <div class="field"><label for="city">City</label><input id="city" type="text" placeholder=""></div>
+                    <div class="field"><label for="city">City</label><input id="city" type="text" placeholder="" required></div>
                     <div class="field"><label for="province">Province</label>
-                        <select id="province">
+                        <select id="province" required>
+                          <option value="">Select Province</option>
                           <option>Gauteng</option><option>Western Cape</option><option>KwaZulu-Natal</option><option>Eastern Cape</option><option>North West</option><option>Mpumalanga</option><option>Northern Cape</option><option>Free State</option><option>Limpopo</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="grid">
-                    <div class="field"><label for="postal">Postal code</label><input id="postal" type="text" placeholder=""></div>
+                    <div class="field"><label for="postal">Postal code</label><input id="postal" type="text" placeholder="" required></div>
                     <div class="field"><label for="country">Country</label><input id="country" type="text" value="South Africa" readonly></div>
                 </div>
 
@@ -757,7 +738,16 @@ $conn->close();
                     <div class="small">Delivery options</div>
                     <div class="delivery-options" role="radiogroup" aria-label="Delivery options">
                         <button class="opt active" data-delivery="collect" id="optCollect">Collect in store (Free)</button>
-                        <button class="opt" data-delivery="standard" id="optDeliver">Deliver Fee (R250)</button>
+                        <button class="opt" data-delivery="standard" id="optDeliver">Deliver to me (R250)</button>
+                    </div>
+                    
+                    <!-- Simple returns section - matches delivery styling -->
+                    <div style="margin-top: 16px;">
+                        <div class="small">Return options</div>
+                        <div class="delivery-options" role="radiogroup" aria-label="Return options">
+                            <button class="opt active" data-return="drop" id="returnDrop">Drop off in store (Free)</button>
+                            <button class="opt" data-return="pickup" id="returnPickup">Arrange pickup (R120)</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -813,7 +803,7 @@ $conn->close();
                                 <div class="grid">
                                     <div class="field"><label for="cardCvv">CVV</label><input id="cardCvv" type="text" maxlength="3" placeholder="123" autocomplete="cc-csc"></div>
                                     <div style="display:flex; align-items:end; gap:8px">
-                                        <button id="payCardBtn" class="btn" style="width:100%">Pay R<?= number_format($total, 2) ?></button>
+                                        <button id="payCardBtn" class="btn" style="width:100%">Pay <span id="payAmountText">R<?php echo number_format($total, 2); ?></span></button>
                                     </div>
                                 </div>
                                 <div class="foot-note">We use secure payment processing. Card details are not stored.</div>
@@ -865,20 +855,16 @@ $conn->close();
             </div>
 
             <div id="statusArea" style="margin-top:8px"></div>
-            <?php endif; ?>
         </section>
 
     </main>
 
     <script>
         // Pass PHP data to JavaScript
-        const cartItems = <?= json_encode($cart_items) ?>;
-        const initialSubtotal = <?= $subtotal ?>;
-        const initialVat = <?= $vat ?>;
-        const initialDeposit = <?= $deposit ?>;
-        const initialDeliveryFee = <?= $delivery_fee ?>;
-        const initialReturnFee = <?= $return_fee ?>;
-        const initialTotal = <?= $total ?>;
+        const items = <?php echo json_encode($items); ?>;
+        const initialSubtotal = <?php echo $subtotal; ?>;
+        const initialDeposit = <?php echo $deposit; ?>;
+        const initialTotal = <?php echo $total; ?>;
 
         // Utilities
         const q = (s) => document.querySelector(s);
@@ -913,29 +899,35 @@ $conn->close();
             day: 'numeric'
         });
 
+        const VAT = 0.15;
+        const DEPOSIT_PCT = 0.20;
+
         // State
-        let deliveryFee = initialDeliveryFee;
-        let returnFee = initialReturnFee;
+        let deliveryFee = 0;
+        let returnFee = 0;
         let proofFile = null;
         let activeMethod = 'card';
 
-        // Update totals when options change
-        function updateTotals() {
+        // Render items & totals
+        function renderSummary() {
+            // Use the fixed deposit amount from PHP (R800)
             const subtotal = initialSubtotal;
-            const vat = initialVat;
-            const deposit = initialDeposit;
-            const total = subtotal + vat + deliveryFee + returnFee + deposit;
+            const deposit = initialDeposit; // R800 fixed deposit
+            const total = subtotal + deposit + deliveryFee + returnFee; // Total = subtotal + deposit + fees
 
+            q('#subtotal').textContent = formatR(subtotal);
+            q('#deposit').textContent = formatR(deposit);
             q('#deliveryFee').textContent = formatR(deliveryFee);
             q('#returnFee').textContent = formatR(returnFee);
             q('#totalAmount').textContent = formatR(total);
-            
-            // Update pay button
-            const payBtn = q('#payCardBtn');
-            if (payBtn) {
-                payBtn.textContent = `Pay ${formatR(total)}`;
-            }
+            q('#payAmountText').textContent = formatR(total);
+
+            // expose totals for later booking object creation
+            q('#totalAmount').dataset.value = String(total);
+            q('#subtotal').dataset.value = String(subtotal);
+            q('#deposit').dataset.value = String(deposit);
         }
+        renderSummary();
 
         // Delivery options wiring
         const delButtons = [q('#optCollect'), q('#optDeliver')];
@@ -946,28 +938,22 @@ $conn->close();
                 const t = b.dataset.delivery;
                 if (t === 'collect') deliveryFee = 0;
                 else if (t === 'standard') deliveryFee = 250;
-                updateTotals();
+                renderSummary();
             });
         });
 
-        // Return options
-        const returnDrop = q('#returnDrop');
-        const returnPickup = q('#returnPickup');
-
-        function setReturnMethod(m) {
-            if (m === 'drop') {
-                returnFee = 0;
-                returnDrop.classList.add('active');
-                returnPickup.classList.remove('active');
-            } else {
-                returnFee = 120;
-                returnPickup.classList.add('active');
-                returnDrop.classList.remove('active');
-            }
-            updateTotals();
-        }
-        returnDrop.addEventListener('click', () => setReturnMethod('drop'));
-        returnPickup.addEventListener('click', () => setReturnMethod('pickup'));
+        // Return options - using same class as delivery
+        const returnButtons = [q('#returnDrop'), q('#returnPickup')];
+        returnButtons.forEach(b => {
+            b.addEventListener('click', () => {
+                returnButtons.forEach(x => x.classList.remove('active'));
+                b.classList.add('active');
+                const method = b.dataset.return;
+                if (method === 'drop') returnFee = 0;
+                else if (method === 'pickup') returnFee = 120;
+                renderSummary();
+            });
+        });
 
         // Payment method toggles
         qa('.methods .method').forEach(btn => {
@@ -986,6 +972,7 @@ $conn->close();
             q('#method-eft').style.display = (activeMethod === 'eft') ? '' : 'none';
             q('#statusArea').innerHTML = '';
         }
+        showMethod('card');
 
         // Set static store deadline
         const storeDeadlineStatic = q('#storeDeadlineStatic');
@@ -1016,6 +1003,14 @@ $conn->close();
                 q('#cardExpiryPreview').textContent = e.target.value || 'MM/YY';
             });
         }
+        if (cardCvvInput) {
+            cardCvvInput.addEventListener('focus', () => {
+                q('#cardPreview').style.transform = 'translateY(-2px) scale(1.01)';
+            });
+            cardCvvInput.addEventListener('blur', () => {
+                q('#cardPreview').style.transform = '';
+            });
+        }
 
         // Card pay (simulate and redirect to success)
         const payCardBtn = q('#payCardBtn');
@@ -1036,17 +1031,21 @@ $conn->close();
                     return;
                 }
 
-                // Create booking object
+                // compute totals again (ensure correct numbers)
+                const subtotal = Number(q('#subtotal').dataset.value || 0);
+                const deposit = Number(q('#deposit').dataset.value || 0);
+                const total = Number(q('#totalAmount').dataset.value || 0);
+
+                // create booking object to hand off to success page
                 const booking = {
                     ref: randRef(6),
                     method: 'card',
-                    items: cartItems,
-                    subtotal: initialSubtotal,
-                    vat: initialVat,
-                    deposit: initialDeposit,
+                    items: items,
+                    subtotal: subtotal,
+                    deposit: deposit,
                     deliveryFee: deliveryFee,
                     returnFee: returnFee,
-                    total: initialTotal + deliveryFee + returnFee,
+                    total: total,
                     name: name || (q('#firstName') && q('#firstName').value.trim()) || '',
                     email: (q('#email') && q('#email').value.trim()) || '',
                     createdAt: new Date().toISOString()
@@ -1060,21 +1059,21 @@ $conn->close();
 
                 q('#statusArea').innerHTML = `<div class="success" role="status">Payment successful — booking confirmed. Redirecting to confirmation…</div>`;
 
-                // Redirect to success page
+                // short delay to let user see the success message, then go to success page
                 setTimeout(() => {
                     window.location.href = 'success.php';
                 }, 850);
             });
         }
 
-        // Pay-in-store: generate ref & deadline
+        // Pay-in-store: generate ref & deadline (keeps user on page)
         const genRefBtn = q('#generateRef');
         if (genRefBtn) {
             genRefBtn.addEventListener('click', () => {
                 const ref = randRef(6);
                 const deadline = addDays(new Date(), 2);
                 
-                // Get customer name
+                // Get customer name for the slip
                 const firstName = (q('#firstName') && q('#firstName').value.trim()) || '';
                 const lastName = (q('#lastName') && q('#lastName').value.trim()) || '';
                 const customerName = `${firstName} ${lastName}`.trim() || 'Customer';
@@ -1126,12 +1125,11 @@ $conn->close();
 
                 // Store booking data
                 const booking = {
-                    ref,
+                    ref: ref,
                     method: 'store',
-                    items: cartItems,
-                    subtotal: initialSubtotal,
-                    vat: initialVat,
-                    total: initialTotal + deliveryFee + returnFee,
+                    items: items,
+                    subtotal: Number(q('#subtotal').dataset.value || 0),
+                    total: Number(q('#totalAmount').dataset.value || 0),
                     name: customerName,
                     email: (q('#email') && q('#email').value.trim()) || '',
                     createdAt: new Date().toISOString(),
@@ -1148,6 +1146,7 @@ $conn->close();
                         copyRefBtn.addEventListener('click', () => {
                             if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
                                 navigator.clipboard.writeText(ref).then(() => {
+                                    // Visual feedback for copy
                                     copyRefBtn.innerHTML = '<span class="btn-icon">✓</span> Copied!';
                                     copyRefBtn.classList.add('copied');
                                     setTimeout(() => {
@@ -1164,6 +1163,7 @@ $conn->close();
                     const printRef = q('#printRef');
                     if (printRef) {
                         printRef.addEventListener('click', () => {
+                            // Create a slip-like print layout
                             const printWindow = window.open('', '_blank');
                             if (printWindow) {
                                 printWindow.document.write(`
@@ -1209,8 +1209,8 @@ $conn->close();
                                             
                                             <div class="section">
                                                 <div class="section-title">ORDER SUMMARY</div>
-                                                ${cartItems.map(item => `<div>${item.name} - ${item.days} days</div>`).join('')}
-                                                <div class="total">TOTAL: ${formatR(initialTotal + deliveryFee + returnFee)}</div>
+                                                ${items.map(item => `<div>${item.title} - ${item.days} days</div>`).join('')}
+                                                <div class="total">TOTAL: ${formatR(Number(q('#totalAmount').dataset.value || 0))}</div>
                                             </div>
                                             
                                             <div class="barcode">
@@ -1228,6 +1228,7 @@ $conn->close();
                                 `);
                                 printWindow.document.close();
                                 
+                                // Wait for content to load then print
                                 setTimeout(() => {
                                     printWindow.print();
                                     printWindow.close();
@@ -1248,6 +1249,7 @@ $conn->close();
             ta.select();
             try {
                 document.execCommand('copy');
+                // Visual feedback for copy
                 btn.innerHTML = '<span class="btn-icon">✓</span> Copied!';
                 btn.classList.add('copied');
                 setTimeout(() => {
@@ -1298,8 +1300,33 @@ $conn->close();
                 q('#proofMsg').textContent = '';
             });
         }
+        if (submitProof) {
+            submitProof.addEventListener('click', () => {
+                if (!proofFile) {
+                    q('#proofMsg').textContent = 'Please upload proof before submitting.';
+                    return;
+                }
+                submitProof.disabled = true;
+                submitProof.textContent = 'Submitting...';
+                setTimeout(() => {
+                    submitProof.textContent = 'Submitted';
+                    q('#statusArea').innerHTML = `<div class="success">Proof received. We will verify and update your booking shortly.</div>`;
+                    q('#proofMsg').textContent = '';
+                }, 900);
+            });
+        }
+        if (clearProofBtn) {
+            clearProofBtn.addEventListener('click', () => {
+                if (proofInput) proofInput.value = '';
+                proofFile = null;
+                proofPreview.style.display = 'none';
+                if (submitProof) submitProof.disabled = true;
+                clearProofBtn.style.display = 'none';
+                q('#proofMsg').textContent = '';
+            });
+        }
 
-        // Finalize booking validation
+        // Finalize booking validation (non-card flows)
         q('#finalizeBtn').addEventListener('click', (e) => {
             e.preventDefault();
             const fn = (q('#firstName') && q('#firstName').value.trim()) || '';
@@ -1326,11 +1353,15 @@ $conn->close();
         });
 
         q('#cancelBtn').addEventListener('click', () => {
-            if (confirm('Cancel checkout and return to cart?')) window.location.href = 'cart.php';
+            if (confirm('Cancel checkout and return to shop?')) window.location.href = 'cart.php';
         });
 
-        // Initialize
-        showMethod('card');
+        q('#finalizeBtn').addEventListener('click', () => {
+            if (confirm('Done Booking?')) window.location.href = 'success.php';
+        });
+
+        // Init done
+        renderSummary();
     </script>
 </body>
 </html>
