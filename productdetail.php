@@ -1,29 +1,37 @@
 <?php
-session_start(); // ADD THIS LINE AT THE TOP
+session_start();
 require 'db.php';
 
 $product_id = isset($_GET['product_id']) ? intval($_GET['product_id']) : 0;
 if ($product_id <= 0) die("Invalid product ID.");
 
-// Fetch product details
-$sql = "SELECT * FROM products WHERE product_id = $product_id LIMIT 1";
+// Fetch product details with proper joins
+$sql = "SELECT p.*, c.category_name 
+        FROM products p 
+        LEFT JOIN categories c ON p.category_id = c.category_id 
+        WHERE p.product_id = $product_id 
+        LIMIT 1";
 $result = $conn->query($sql);
 if (!$result || $result->num_rows == 0) die("Product not found.");
 
 $product = $result->fetch_assoc();
 
-// Get sizes from the product's size column
+// Get sizes from the product's size column - FIXED PARSING
 $sizes = [];
 if (!empty($product['size'])) {
-    // If size is stored as comma-separated values like "XS,S,M,L"
+    // Parse the size string format "S:5,M:2,XS:3"
     $size_array = explode(',', $product['size']);
-    foreach ($size_array as $size) {
-        $size = trim($size);
-        if (!empty($size)) {
-            $sizes[] = [
-                'size' => $size,
-                'stock' => 1 // Assuming available since it's in the product
-            ];
+    foreach ($size_array as $size_item) {
+        $size_parts = explode(':', trim($size_item));
+        if (count($size_parts) >= 2) {
+            $size = trim($size_parts[0]);
+            $stock = (int)trim($size_parts[1]);
+            if (!empty($size) && $stock > 0) {
+                $sizes[] = [
+                    'size' => $size,
+                    'stock' => $stock
+                ];
+            }
         }
     }
 }
@@ -39,22 +47,68 @@ if (empty($sizes)) {
     }
 }
 
+// FIXED: Use rental_price for rental products, fallback to price
+$display_price = !empty($product['rental_price']) ? $product['rental_price'] : $product['price'];
+
 // Prepare variables
 $name = htmlspecialchars($product['name']);
 $brand = htmlspecialchars($product['brand'] ?? '');
 $description = htmlspecialchars($product['description']);
-$price = number_format($product['price'], 2);
-$image_main = htmlspecialchars($product['image']);
+$price = number_format($display_price, 2);
 $color = htmlspecialchars($product['color'] ?? '');
 $stock = (int)$product['stock'];
 
-// Get additional images
-$additional_images = [
-    $image_main,
-    'gallery/placeholder2.png',
-    'gallery/placeholder3.png',
-    'gallery/placeholder4.png'
-];
+// FIXED: Better image path handling
+function getProductImage($image_path, $product_name) {
+    if (empty($image_path)) {
+        return 'images/placeholder.png';
+    }
+    
+    // Check if file exists in multiple possible locations
+    $possible_paths = [
+        $image_path,
+        'uploads/' . basename($image_path),
+        'gallery/' . basename($image_path),
+        'images/' . basename($image_path),
+        '../' . $image_path,
+        '../uploads/' . basename($image_path),
+        '../gallery/' . basename($image_path)
+    ];
+    
+    foreach ($possible_paths as $path) {
+        if (file_exists($path) && is_file($path)) {
+            return $path;
+        }
+    }
+    
+    return 'images/placeholder.png';
+}
+
+$image_main = getProductImage($product['image'], $name);
+
+// Get additional images from gallery
+$additional_images = [];
+$gallery_sql = "SELECT image_url FROM gallery WHERE product_id = $product_id ORDER BY display_order, is_primary DESC";
+$gallery_result = $conn->query($gallery_sql);
+if ($gallery_result && $gallery_result->num_rows > 0) {
+    while ($row = $gallery_result->fetch_assoc()) {
+        $additional_images[] = getProductImage($row['image_url'], $name);
+    }
+}
+
+// If no additional images, use main image and placeholders
+if (empty($additional_images)) {
+    $additional_images = [
+        $image_main,
+        'images/placeholder.png',
+        'images/placeholder.png',
+        'images/placeholder.png'
+    ];
+} else {
+    // Ensure main image is first
+    array_unshift($additional_images, $image_main);
+    $additional_images = array_slice($additional_images, 0, 4);
+}
 ?>
 
 <!DOCTYPE html>
@@ -422,6 +476,21 @@ $additional_images = [
     }
     
     /* Rental Information */
+    .rental-info {
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Product Detail - OZYDE</title>
+        </head>
+        <body>
+            <!-- Your existing HTML content -->
+        </body>
+        </html>
+        margin-bottom: 25px;
+    }
+    
     .rental-info h3 {
         font-size: 18px;
         font-weight: 600;
@@ -861,7 +930,7 @@ $additional_images = [
           <!-- Image Section -->
           <div class="image-section">
             <div class="main-image-container">
-              <img src="<?= $image_main ?>" alt="<?= $name ?>" class="main-image" id="mainImage">
+              <img src="<?= $image_main ?>" alt="<?= $name ?>" class="main-image" id="mainImage" onerror="this.src='images/placeholder.png'">
             </div>
             
             <div class="thumbnail-grid">
@@ -870,7 +939,7 @@ $additional_images = [
                      alt="<?= $name ?> view <?= $index + 1 ?>" 
                      class="thumbnail <?= $index === 0 ? 'active' : '' ?>" 
                      data-image="<?= $image ?>"
-                     onerror="this.src='gallery/placeholder.png'">
+                     onerror="this.src='images/placeholder.png'">
               <?php endforeach; ?>
             </div>
           </div>
@@ -894,6 +963,12 @@ $additional_images = [
                 <h4>Color</h4>
                 <p><?= $color ?: 'Not specified' ?></p>
               </div>
+              <?php if (isset($product['category_name'])): ?>
+              <div class="detail-item">
+                <h4>Category</h4>
+                <p><?= htmlspecialchars($product['category_name']) ?></p>
+              </div>
+              <?php endif; ?>
             </div>
 
             <!-- Size Selection -->
@@ -901,9 +976,13 @@ $additional_images = [
               <h3>Select Size</h3>
               <div class="size-grid">
                 <?php foreach ($sizes as $size_data): ?>
-                  <button class="size-btn available" 
-                          data-size="<?= $size_data['size'] ?>">
+                  <button class="size-btn <?= $size_data['stock'] > 0 ? 'available' : 'unavailable' ?>" 
+                          data-size="<?= $size_data['size'] ?>"
+                          <?= $size_data['stock'] <= 0 ? 'disabled' : '' ?>>
                     <?= $size_data['size'] ?>
+                    <?php if ($size_data['stock'] <= 0): ?>
+                      <br><small>(Out of stock)</small>
+                    <?php endif; ?>
                   </button>
                 <?php endforeach; ?>
               </div>

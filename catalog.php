@@ -5,7 +5,6 @@ $db_host = 'localhost';
 $db_user = 'root';
 $db_pass = '';
 $db_name = 'ozyde';
-// -----------------------------------------------------
 
 // Connect with mysqli
 $mysqli = new mysqli($db_host, $db_user, $db_pass, $db_name);
@@ -16,8 +15,15 @@ if ($mysqli->connect_errno) {
 }
 $mysqli->set_charset('utf8mb4');
 
+// Check logged in - REDIRECT TO GUEST VERSION IF NOT LOGGED IN
+if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
+    header("Location: catalog_guest.php");
+    exit;
+}
+
 // Check logged in
 $logged_in = isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
+$user_id = $_SESSION['user_id'];
 
 // Handle wishlist actions via AJAX
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wishlist_action']) && isset($_POST['product_id'])) {
@@ -67,14 +73,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wishlist_action']) &&
     exit;
 }
 
+// Get view type (Shop or For You)
+$view_type = isset($_GET['view']) && $_GET['view'] === 'for-you' ? 'for-you' : 'shop';
+
 // Get filter parameters - now handling arrays for multiple selection
 $category_filter = isset($_GET['category']) ? (array)$_GET['category'] : [];
 $size_filter = isset($_GET['size']) ? (array)$_GET['size'] : [];
 $color_filter = isset($_GET['color']) ? (array)$_GET['color'] : [];
+$style_filter = isset($_GET['style']) ? (array)$_GET['style'] : [];
 $price_min = isset($_GET['price_min']) ? (float)$_GET['price_min'] : 0;
-$price_max = isset($_GET['price_max']) ? (float)$_GET['price_max'] : 1000;
+$price_max = isset($_GET['price_max']) ? (float)$_GET['price_max'] : 10000;
 $sort_by = isset($_GET['sort']) ? $_GET['sort'] : 'newest';
-$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 8;
+$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 20;
+
+// DEBUG: Show all products regardless of filters for testing
+$debug_mode = false; // Changed to false to only show rental products
 
 // Fetch categories from database
 $categories = [];
@@ -86,50 +99,156 @@ if ($cat_result = $mysqli->query($cat_query)) {
     $cat_result->free();
 }
 
-// Build query with filters
-$query = "SELECT product_id, category_id, name, description, size, color, price, image, stock, is_rental, created_at FROM products WHERE 1=1";
+// Fetch dress styles from database
+$styles = [];
+$style_query = "SELECT style_id, style_name FROM dress_styles WHERE is_custom = 0 ORDER BY style_name";
+if ($style_result = $mysqli->query($style_query)) {
+    while ($row = $style_result->fetch_assoc()) {
+        $styles[] = $row;
+    }
+    $style_result->free();
+}
+
+// Build query with filters - FIXED PRICE FILTER AND DUPLICATE ISSUES
+if ($debug_mode) {
+    $query = "SELECT DISTINCT p.product_id, p.category_id, p.name, p.brand, p.description, p.size, p.color, p.price, p.rental_price, p.image, p.video_url, p.stock, p.is_rental, p.created_at 
+              FROM products p 
+              WHERE 1=1";
+} else {
+    $query = "SELECT DISTINCT p.product_id, p.category_id, p.name, p.brand, p.description, p.size, p.color, p.price, p.rental_price, p.image, p.video_url, p.stock, p.is_rental, p.created_at 
+              FROM products p 
+              WHERE p.is_rental = 1 AND p.stock > 0";
+}
+
 $params = [];
 $types = "";
+
+// Add JOIN for styles if style filter is applied
+if (!empty($style_filter)) {
+    $query .= " INNER JOIN product_styles ps ON p.product_id = ps.product_id";
+}
+
+// FOR YOU VIEW: Filter by user preferences
+if ($view_type === 'for-you' && $logged_in) {
+    // Get user preferences
+    $user_sizes = [];
+    $user_styles = [];
+    
+    // Get user size preferences
+    $size_pref_query = "SELECT size_label FROM size_preferences WHERE user_id = ?";
+    $size_pref_stmt = $mysqli->prepare($size_pref_query);
+    $size_pref_stmt->bind_param("i", $user_id);
+    $size_pref_stmt->execute();
+    $size_pref_result = $size_pref_stmt->get_result();
+    while ($row = $size_pref_result->fetch_assoc()) {
+        $user_sizes[] = $row['size_label'];
+    }
+    $size_pref_stmt->close();
+    
+    // Get user style preferences
+    $style_pref_query = "SELECT ds.style_id 
+                         FROM user_style_preferences usp 
+                         JOIN dress_styles ds ON usp.style_id = ds.style_id 
+                         WHERE usp.user_id = ?
+                         UNION
+                         SELECT NULL as style_id FROM user_custom_styles ucs WHERE ucs.user_id = ?";
+    $style_pref_stmt = $mysqli->prepare($style_pref_query);
+    $style_pref_stmt->bind_param("ii", $user_id, $user_id);
+    $style_pref_stmt->execute();
+    $style_pref_result = $style_pref_stmt->get_result();
+    while ($row = $style_pref_result->fetch_assoc()) {
+        if ($row['style_id']) {
+            $user_styles[] = $row['style_id'];
+        }
+    }
+    $style_pref_stmt->close();
+    
+    // Apply For You filters if user has preferences
+    if (!empty($user_sizes) || !empty($user_styles)) {
+        $query .= " AND (1=0"; // Start with false condition
+        
+        // Size preferences
+        if (!empty($user_sizes)) {
+            $size_conditions = [];
+            foreach ($user_sizes as $size) {
+                $size_conditions[] = "p.size LIKE ?";
+                $params[] = "%$size%";
+                $types .= "s";
+            }
+            $query .= " OR (" . implode(" OR ", $size_conditions) . ")";
+        }
+        
+        // Style preferences
+        if (!empty($user_styles)) {
+            if (!empty($style_filter)) {
+                // If style filter is already applied, combine with user preferences
+                $style_filter = array_merge($style_filter, $user_styles);
+                $style_filter = array_unique($style_filter);
+            } else {
+                // Apply user style preferences
+                $query .= " OR EXISTS (SELECT 1 FROM product_styles ps WHERE ps.product_id = p.product_id AND ps.style_id IN (" . 
+                         implode(',', array_fill(0, count($user_styles), '?')) . "))";
+                $params = array_merge($params, $user_styles);
+                $types .= str_repeat('i', count($user_styles));
+            }
+        }
+        
+        $query .= ")";
+    }
+}
 
 // Category filter (multiple selection)
 if (!empty($category_filter)) {
     $placeholders = str_repeat('?,', count($category_filter) - 1) . '?';
-    $query .= " AND category_id IN ($placeholders)";
+    $query .= " AND p.category_id IN ($placeholders)";
     $params = array_merge($params, $category_filter);
     $types .= str_repeat('i', count($category_filter));
 }
 
 // Size filter (multiple selection)
 if (!empty($size_filter)) {
-    $placeholders = str_repeat('?,', count($size_filter) - 1) . '?';
-    $query .= " AND size IN ($placeholders)";
-    $params = array_merge($params, $size_filter);
-    $types .= str_repeat('s', count($size_filter));
+    $size_conditions = [];
+    foreach ($size_filter as $size) {
+        $size_conditions[] = "p.size LIKE ?";
+        $params[] = "%$size%";
+        $types .= "s";
+    }
+    $query .= " AND (" . implode(" OR ", $size_conditions) . ")";
 }
 
 // Color filter (multiple selection)
 if (!empty($color_filter)) {
     $placeholders = str_repeat('?,', count($color_filter) - 1) . '?';
-    $query .= " AND color IN ($placeholders)";
+    $query .= " AND p.color IN ($placeholders)";
     $params = array_merge($params, $color_filter);
     $types .= str_repeat('s', count($color_filter));
 }
 
-// Price range filter
-$query .= " AND price BETWEEN ? AND ?";
-$params[] = $price_min;
-$params[] = $price_max;
-$types .= "dd";
+// Style filter (multiple selection)
+if (!empty($style_filter)) {
+    $placeholders = str_repeat('?,', count($style_filter) - 1) . '?';
+    $query .= " AND ps.style_id IN ($placeholders)";
+    $params = array_merge($params, $style_filter);
+    $types .= str_repeat('i', count($style_filter));
+}
+
+// FIXED PRICE RANGE FILTER - Only add if not default values
+if ($price_min > 0 || $price_max < 10000) {
+    $query .= " AND p.rental_price BETWEEN ? AND ?";
+    $params[] = $price_min;
+    $params[] = $price_max;
+    $types .= "dd";
+}
 
 // Add sorting
 if ($sort_by === 'price-low') {
-    $query .= " ORDER BY price ASC";
+    $query .= " ORDER BY COALESCE(p.rental_price, 0) ASC";
 } elseif ($sort_by === 'price-high') {
-    $query .= " ORDER BY price DESC";
+    $query .= " ORDER BY COALESCE(p.rental_price, 0) DESC";
 } elseif ($sort_by === 'popular') {
-    $query .= " ORDER BY stock DESC";
+    $query .= " ORDER BY p.stock DESC";
 } else {
-    $query .= " ORDER BY created_at DESC";
+    $query .= " ORDER BY p.created_at DESC";
 }
 
 // Add limit
@@ -137,21 +256,36 @@ $query .= " LIMIT ?";
 $params[] = $limit;
 $types .= "i";
 
-// Fetch products
+// DEBUG: Output the query for testing
+// echo "<!-- Query: " . htmlspecialchars($query) . " -->";
+// echo "<!-- Params: " . htmlspecialchars(print_r($params, true)) . " -->";
+
+// Fetch products with PROPER ERROR HANDLING
 $products = [];
 if ($stmt = $mysqli->prepare($query)) {
     if (!empty($params)) {
         $stmt->bind_param($types, ...$params);
     }
-    $stmt->execute();
-    $res = $stmt->get_result();
-    while ($row = $res->fetch_assoc()) {
-        $products[] = $row;
+    
+    if ($stmt->execute()) {
+        $res = $stmt->get_result();
+        while ($row = $res->fetch_assoc()) {
+            $products[] = $row;
+        }
+        $stmt->close();
+    } else {
+        // Log error and use fallback
+        error_log("Query execution failed: " . $stmt->error);
+        $fallback_query = "SELECT product_id, category_id, name, brand, description, size, color, price, rental_price, image, video_url, stock, is_rental, created_at FROM products WHERE is_rental = 1 AND stock > 0 ORDER BY created_at DESC LIMIT $limit";
+        if ($res = $mysqli->query($fallback_query)) {
+            while ($row = $res->fetch_assoc()) $products[] = $row;
+            $res->free();
+        }
     }
-    $stmt->close();
 } else {
-    // fallback: try direct query without filters
-    $fallback_query = "SELECT product_id, category_id, name, description, size, color, price, image, stock, is_rental, created_at FROM products ORDER BY created_at DESC LIMIT $limit";
+    // Log error and use fallback
+    error_log("Query preparation failed: " . $mysqli->error);
+    $fallback_query = "SELECT product_id, category_id, name, brand, description, size, color, price, rental_price, image, video_url, stock, is_rental, created_at FROM products WHERE is_rental = 1 AND stock > 0 ORDER BY created_at DESC LIMIT $limit";
     if ($res = $mysqli->query($fallback_query)) {
         while ($row = $res->fetch_assoc()) $products[] = $row;
         $res->free();
@@ -175,7 +309,7 @@ if ($logged_in) {
 }
 
 // Get total count for pagination
-$count_query = "SELECT COUNT(*) as total FROM products";
+$count_query = "SELECT COUNT(*) as total FROM products WHERE is_rental = 1 AND stock > 0";
 $total_products = 0;
 if ($count_stmt = $mysqli->prepare($count_query)) {
     $count_stmt->execute();
@@ -202,7 +336,34 @@ if ($logged_in) {
 function esc($s) {
     return htmlspecialchars((string)$s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
+
+// FIXED IMAGE PATH FUNCTION - Better file checking
+function getImagePath($image_path) {
+    if (empty($image_path)) {
+        return 'images/placeholder.png';
+    }
+    
+    // Check if file exists in multiple possible locations
+    $possible_paths = [
+        $image_path,
+        'uploads/' . basename($image_path),
+        'gallery/' . basename($image_path),
+        'images/' . basename($image_path),
+        '../' . $image_path,
+        '../uploads/' . basename($image_path),
+        '../gallery/' . basename($image_path)
+    ];
+    
+    foreach ($possible_paths as $path) {
+        if (file_exists($path) && is_file($path)) {
+            return $path;
+        }
+    }
+    
+    return 'images/placeholder.png';
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -570,7 +731,17 @@ function esc($s) {
         .product-details { display:flex; justify-content:space-between; margin-bottom:12px; font-size:13px; color:var(--muted); }
         .product-price { font-size:20px; font-weight:700; color:var(--accent); }
         
+        .product-status {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-top: 5px;
+            display: inline-block;
+        }
         
+        .status-rental { background: #e8f5e8; color: #2fa46b; }
+        .status-sale { background: #fff3cd; color: #856404; }
+        .status-outofstock { background: #f8d7da; color: #721c24; }
 
         .load-more-section { text-align:center; }
         .load-more-btn { padding:12px 30px; border:1px solid #e6e6e6; border-radius:6px; background:#fff; color:var(--accent); font-weight:600; cursor:pointer; }
@@ -587,6 +758,30 @@ function esc($s) {
         .modal-btn.secondary { background:#f5f5f5; color:var(--accent); }
         footer { border-top:1px solid #eee; padding:36px 0; margin-top:28px; color:var(--muted); background:#fafafa; }
         .footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:32px; }
+        
+        /* Debug info */
+        .debug-info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        /* For You Indicator */
+        .for-you-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--airbnb-pink);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            z-index: 5;
+        }
         
         /* Mobile Responsive */
         @media (max-width: 880px) {
@@ -655,7 +850,7 @@ function esc($s) {
 
             <nav aria-label="Main navigation">
                 <ul id="main-nav">
-                    <li><a href="finalhomepage.html">Home</a></li>
+                    <li><a href="finalhomepage.php">Home</a></li>
                     <li><a href="catalog.php" class="active">Browse</a></li>
                     <li><a href="custommade.html">Custom Made</a></li>
                     <li><a href="about.html">About</a></li>
@@ -703,11 +898,11 @@ function esc($s) {
                         <a href="customerdashboard.php">Customer Dashboard</a>
                         <a href="my-account.html">My Account</a>
                         <div class="dropdown-divider"></div>
-                        <a href="#" id="logoutLink">Sign Out</a>
+                        <a href="logout.php" id="logoutLink">Sign Out</a>
                     </div>
                 </div>
                 <?php else: ?>
-                <a href="register.html" class="btn-signup">Sign Up</a>
+                <a href="register.php" class="btn-signup">Sign Up</a>
                 <?php endif; ?>
             </div>
         </div>
@@ -717,9 +912,9 @@ function esc($s) {
     <div class="user-status <?php echo $logged_in ? '' : 'logged-out'; ?>" id="userStatus">
         <div class="container">
             <?php if ($logged_in): ?>
-                Welcome back — you are signed in. <a href="customerdashboard.html">Go to your dashboard</a>.
+                Welcome back — you are signed in. <a href="customerdashboard.php">Go to your dashboard</a>.
             <?php else: ?>
-                You are browsing as a guest. <a href="register.html" id="loginLink">Sign in or register</a> to access wishlist and quick checkout.
+                You are browsing as a guest. <a href="register.php" id="loginLink">Sign in or register</a> to access wishlist and quick checkout.
             <?php endif; ?>
         </div>
     </div>
@@ -736,6 +931,18 @@ function esc($s) {
         </section>
 
         <div class="container">
+            <!-- Debug Information -->
+            <div class="debug-info">
+                <strong>Debug Info:</strong> 
+                Showing <?php echo count($products); ?> products in <strong><?php echo $view_type === 'for-you' ? 'For You' : 'Shop'; ?></strong> view.
+                <?php if ($debug_mode): ?>
+                    <span style="color: var(--success);">DEBUG MODE: Showing all products</span>
+                <?php endif; ?>
+                <?php if ($view_type === 'for-you'): ?>
+                    <br><span style="color: var(--airbnb-pink);">Personalized recommendations based on your preferences</span>
+                <?php endif; ?>
+            </div>
+
             <!-- Mobile Filter Toggle -->
             <div class="mobile-filter-toggle">
                 <button class="filter-toggle-btn" id="mobileFilterToggle">
@@ -760,6 +967,9 @@ function esc($s) {
                     <div class="active-filters" id="activeFilters"></div>
 
                     <form method="GET" id="filterForm">
+                        <!-- Hidden view input -->
+                        <input type="hidden" name="view" value="<?php echo $view_type; ?>">
+
                         <!-- Category Filter -->
                         <div class="filter-section">
                             <h4>Category</h4>
@@ -835,13 +1045,26 @@ function esc($s) {
                             </div>
                         </div>
 
+                        <!-- Style Filter -->
+                        <div class="filter-section">
+                            <h4>Styles</h4>
+                            <div class="filter-options">
+                                <?php foreach ($styles as $style): ?>
+                                <div class="filter-option">
+                                    <input type="checkbox" id="style-<?php echo $style['style_id']; ?>" name="style[]" value="<?php echo $style['style_id']; ?>" <?php echo in_array($style['style_id'], $style_filter) ? 'checked' : ''; ?>>
+                                    <label for="style-<?php echo $style['style_id']; ?>"><?php echo esc($style['style_name']); ?></label>
+                                </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+
                         <!-- Price Range Filter -->
                         <div class="filter-section">
                             <h4>Price Range</h4>
                             <div class="price-range">
                                 <div class="price-inputs">
-                                    <input type="number" class="price-input" id="priceMin" name="price_min" value="<?php echo $price_min; ?>" placeholder="Min" min="0" max="1000">
-                                    <input type="number" class="price-input" id="priceMax" name="price_max" value="<?php echo $price_max; ?>" placeholder="Max" min="0" max="1000">
+                                    <input type="number" class="price-input" id="priceMin" name="price_min" value="<?php echo $price_min; ?>" placeholder="Min" min="0" max="10000">
+                                    <input type="number" class="price-input" id="priceMax" name="price_max" value="<?php echo $price_max; ?>" placeholder="Max" min="0" max="10000">
                                 </div>
                                 <div class="slider-container" id="priceSlider">
                                     <div class="slider-track" id="sliderTrack"></div>
@@ -850,7 +1073,7 @@ function esc($s) {
                                 </div>
                                 <div class="price-display">
                                     <span>R0</span>
-                                    <span>R1000</span>
+                                    <span>R10000</span>
                                 </div>
                             </div>
                         </div>
@@ -863,7 +1086,13 @@ function esc($s) {
                 <!-- Products Grid -->
                 <section class="products-section">
                     <div class="section-header">
-                        <h2>Available Dresses</h2>
+                        <h2>
+                            <?php if ($view_type === 'for-you'): ?>
+                                For You (<?php echo count($products); ?> recommendations)
+                            <?php else: ?>
+                                Available Dresses (<?php echo count($products); ?> found)
+                            <?php endif; ?>
+                        </h2>
 
                         <div style="display:flex; align-items:center; gap:12px;">
                             <div class="sort-options">
@@ -877,43 +1106,92 @@ function esc($s) {
                             </div>
 
                             <div class="view-toggle" role="tablist" aria-label="View toggle">
-                                <button class="toggle active" data-view="shop" role="tab" aria-selected="true">Shop</button>
-                                <button class="toggle" data-view="for-you" role="tab" aria-selected="false">For you</button>
+                                <a href="?view=shop<?php echo !empty($_GET) ? '&' . http_build_query(array_diff_key($_GET, ['view' => ''])) : ''; ?>" 
+                                   class="toggle <?php echo $view_type === 'shop' ? 'active' : ''; ?>" 
+                                   data-view="shop" 
+                                   role="tab" 
+                                   aria-selected="<?php echo $view_type === 'shop' ? 'true' : 'false'; ?>">Shop</a>
+                                <a href="?view=for-you<?php echo !empty($_GET) ? '&' . http_build_query(array_diff_key($_GET, ['view' => ''])) : ''; ?>" 
+                                   class="toggle <?php echo $view_type === 'for-you' ? 'active' : ''; ?>" 
+                                   data-view="for-you" 
+                                   role="tab" 
+                                   aria-selected="<?php echo $view_type === 'for-you' ? 'true' : 'false'; ?>">For you</a>
                             </div>
                         </div>
                     </div>
 
+                    <?php if ($view_type === 'for-you' && !$logged_in): ?>
+                        <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+                            <p style="margin: 0; color: #856404;">
+                                <strong>Sign in to see personalized recommendations!</strong><br>
+                                The "For You" section shows dresses that match your size and style preferences.
+                            </p>
+                            <a href="register.php" class="btn btn-primary" style="margin-top: 10px; display: inline-block; padding: 10px 20px; background: var(--accent); color: white; border-radius: 4px;">Sign In / Register</a>
+                        </div>
+                    <?php endif; ?>
+
                     <div class="products-grid" id="productsGrid">
                         <?php if (empty($products)): ?>
                             <div style="grid-column:1/-1; background:#fff;border:1px solid #f1f1f1;padding:20px;border-radius:8px;text-align:center;">
-                                No products found matching your filters.
+                                <?php if ($view_type === 'for-you'): ?>
+                                    No personalized recommendations found. 
+                                    <div style="margin-top:10px;">
+                                        <p>Update your <a href="customerdashboard.php">profile preferences</a> to get better recommendations, or try the <a href="?view=shop">Shop view</a>.</p>
+                                    </div>
+                                <?php else: ?>
+                                    No products found matching your filters.
+                                    <div style="margin-top:10px;">
+                                        <a href="catalog.php" class="btn btn-primary" style="padding:10px 20px;background:var(--accent);color:white;border-radius:4px;">Clear All Filters</a>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         <?php else: ?>
                             <?php foreach ($products as $p): 
                                 $pid = (int)$p['product_id'];
                                 $title = esc($p['name'] ?? 'Untitled');
-                                $price = is_numeric($p['price']) ? number_format((float)$p['price'], 2) : '0.00';
-                                $img = !empty($p['image']) ? esc($p['image']) : 'gallery/placeholder.png';
+                                $brand = esc($p['brand'] ?? 'Designer');
+                                // Use rental price instead of purchase price for rental business
+                                $price = is_numeric($p['rental_price']) && $p['rental_price'] > 0 ? number_format((float)$p['rental_price'], 2) : (is_numeric($p['price']) && $p['price'] > 0 ? number_format((float)$p['price'], 2) : '0.00');
+                                $img = getImagePath($p['image']);
                                 $stock = isset($p['stock']) ? (int)$p['stock'] : 0;
+                                $is_rental = isset($p['is_rental']) ? (bool)$p['is_rental'] : false;
 
                                 $is_wishlisted = isset($wishlist_status[$pid]);
+                                
+                                // Determine product status
+                                $status_class = 'status-rental';
+                                $status_text = 'For Rent';
+                                if (!$is_rental) {
+                                    $status_class = 'status-sale';
+                                    $status_text = 'For Sale';
+                                }
+                                if ($stock <= 0) {
+                                    $status_class = 'status-outofstock';
+                                    $status_text = 'Out of Stock';
+                                }
+
+                                // Check if this is a "For You" recommendation
+                                $is_for_you = $view_type === 'for-you';
                             ?>
                             <a href="productdetail.php?product_id=<?php echo $pid; ?>" class="product-link" style="text-decoration:none;">
                                 <div class="product-card" data-id="<?php echo $pid; ?>">
+                                    <?php if ($is_for_you): ?>
+                                        <div class="for-you-badge">For You</div>
+                                    <?php endif; ?>
                                     <div class="product-image">
-                                        <img src="<?php echo $img; ?>" alt="<?php echo $title; ?>" onerror="this.onerror=null;this.src='gallery/placeholder.png'">
+                                        <img src="<?php echo $img; ?>" alt="<?php echo $title; ?>" onerror="this.onerror=null;this.src='images/placeholder.png'">
                                         <button class="wishlist-btn <?php echo $is_wishlisted ? 'active' : ''; ?>" data-product-id="<?php echo $pid; ?>" aria-label="Add to wishlist">
                                             <svg viewBox="0 0 24 24" fill="<?php echo $is_wishlisted ? 'currentColor' : 'none'; ?>" stroke="currentColor" stroke-width="2" width="18" height="18">
                                                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                             </svg>
                                         </button>
-
                                     </div>
                                     <div class="product-info">
                                         <h3 class="product-title"><?php echo $title; ?></h3>
-                                        <p class="product-designer">By Designer</p>
+                                        <p class="product-designer">By <?php echo $brand; ?></p>
                                         <div class="product-details">
-                                            <span class="rental-period">3-day rental</span>
+                                            <span class="rental-period"><?php echo $is_rental ? '3-day rental' : 'For Sale'; ?></span>
+                                            <span class="product-status <?php echo $status_class; ?>"><?php echo $status_text; ?></span>
                                         </div>
                                         <div class="product-price">R<?php echo $price; ?></div>
                                     </div>
@@ -967,7 +1245,7 @@ function esc($s) {
                                 <circle cx="17.5" cy="6.5" r="0.6" fill="#333"/>
                             </svg>
                         </a>
-                        <!-- TikTok Icon from homepage -->
+                        <!-- Fixed TikTok Icon -->
                         <a href="https://www.tiktok.com/@ozyde_designs?_t=ZS-8zlyfPi8HHJ&_r=1" target="_blank" rel="noopener" aria-label="TikTok">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                                 <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" fill="currentColor"/>
@@ -1063,7 +1341,7 @@ function esc($s) {
         const priceMaxInput = document.getElementById('priceMax');
         
         const minPrice = 0;
-        const maxPrice = 1000;
+        const maxPrice = 10000;
         
         let minValue = <?php echo $price_min; ?>;
         let maxValue = <?php echo $price_max; ?>;
@@ -1151,6 +1429,13 @@ function esc($s) {
                 activeFilters.appendChild(chip);
             });
             
+            // Style filters
+            document.querySelectorAll('input[name="style[]"]:checked').forEach(checkbox => {
+                const label = checkbox.nextElementSibling.textContent;
+                const chip = createFilterChip('style', checkbox.value, label);
+                activeFilters.appendChild(chip);
+            });
+            
             // Price filter (if not default)
             if (minValue > minPrice || maxValue < maxPrice) {
                 const chip = createFilterChip('price', `${minValue}-${maxValue}`, `R${minValue} - R${maxValue}`);
@@ -1233,7 +1518,7 @@ function esc($s) {
         if (loadMoreBtn) {
             loadMoreBtn.addEventListener('click', function() {
                 const currentLimit = parseInt(this.getAttribute('data-current-limit'));
-                const newLimit = currentLimit + 8;
+                const newLimit = currentLimit + 20;
                 
                 // Update the limit input and submit the form
                 document.getElementById('limitInput').value = newLimit;
@@ -1331,7 +1616,7 @@ function esc($s) {
         const closeModal = document.getElementById('closeModal');
 
         goToRegister.addEventListener('click', function() {
-            window.location.href = 'register.html?redirect=catalog.php';
+            window.location.href = 'register.php?redirect=catalog.php';
         });
         
         closeModal.addEventListener('click', function() {
@@ -1339,42 +1624,23 @@ function esc($s) {
             loginModal.setAttribute('aria-hidden', 'true');
         });
 
-        // For You toggle functionality
-        const viewToggles = document.querySelectorAll('.view-toggle .toggle');
-
-        viewToggles.forEach(toggle => {
-            toggle.addEventListener('click', function() {
-                const view = this.getAttribute('data-view');
-                
-                // If user clicks "For you" and is not logged in, show login modal
-                if (view === 'for-you' && !<?php echo $logged_in ? 'true' : 'false'; ?>) {
-                    document.getElementById('loginModal').classList.add('active');
-                    document.getElementById('loginModal').setAttribute('aria-hidden', 'false');
-                    return;
-                }
-                
-                // Toggle active class
-                viewToggles.forEach(t => {
-                    t.classList.remove('active');
-                    t.setAttribute('aria-selected', 'false');
-                });
-                this.classList.add('active');
-                this.setAttribute('aria-selected', 'true');
-                
-                // Handle view switching
-                if (view === 'for-you') {
-                    // For You view - you can implement filtering logic here later
-                    console.log('Switched to For You view');
-                    // This is where you'll add personalized filtering when backend is ready
-                } else {
-                    // Shop view - normal catalog
-                    console.log('Switched to Shop view');
-                }
-            });
-        });
-        
         // Initialize active filters display
         updateActiveFilters();
+
+        // View type handling
+        const viewToggles = document.querySelectorAll('.view-toggle .toggle');
+        const currentView = '<?php echo $view_type; ?>';
+
+        // Set active state for view toggles
+        viewToggles.forEach(toggle => {
+            if (toggle.getAttribute('data-view') === currentView) {
+                toggle.classList.add('active');
+                toggle.setAttribute('aria-selected', 'true');
+            } else {
+                toggle.classList.remove('active');
+                toggle.setAttribute('aria-selected', 'false');
+            }
+        });
     </script>
 </body>
 

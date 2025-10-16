@@ -2,5 +2,5 @@
 session_start();
 session_unset();
 session_destroy();
-header('Location: finalhomepage.html.html');
+header('Location: finalhomepage.html');
 exit;
