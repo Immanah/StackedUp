@@ -30,11 +30,12 @@ $items = []; // For JavaScript
 
 if ($result && $result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        // Calculate days rented
+        // Calculate rental period display
         $start = new DateTime($row['start_date']);
         $end = new DateTime($row['end_date']);
-        $days = $start->diff($end)->days;
-        $days = max(1, $days);
+        $start_formatted = $start->format('M j');
+        $end_formatted = $end->format('M j, Y');
+        $rental_period = $start_formatted . ' - ' . $end_formatted;
 
         $cart_items[] = [
             'cart_id' => $row['cart_id'],
@@ -46,13 +47,13 @@ if ($result && $result->num_rows > 0) {
             'quantity' => (int)$row['quantity'],
             'start_date' => $row['start_date'],
             'end_date' => $row['end_date'],
-            'days' => $days,
+            'rental_period' => $rental_period,
         ];
         
         // Also create items array for JavaScript
         $items[] = [
             'title' => $row['product_name'],
-            'days' => $days,
+            'rental_period' => $rental_period,
             'price' => (float)$row['price']
         ];
     }
@@ -416,6 +417,14 @@ $conn->close();
             color: #075;
         }
         
+        .warning {
+            padding: 12px;
+            background: #fff8e8;
+            border-left: 4px solid #ffb300;
+            border-radius: 8px;
+            color: #856404;
+        }
+        
         .foot-note {
             font-size: 12px;
             color: var(--muted);
@@ -638,6 +647,28 @@ $conn->close();
         .copied {
             animation: copied 0.5s ease;
         }
+
+        /* Loading spinner */
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid var(--accent);
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .processing {
+            opacity: 0.7;
+            pointer-events: none;
+        }
     </style>
 </head>
 
@@ -656,7 +687,7 @@ $conn->close();
                     <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
                         <div>
                             <div style="font-weight:700"><?php echo htmlspecialchars($item['name']); ?></div>
-                            <div class="small"><?php echo $item['days']; ?> days</div>
+                            <div class="small"><?php echo $item['rental_period']; ?></div>
                         </div>
                         <div style="font-weight:700">R<?php echo number_format($item['price'], 2); ?></div>
                     </div>
@@ -833,8 +864,8 @@ $conn->close();
                             </div>
 
                             <div style="margin-top:10px">
-                                <label for="proof">Upload proof of payment (jpg/png/pdf)</label>
-                                <input id="proof" type="file" accept=".png,.jpg,.jpeg,.pdf">
+                                <label for="proof">Upload proof of payment (jpg/png/pdf) *</label>
+                                <input id="proof" type="file" accept=".png,.jpg,.jpeg,.pdf" required>
                                 <div id="proofPreview" class="upload-preview" style="display:none"></div>
                                 <div style="margin-top:10px; display:flex; gap:8px">
                                     <button id="submitProof" class="btn" disabled>Submit proof</button>
@@ -899,6 +930,49 @@ $conn->close();
             day: 'numeric'
         });
 
+        // Card validation functions
+        const validateCardNumber = (number) => {
+            const cleanNumber = number.replace(/\s/g, '');
+            // Luhn algorithm validation
+            let sum = 0;
+            let isEven = false;
+            
+            for (let i = cleanNumber.length - 1; i >= 0; i--) {
+                let digit = parseInt(cleanNumber.charAt(i), 10);
+                
+                if (isEven) {
+                    digit *= 2;
+                    if (digit > 9) {
+                        digit -= 9;
+                    }
+                }
+                
+                sum += digit;
+                isEven = !isEven;
+            }
+            
+            return (sum % 10) === 0;
+        };
+
+        const validateExpiry = (expiry) => {
+            if (!/^\d{2}\/\d{2}$/.test(expiry)) return false;
+            
+            const [month, year] = expiry.split('/').map(Number);
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear() % 100;
+            const currentMonth = currentDate.getMonth() + 1;
+            
+            if (month < 1 || month > 12) return false;
+            if (year < currentYear) return false;
+            if (year === currentYear && month < currentMonth) return false;
+            
+            return true;
+        };
+
+        const validateCVV = (cvv) => {
+            return /^\d{3,4}$/.test(cvv);
+        };
+
         const VAT = 0.15;
         const DEPOSIT_PCT = 0.20;
 
@@ -907,6 +981,7 @@ $conn->close();
         let returnFee = 0;
         let proofFile = null;
         let activeMethod = 'card';
+        let storeReferenceGenerated = false;
 
         // Render items & totals
         function renderSummary() {
@@ -1012,64 +1087,116 @@ $conn->close();
             });
         }
 
-        // Card pay (simulate and redirect to success)
+        // Card pay with proper validation
         const payCardBtn = q('#payCardBtn');
         if (payCardBtn) {
             payCardBtn.addEventListener('click', (ev) => {
                 ev.preventDefault();
+                
+                // Validate shipping details first
+                if (!validateShippingDetails()) {
+                    return;
+                }
+
                 const num = (q('#cardNumber') && q('#cardNumber').value.replace(/\s/g, '')) || '';
                 const name = (q('#cardName') && q('#cardName').value.trim()) || '';
                 const exp = (q('#cardExpiry') && q('#cardExpiry').value) || '';
                 const cvv = (q('#cardCvv') && q('#cardCvv').value) || '';
+                
                 const errs = [];
-                if (num.length < 13) errs.push('Enter a valid card number.');
-                if (!name) errs.push('Enter the cardholder name.');
-                if (!/^\d{2}\/\d{2}$/.test(exp)) errs.push('Enter expiry as MM/YY.');
-                if (!/^\d{3}$/.test(cvv)) errs.push('Enter a 3-digit CVV.');
+                
+                // Enhanced card validation
+                if (!validateCardNumber(num)) errs.push('Please enter a valid card number.');
+                if (!name || name.length < 2) errs.push('Enter the full cardholder name.');
+                if (!validateExpiry(exp)) errs.push('Enter a valid expiry date (MM/YY).');
+                if (!validateCVV(cvv)) errs.push('Enter a valid 3 or 4-digit CVV.');
+                
                 if (errs.length) {
                     q('#statusArea').innerHTML = `<div class="notice" role="alert">${errs.join('<br>')}</div>`;
                     return;
                 }
 
-                // compute totals again (ensure correct numbers)
-                const subtotal = Number(q('#subtotal').dataset.value || 0);
-                const deposit = Number(q('#deposit').dataset.value || 0);
-                const total = Number(q('#totalAmount').dataset.value || 0);
+                // Show processing state
+                payCardBtn.innerHTML = '<span class="spinner"></span> Processing...';
+                payCardBtn.classList.add('processing');
 
-                // create booking object to hand off to success page
-                const booking = {
-                    ref: randRef(6),
-                    method: 'card',
-                    items: items,
-                    subtotal: subtotal,
-                    deposit: deposit,
-                    deliveryFee: deliveryFee,
-                    returnFee: returnFee,
-                    total: total,
-                    name: name || (q('#firstName') && q('#firstName').value.trim()) || '',
-                    email: (q('#email') && q('#email').value.trim()) || '',
-                    createdAt: new Date().toISOString()
-                };
-
-                try {
-                    sessionStorage.setItem('ozyde_booking', JSON.stringify(booking));
-                } catch (err) {
-                    console.warn('sessionStorage set failed', err);
-                }
-
-                q('#statusArea').innerHTML = `<div class="success" role="status">Payment successful — booking confirmed. Redirecting to confirmation…</div>`;
-
-                // short delay to let user see the success message, then go to success page
+                // Simulate payment processing
                 setTimeout(() => {
-                    window.location.href = 'success.php';
-                }, 850);
+                    // compute totals again (ensure correct numbers)
+                    const subtotal = Number(q('#subtotal').dataset.value || 0);
+                    const deposit = Number(q('#deposit').dataset.value || 0);
+                    const total = Number(q('#totalAmount').dataset.value || 0);
+
+                    // create booking object to hand off to success page
+                    const booking = {
+                        ref: randRef(6),
+                        method: 'card',
+                        status: 'confirmed',
+                        items: items,
+                        subtotal: subtotal,
+                        deposit: deposit,
+                        deliveryFee: deliveryFee,
+                        returnFee: returnFee,
+                        total: total,
+                        name: (q('#firstName') && q('#firstName').value.trim()) || '',
+                        email: (q('#email') && q('#email').value.trim()) || '',
+                        phone: (q('#phone') && q('#phone').value.trim()) || '',
+                        address: (q('#addr1') && q('#addr1').value.trim()) || '',
+                        createdAt: new Date().toISOString()
+                    };
+
+                    try {
+                        sessionStorage.setItem('ozyde_booking', JSON.stringify(booking));
+                    } catch (err) {
+                        console.warn('sessionStorage set failed', err);
+                    }
+
+                    q('#statusArea').innerHTML = `<div class="success" role="status">Payment successful — booking confirmed. Redirecting to confirmation…</div>`;
+
+                    // short delay to let user see the success message, then go to success page
+                    setTimeout(() => {
+                        window.location.href = 'success.php';
+                    }, 1500);
+                }, 2000);
             });
         }
 
-        // Pay-in-store: generate ref & deadline (keeps user on page)
+        // Validate shipping details
+        function validateShippingDetails() {
+            const fn = (q('#firstName') && q('#firstName').value.trim()) || '';
+            const ln = (q('#lastName') && q('#lastName').value.trim()) || '';
+            const email = (q('#email') && q('#email').value.trim()) || '';
+            const phone = (q('#phone') && q('#phone').value.trim()) || '';
+            const addr = (q('#addr1') && q('#addr1').value.trim()) || '';
+            const city = (q('#city') && q('#city').value.trim()) || '';
+            const province = (q('#province') && q('#province').value) || '';
+            const postal = (q('#postal') && q('#postal').value.trim()) || '';
+            
+            const errs = [];
+            if (!fn) errs.push('First name is required');
+            if (!ln) errs.push('Last name is required');
+            if (!email || !/\S+@\S+\.\S+/.test(email)) errs.push('Valid email is required');
+            if (!phone || phone.length < 10) errs.push('Valid phone number is required');
+            if (!addr) errs.push('Address is required');
+            if (!city) errs.push('City is required');
+            if (!province) errs.push('Province is required');
+            if (!postal) errs.push('Postal code is required');
+            
+            if (errs.length) {
+                q('#statusArea').innerHTML = `<div class="notice" role="alert">Please complete shipping details:<br>${errs.join('<br>')}</div>`;
+                return false;
+            }
+            return true;
+        }
+
+        // Pay-in-store: generate ref & deadline
         const genRefBtn = q('#generateRef');
         if (genRefBtn) {
             genRefBtn.addEventListener('click', () => {
+                if (!validateShippingDetails()) {
+                    return;
+                }
+
                 const ref = randRef(6);
                 const deadline = addDays(new Date(), 2);
                 
@@ -1119,25 +1246,15 @@ $conn->close();
                                 <span class="btn-icon">🖨️</span>
                                 Print / Save
                             </button>
+                            <button id="confirmStorePayment" class="btn-action" style="background: #ffb300; color: #000;">
+                                <span class="btn-icon">✓</span>
+                                Confirm Reservation
+                            </button>
                         </div>
                     </div>
                 `;
 
-                // Store booking data
-                const booking = {
-                    ref: ref,
-                    method: 'store',
-                    items: items,
-                    subtotal: Number(q('#subtotal').dataset.value || 0),
-                    total: Number(q('#totalAmount').dataset.value || 0),
-                    name: customerName,
-                    email: (q('#email') && q('#email').value.trim()) || '',
-                    createdAt: new Date().toISOString(),
-                    deadline: deadline.toISOString()
-                };
-                try {
-                    sessionStorage.setItem('ozyde_booking', JSON.stringify(booking));
-                } catch (e) {}
+                storeReferenceGenerated = true;
 
                 // Set up copy and print buttons
                 setTimeout(() => {
@@ -1209,7 +1326,7 @@ $conn->close();
                                             
                                             <div class="section">
                                                 <div class="section-title">ORDER SUMMARY</div>
-                                                ${items.map(item => `<div>${item.title} - ${item.days} days</div>`).join('')}
+                                                ${items.map(item => `<div>${item.title} - ${item.rental_period}</div>`).join('')}
                                                 <div class="total">TOTAL: ${formatR(Number(q('#totalAmount').dataset.value || 0))}</div>
                                             </div>
                                             
@@ -1234,6 +1351,39 @@ $conn->close();
                                     printWindow.close();
                                 }, 250);
                             }
+                        });
+                    }
+
+                    // Confirm store payment button
+                    const confirmStorePayment = q('#confirmStorePayment');
+                    if (confirmStorePayment) {
+                        confirmStorePayment.addEventListener('click', () => {
+                            confirmStorePayment.innerHTML = '<span class="spinner"></span> Processing...';
+                            confirmStorePayment.classList.add('processing');
+                            
+                            // Store booking data for pending order
+                            const booking = {
+                                ref: ref,
+                                method: 'store',
+                                status: 'pending',
+                                items: items,
+                                subtotal: Number(q('#subtotal').dataset.value || 0),
+                                total: Number(q('#totalAmount').dataset.value || 0),
+                                name: customerName,
+                                email: (q('#email') && q('#email').value.trim()) || '',
+                                phone: (q('#phone') && q('#phone').value.trim()) || '',
+                                address: (q('#addr1') && q('#addr1').value.trim()) || '',
+                                createdAt: new Date().toISOString(),
+                                deadline: deadline.toISOString()
+                            };
+                            
+                            try {
+                                sessionStorage.setItem('ozyde_booking', JSON.stringify(booking));
+                            } catch (e) {}
+                            
+                            setTimeout(() => {
+                                window.location.href = 'pending.php?method=store&ref=' + ref;
+                            }, 1000);
                         });
                     }
                 }, 50);
@@ -1271,13 +1421,30 @@ $conn->close();
             proofInput.addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
+                
+                // Validate file type and size
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+                const maxSize = 5 * 1024 * 1024; // 5MB
+                
+                if (!validTypes.includes(file.type)) {
+                    q('#proofMsg').textContent = 'Please upload a JPG, PNG, or PDF file.';
+                    proofInput.value = '';
+                    return;
+                }
+                
+                if (file.size > maxSize) {
+                    q('#proofMsg').textContent = 'File size must be less than 5MB.';
+                    proofInput.value = '';
+                    return;
+                }
+                
                 proofFile = file;
                 proofPreview.style.display = '';
                 proofPreview.innerHTML = '';
                 const thumb = document.createElement('div');
                 thumb.className = 'thumb';
                 if (file.type === 'application/pdf') {
-                    thumb.innerHTML = '<svg width="36" height="36" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="4" fill="#eee"/></svg>';
+                    thumb.innerHTML = '<div style="text-align:center; padding:10px;"><span style="font-size:24px;">📄</span><div class="small">PDF</div></div>';
                     proofPreview.appendChild(thumb);
                     const meta = document.createElement('div');
                     meta.className = 'meta';
@@ -1286,7 +1453,7 @@ $conn->close();
                 } else {
                     const reader = new FileReader();
                     reader.onload = function(ev) {
-                        thumb.innerHTML = `<img src="${ev.target.result}" alt="proof">`;
+                        thumb.innerHTML = `<img src="${ev.target.result}" alt="proof" style="width:100%; height:100%; object-fit:cover;">`;
                         proofPreview.appendChild(thumb);
                         const meta = document.createElement('div');
                         meta.className = 'meta';
@@ -1302,17 +1469,46 @@ $conn->close();
         }
         if (submitProof) {
             submitProof.addEventListener('click', () => {
-                if (!proofFile) {
-                    q('#proofMsg').textContent = 'Please upload proof before submitting.';
+                if (!validateShippingDetails()) {
                     return;
                 }
+
+                if (!proofFile) {
+                    q('#proofMsg').textContent = 'Please upload proof of payment before submitting.';
+                    return;
+                }
+                
+                submitProof.innerHTML = '<span class="spinner"></span> Submitting...';
                 submitProof.disabled = true;
-                submitProof.textContent = 'Submitting...';
+                
                 setTimeout(() => {
-                    submitProof.textContent = 'Submitted';
-                    q('#statusArea').innerHTML = `<div class="success">Proof received. We will verify and update your booking shortly.</div>`;
-                    q('#proofMsg').textContent = '';
-                }, 900);
+                    // Store booking data for pending EFT order
+                    const ref = randRef(6);
+                    const booking = {
+                        ref: ref,
+                        method: 'eft',
+                        status: 'pending',
+                        items: items,
+                        subtotal: Number(q('#subtotal').dataset.value || 0),
+                        total: Number(q('#totalAmount').dataset.value || 0),
+                        name: (q('#firstName') && q('#firstName').value.trim()) + ' ' + (q('#lastName') && q('#lastName').value.trim()),
+                        email: (q('#email') && q('#email').value.trim()) || '',
+                        phone: (q('#phone') && q('#phone').value.trim()) || '',
+                        address: (q('#addr1') && q('#addr1').value.trim()) || '',
+                        createdAt: new Date().toISOString(),
+                        proofUploaded: true
+                    };
+                    
+                    try {
+                        sessionStorage.setItem('ozyde_booking', JSON.stringify(booking));
+                    } catch (e) {}
+                    
+                    q('#statusArea').innerHTML = `<div class="warning">Proof submitted. Your order is pending verification. Redirecting...</div>`;
+                    
+                    setTimeout(() => {
+                        window.location.href = 'pending.php?method=eft&ref=' + ref;
+                    }, 1500);
+                }, 1000);
             });
         }
         if (clearProofBtn) {
@@ -1326,38 +1522,40 @@ $conn->close();
             });
         }
 
-        // Finalize booking validation (non-card flows)
+        // Finalize booking validation
         q('#finalizeBtn').addEventListener('click', (e) => {
             e.preventDefault();
-            const fn = (q('#firstName') && q('#firstName').value.trim()) || '';
-            const ln = (q('#lastName') && q('#lastName').value.trim()) || '';
-            const email = (q('#email') && q('#email').value.trim()) || '';
-            const addr = (q('#addr1') && q('#addr1').value.trim()) || '';
-            if (!fn || !ln || !email || !addr) {
-                q('#statusArea').innerHTML = `<div class="notice">Please complete the shipping details (name, email and address) before finalizing.</div>`;
+            
+            if (!validateShippingDetails()) {
                 return;
             }
+            
             if (activeMethod === 'card') {
                 q('#statusArea').innerHTML = `<div class="notice">Please press <strong>Pay</strong> to complete card payment and confirm your booking.</div>`;
                 return;
             }
+            
             if (activeMethod === 'store') {
-                q('#statusArea').innerHTML = `<div class="notice">Generate a payment reference and pay in store within 2 days to confirm your booking.</div>`;
+                if (!storeReferenceGenerated) {
+                    q('#statusArea').innerHTML = `<div class="notice">Please generate a payment reference first to confirm your store payment reservation.</div>`;
+                    return;
+                }
+                q('#statusArea').innerHTML = `<div class="notice">Please click "Confirm Reservation" in the payment reference section to complete your booking.</div>`;
                 return;
             }
+            
             if (activeMethod === 'eft') {
-                if (!proofFile) q('#statusArea').innerHTML = `<div class="notice">Please upload EFT proof and submit it to confirm booking.</div>`;
-                else q('#statusArea').innerHTML = `<div class="success">EFT proof submitted. Booking pending verification — we'll confirm soon.</div>`;
+                if (!proofFile) {
+                    q('#statusArea').innerHTML = `<div class="notice">Please upload proof of payment and submit it to confirm your EFT booking.</div>`;
+                    return;
+                }
+                q('#statusArea').innerHTML = `<div class="notice">Please click "Submit proof" to complete your EFT booking.</div>`;
                 return;
             }
         });
 
         q('#cancelBtn').addEventListener('click', () => {
             if (confirm('Cancel checkout and return to shop?')) window.location.href = 'cart.php';
-        });
-
-        q('#finalizeBtn').addEventListener('click', () => {
-            if (confirm('Done Booking?')) window.location.href = 'success.php';
         });
 
         // Init done
