@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OZYDE Boutique - Date Selection</title>
+    <style>
+        /* Ozyde Boutique consistent styling */
+        :root {
+            --bg: #fff;
+            --text: #222;
+            --muted: #7a7a7a;
+            --accent: #111;
+            --max-width: 1200px;
+            --chip-bg: #f3f3f3;
+            --chip-border: #e6e6e6;
+            --primary: #111;
+            --success: #2fa46b;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --airbnb-pink: #FF5A5F;
+            --airbnb-light: #F7F7F7;
+            --airbnb-dark: #484848;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--airbnb-light);
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+        
+        /* Header Styles */
+        .nav-wrap {
+            background: #0b0b0b;
+            color: #fff;
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 120;
+            box-shadow: 0 6px 20px rgba(2, 2, 2, 0.12);
+        }
+        
+        .nav {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-weight: 800;
+            letter-spacing: 1px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .logo-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #fff2, #fff6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #111;
+            font-weight: 900;
+            font-size: 16px;
+        }
+        
+        nav ul {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 18px;
+            list-style: none;
+            align-items: center;
+        }
+        
+        nav a {
+            font-size: 14px;
+            color: #fff;
+            display: block;
+            padding: 8px 6px;
+            transition: color 0.2s ease;
+        }
+        
+        nav a:hover {
+            color: #ddd;
+        }
+        
+        .btn-signup {
+            background: var(--accent);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background 0.2s ease;
+        }
+        
+        .btn-signup:hover {
+            background: #333;
+        }
+        
+        .icons {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+        
+        .icon-only {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 0;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .icon-only:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            width: 100%;
+        }
+        
+        .calendar-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        .calendar-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .calendar-header h1 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--accent);
+        }
+        
+        .calendar-header p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 16px;
+        }
+        
+        /* Date Inputs */
+        .date-inputs {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .date-input {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .date-input label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--muted);
+        }
+        
+        .date-input-field {
+            padding: 12px 16px;
+            border: 1px solid #e6e6e6;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+            background-color: white;
+        }
+        
+        .date-input-field:hover {
+            border-color: #ccc;
+        }
+        
+        .date-input-field:focus {
+            outline: none;
+            border-color: var(--airbnb-pink);
+        }
+        
+        /* Calendar Styles */
+        .calendar {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        
+        .calendar-header-row {
+            background-color: var(--airbnb-light);
+        }
+        
+        .calendar th {
+            padding: 15px 0;
+            text-align: center;
+            font-weight: 600;
+            color: var(--airbnb-dark);
+            font-size: 14px;
+        }
+        
+        .calendar td {
+            padding: 12px 0;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.2s ease;
+        }
+        
+        .calendar td:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .calendar-day {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin: 0 auto;
+            font-size: 14px;
+        }
+        
+        .calendar-day.selected {
+            background-color: var(--airbnb-pink);
+            color: white;
+        }
+        
+        .calendar-day.in-range {
+            background-color: rgba(255, 90, 95, 0.1);
+        }
+        
+        .calendar-day.start-date {
+            background-color: var(--airbnb-pink);
+            color: white;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        
+        .calendar-day.end-date {
+            background-color: var(--airbnb-pink);
+            color: white;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+        
+        .calendar-day.disabled {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .calendar-day.disabled:hover {
+            background-color: transparent;
+        }
+        
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .calendar-nav button {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background-color 0.2s ease;
+        }
+        
+        .calendar-nav button:hover {
+            background-color: var(--airbnb-light);
+        }
+        
+        .calendar-nav h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--airbnb-dark);
+        }
+        
+        /* Action Buttons */
+        .calendar-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            font-size: 16px;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--airbnb-dark);
+            border: 1px solid #e6e6e6;
+        }
+        
+        .btn-secondary:hover {
+            border-color: #ccc;
+        }
+        
+        .btn-primary {
+            background: var(--airbnb-pink);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #e04e53;
+        }
+        
+        /* Footer Styles */
+        footer {
+            border-top: 1px solid #eee;
+            padding: 36px 0;
+            color: var(--muted);
+            background: #fafafa;
+            width: 100%;
+            margin-top: auto;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 32px;
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .footer-grid h4 {
+            margin: 0 0 16px 0;
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        .footer-grid ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-grid li {
+            margin-bottom: 8px;
+        }
+        
+        .footer-grid a {
+            color: var(--muted);
+            transition: color 0.2s ease;
+        }
+        
+        .footer-grid a:hover {
+            color: var(--accent);
+        }
+        
+        .socials {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .socials a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: #f5f5f5;
+            transition: all 0.2s ease;
+        }
+        
+        .socials a:hover {
+            background: var(--accent);
+        }
+        
+        .socials a:hover svg path,
+        .socials a:hover svg circle {
+            stroke: #fff;
+            fill: #fff;
+        }
+        
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .date-inputs {
+                flex-direction: column;
+            }
+            
+            .calendar-container {
+                padding: 20px;
+            }
+            
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 24px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .calendar-day {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+            }
+            
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- ===== Navigation Bar ===== -->
+    <header class="nav-wrap" role="banner">
+        <div class="nav" role="navigation" aria-label="Main navigation">
+            <div class="logo" id="brandLink">
+                <div class="logo-badge" aria-hidden="true">✦</div>
+                <div>Ozyde</div>
+            </div>
+
+            <nav aria-label="Main navigation">
+                <ul id="main-nav">
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="catalog.php">Browse</a></li>
+                </ul>
+            </nav>
+
+            <div class="icons" role="group" aria-label="User actions">
+                <a href="customerdashboard.html" class="icon-only" title="Dashboard" aria-label="Dashboard">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="white" stroke-width="1.2" fill="none"/>
+                        <polyline points="9 22 9 12 15 12 15 22" stroke="white" stroke-width="1.2" fill="none"/>
+                    </svg>
+                </a>
+                
+                <a href="login.html" class="icon-only" title="Login" aria-label="Login">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                        <polyline points="10 17 15 12 10 7" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="15" y1="12" x2="3" y2="12" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </a>
+                
+                <a href="help.html" class="icon-only" title="Help" aria-label="Help">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.2" fill="none"/>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                        <line x1="12" y1="17" x2="12" y2="17" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <div class="container">
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <h1>Select Your Rental Dates</h1>
+                    <h2>Rental period is 3 days including delivery and return days</h2>
+                </div>
+                
+                <div class="date-inputs">
+                    <div class="date-input">
+                        <label for="start-date">Start Date</label>
+                        <input type="text" id="start-date" class="date-input-field" placeholder="Select start date" readonly>
+                    </div>
+                    <div class="date-input">
+                        <label for="end-date">End Date</label>
+                        <input type="text" id="end-date" class="date-input-field" placeholder="Select end date" readonly>
+                    </div>
+                </div>
+                
+                <div class="calendar-nav">
+                    <button id="prev-month">&lt;</button>
+                    <h2 id="current-month">June 2024</h2>
+                    <button id="next-month">&gt;</button>
+                </div>
+                
+                <table class="calendar">
+                    <thead>
+                        <tr class="calendar-header-row">
+                            <th>Su</th>
+                            <th>Mo</th>
+                            <th>Tu</th>
+                            <th>We</th>
+                            <th>Th</th>
+                            <th>Fr</th>
+                            <th>Sa</th>
+                        </tr>
+                    </thead>
+                    <tbody id="calendar-body">
+                        <!-- Calendar days will be generated by JavaScript -->
+                    </tbody>
+                </table>
+                <!-- Legend -->
+<div class="calendar-legend" style="display:flex; gap:10px; margin: top 10px; font-size:16px; justify-content: flex-wrap;">
+    <div style="display:flex; align-items:center; gap:6px;">
+        <span style="display:inline-block;width:18px;height:18px;background:#FF5A5F;border-radius:50%;"></span>
+        <span>Start / End Date</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:6px;">
+        <span style="display:inline-block;width:18px;height:18px;background:rgba(255,90,95,0.2);border-radius:50%;"></span>
+        <span>In Range</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:6px;">
+        <span style="display:inline-block;width:18px;height:18px;background:#ccc;border-radius:50%;"></span>
+        <span>Unavailable Dates</span>
+    </div>
+</div>
+
+                
+                <div class="calendar-actions">
+                    <button class="btn btn-secondary" id="clear-dates">Clear Dates</button>
+                    <button class="btn btn-primary" id="apply-dates">Apply Dates</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Overlay for Calendar -->
+    <div class="modal-overlay" id="calendar-modal">
+        <div class="modal-content">
+            <div class="calendar-header">
+                <h1>Select Your Rental Dates</h1>
+                <h2>Rental period is 3 days including delivery and return days</h2>
+            </div>
+            
+            <div class="date-inputs">
+                <div class="date-input">
+                    <label for="modal-start-date">Start Date</label>
+                    <input type="text" id="modal-start-date" class="date-input-field" placeholder="Select start date" readonly>
+                </div>
+                <div class="date-input">
+                    <label for="modal-end-date">End Date</label>
+                    <input type="text" id="modal-end-date" class="date-input-field" placeholder="Select end date" readonly>
+                </div>
+            </div>
+            <div class="date-inputs">
+    <div class="date-input">
+        <label for="start-date">Start Date</label>
+        <input type="text" id="start-date" class="date-input-field" placeholder="Select start date" readonly>
+    </div>
+    <div class="date-input">
+        <label for="end-date">End Date</label>
+        <input type="text" id="end-date" class="date-input-field" placeholder="Select end date" readonly>
+        <p style="font-size:14px; color:var(--muted); margin-top:8px;">
+    Rental period is 3 days including delivery and return days.
+</p>
+<p style="font-size:14px; color:var(--muted); margin-top:8px;">
+    Rental period is 3 days including delivery and return days.
+    <div style="display:flex; gap:12px; margin-top:8px; font-size:14px;">
+    <span style="display:inline-block;width:12px;height:12px;background:#FF5A5F;border-radius:50%;"></span> Start/End Date
+    <span style="display:inline-block;width:12px;height:12px;background:rgba(255,90,95,0.1);border-radius:50%;"></span> In Range
+    <span style="display:inline-block;width:12px;height:12px;background:#ccc;border-radius:50%;"></span> Unavailable Dates
+</div>
+
+
+</p>
+
+
+
+    </div>
+</div>
+
+
+            <div id="calendar"></div>
+
+<div class="legend" style="margin-top:12px;">
+  <span style="background:#ddd; padding:4px 8px; border-radius:4px;">Unavailable</span>
+  <span style="background:#ffb6c1; padding:4px 8px; border-radius:4px;">Rental (3 days)</span>
+</div>
+<p style="font-size:13px; color:#777; margin-top:6px;">
+  Note: Rentals are strictly <strong>3 days</strong>. 
+</p>
+
+
+            
+            <div class="calendar-nav">
+                <button id="modal-prev-month">&lt;</button>
+                <h2 id="modal-current-month">June 2024</h2>
+                <button id="modal-next-month">&gt;</button>
+            </div>
+            
+            <table class="calendar">
+                <thead>
+                    <tr class="calendar-header-row">
+                        <th>Su</th>
+                        <th>Mo</th>
+                        <th>Tu</th>
+                        <th>We</th>
+                        <th>Th</th>
+                        <th>Fr</th>
+                        <th>Sa</th>
+                    </tr>
+                </thead>
+                <tbody id="modal-calendar-body">
+                    <!-- Calendar days will be generated by JavaScript -->
+                </tbody>
+            </table>
+            
+            <div class="calendar-actions">
+                <button class="btn btn-secondary" id="modal-clear-dates">Clear Dates</button>
+                <button class="btn btn-primary" id="modal-apply-dates">Apply Dates</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-grid">
+            <div>
+                <h4>Ozyde Boutique</h4>
+                <p>Premium dress rentals for your special occasions. Quality, style, and affordability combined.</p>
+                <div>Address:<br>5 Liebenberg Rd, Noordwyk, Midrand 1687</div>
+                <div class="socials" aria-label="Social media">
+                    <a href="https://www.instagram.com/ozyde_?igsh=NWM0aTd4ZGFmeHVr" target="_blank" rel="noopener" aria-label="Instagram">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <rect x="3" y="3" width="18" height="18" rx="5" stroke="#333" stroke-width="1.2" fill="none"/>
+                            <circle cx="12" cy="12" r="3.2" stroke="#333" stroke-width="1.2" fill="none"/>
+                            <circle cx="17.5" cy="6.5" r="0.6" fill="#333"/>
+                        </svg>
+                    </a>
+                    <a href="https://www.tiktok.com/@ozyde_designs?_t=ZS-8zlyfPi8HHJ&_r=1" target="_blank" rel="noopener" aria-label="TikTok">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M17 3v6.2c0 2.5 2 4.5 4.5 4.5V12c-1.8 0-3.2-1.4-3.5-3H17zM9 8.5a5.5 5.5 0 1 0 5.5 5.5V8.5H9z" fill="#333"/>
+                        </svg>
+                    </a>
+                    <a href="mailto:ozydedesigns@gmail.com" aria-label="Email">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <rect x="3" y="6" width="18" height="12" rx="2" stroke="#333" stroke-width="1.2" fill="none"/>
+                            <path d="M4 7.5l8 6 8-6" stroke="#333" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#">How It Works</a></li>
+                    <li><a href="#">Size Guide</a></li>
+                    <li><a href="#">Care Instructions</a></li>
+                    <li><a href="#">Returns & Policy</a></li>
+                    <li><a href="#">Delivery</a></li>
+                    <li><a href="#">Help Center</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Press</a></li>
+                    <li><a href="#">Terms</a></li>
+                    <li><a href="#">Privacy</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="#">Sizing Guide</a></li>
+                    <li><a href="#">Cleaning</a></li>
+                    <li><a href="#">Partnerships</a></li>
+                    <li><a href="#">Affiliate</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div style="margin-top:24px;text-align:center;padding-top:24px;border-top:1px solid #e6e6e6;color:var(--muted)">
+            © 2024 Ozyde Boutique. All rights reserved.
+        </div>
+    </footer>
+
+   <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Calendar state
+    let currentDate = new Date();
+    let startDate = null;
+    let endDate = null;
+    let isSelectingStart = true;
+// Unavailable dates fetched from server
+    let unavailableDates = [];
+
+fetch('get_booked_dates.php')
+    .then(res => res.json())
+    .then(data => {
+        unavailableDates = data;
+        generateCalendar(currentDate.getFullYear(), currentDate.getMonth(), calendarBody);
+        generateCalendar(currentDate.getFullYear(), currentDate.getMonth(), modalCalendarBody);
+    });
+
+
+    // DOM elements
+    const startDateInput = document.getElementById('start-date');
+    const endDateInput = document.getElementById('end-date');
+    const modalStartDateInput = document.getElementById('modal-start-date');
+    const modalEndDateInput = document.getElementById('modal-end-date');
+    const currentMonthElement = document.getElementById('current-month');
+    const modalCurrentMonthElement = document.getElementById('modal-current-month');
+    const calendarBody = document.getElementById('calendar-body');
+    const modalCalendarBody = document.getElementById('modal-calendar-body');
+    const prevMonthButton = document.getElementById('prev-month');
+    const nextMonthButton = document.getElementById('next-month');
+    const modalPrevMonthButton = document.getElementById('modal-prev-month');
+    const modalNextMonthButton = document.getElementById('modal-next-month');
+    const clearDatesButton = document.getElementById('clear-dates');
+    const applyDatesButton = document.getElementById('apply-dates');
+    const modalClearDatesButton = document.getElementById('modal-clear-dates');
+    const modalApplyDatesButton = document.getElementById('modal-apply-dates');
+    const calendarModal = document.getElementById('calendar-modal');
+    const dateInputs = document.querySelectorAll('.date-input-field');
+
+    // Format date as "Month Day, Year"
+    function formatDate(date) {
+        if (!date) return '';
+        return date.toLocaleDateString('en-US', { 
+            month: 'long', 
+            day: 'numeric', 
+            year: 'numeric' 
+        });
+    }
+
+    // Generate calendar for a given month and year
+    function generateCalendar(year, month, calendarBodyElement) {
+        calendarBodyElement.innerHTML = '';
+
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const daysInMonth = lastDay.getDate();
+        const startingDay = firstDay.getDay();
+
+        // Update month display
+        const monthName = firstDay.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        if (calendarBodyElement === calendarBody) {
+            currentMonthElement.textContent = monthName;
+        } else {
+            modalCurrentMonthElement.textContent = monthName;
+        }
+
+        let date = 1;
+        let calendarHTML = '';
+
+        for (let i = 0; i < 6; i++) {
+            calendarHTML += '<tr>';
+
+            for (let j = 0; j < 7; j++) {
+                if (i === 0 && j < startingDay) {
+                    calendarHTML += '<td><div class="calendar-day disabled"></div></td>';
+                } else if (date > daysInMonth) {
+                    calendarHTML += '<td><div class="calendar-day disabled"></div></td>';
+                } else {
+                    const currentDateObj = new Date(year, month, date);
+                    const dayClass = getDayClass(currentDateObj);
+
+                    calendarHTML += `<td data-date="${currentDateObj.toISOString()}">
+                        <div class="calendar-day ${dayClass}">${date}</div>
+                    </td>`;
+                    date++;
+                }
+            }
+
+            calendarHTML += '</tr>';
+        }
+
+        calendarBodyElement.innerHTML = calendarHTML;
+
+        // Add event listeners to calendar days
+        const dayElements = calendarBodyElement.querySelectorAll('td');
+        dayElements.forEach(dayElement => {
+            const dayDiv = dayElement.querySelector('.calendar-day');
+            if (!dayDiv || dayDiv.classList.contains('disabled')) return;
+
+            dayElement.addEventListener('click', function() {
+                const dateString = this.getAttribute('data-date');
+                const clickedDate = new Date(dateString);
+                handleDateClick(clickedDate);
+            });
+        });
+    }
+
+    // Get CSS class for a day based on selection state
+    function getDayClass(date) {
+        const today = new Date();
+        today.setHours(0,0,0,0);
+
+        // Disable past dates
+        if (date < today) return 'disabled';
+
+        // Disable unavailable dates
+        const dateStr = date.toISOString().split('T')[0];
+        if (unavailableDates.includes(dateStr)) return 'disabled';
+
+        if (startDate && date.getTime() === startDate.getTime()) return 'start-date';
+        if (endDate && date.getTime() === endDate.getTime()) return 'end-date';
+        if (startDate && endDate && date > startDate && date < endDate) return 'in-range';
+
+        return '';
+    }
+
+    // Handle date selection
+    function handleDateClick(date) {
+        startDate = date;
+
+        // Auto-set end date for 3-day rental
+        endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 2); // 3-day rental total
+
+        updateDateInputs();
+        generateCalendar(currentDate.getFullYear(), currentDate.getMonth(), calendarBody);
+        generateCalendar(currentDate.getFullYear(), currentDate.getMonth(), modalCalendarBody);
+    }
+
+    // Update date input fields
+    function updateDateInputs() {
+        startDateInput.value = formatDate(startDate);
+        endDateInput.value = formatDate(endDate);
+        modalStartDateInput.value = formatDate(startDate);
+        modalEndDateInput.value = formatDate(endDate);
+    }
+
+    // Clear selected dates
+    function clearDates() {
+        startDate = null;
+        endDate = null;
+        updateDateInputs();
+        generateCalendar(currentDate.getFullYear(), currentDate.getMonth(), calendarBody);
+        generateCalendar(currentDate.getFullYear(), currentDate.getMonth(), modalCalendarBody);
+    }
+
+    // Apply selected dates
+   function applyDates() {
+    if (!startDate || !endDate) {
+        alert('Please select a start date');
+        return;
+    }
+
+    const productId = new URLSearchParams(window.location.search).get('product_id');
+    if (!productId) {
+        alert('Product ID missing');
+        return;
+    }
+
+    const params = new URLSearchParams({
+        action: 'add',
+        product_id: productId,
+        start_date: startDate.toISOString().split('T')[0],
+        end_date: endDate.toISOString().split('T')[0]
+    });
+
+    fetch('cart.php?' + params)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert(`Rental dates selected: ${formatDate(startDate)} → ${formatDate(endDate)}`);
+                window.location.href = 'cart.php'; // redirect to cart page
+            } else {
+                alert(data.error || 'Failed to add to cart');
+            }
+        });
+
+
+}
+
+    
+    // Navigate months
+    function goToPreviousMonth() {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        generateCalendar(currentDate.getFullYear(), currentDate.getMonth(), calendarBody);
+        generateCalendar(currentDate.getFullYear(), currentDate.getMonth(), modalCalendarBody);
+    }
+
+    function goToNextMonth() {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        generateCalendar(currentDate.getFullYear(), currentDate.getMonth(), calendarBody);
+        generateCalendar(currentDate.getFullYear(), currentDate.getMonth(), modalCalendarBody);
+    }
+
+    // Show/Hide modal
+    function showCalendarModal() { calendarModal.classList.add('active'); }
+    function hideCalendarModal() { calendarModal.classList.remove('active'); }
+
+    // Initialize calendar
+    generateCalendar(currentDate.getFullYear(), currentDate.getMonth(), calendarBody);
+    generateCalendar(currentDate.getFullYear(), currentDate.getMonth(), modalCalendarBody);
+
+    // Event listeners
+    prevMonthButton.addEventListener('click', goToPreviousMonth);
+    nextMonthButton.addEventListener('click', goToNextMonth);
+    modalPrevMonthButton.addEventListener('click', goToPreviousMonth);
+    modalNextMonthButton.addEventListener('click', goToNextMonth);
+
+    clearDatesButton.addEventListener('click', clearDates);
+    modalClearDatesButton.addEventListener('click', clearDates);
+
+    applyDatesButton.addEventListener('click', applyDates);
+    modalApplyDatesButton.addEventListener('click', applyDates);
+
+    dateInputs.forEach(input => input.addEventListener('click', showCalendarModal));
+
+    calendarModal.addEventListener('click', function(e) {
+        if (e.target === calendarModal) hideCalendarModal();
+    });
+document.addEventListener("DOMContentLoaded", function() {
+    const applyBtn = document.getElementById('applyDatesBtn');
+
+    applyBtn.addEventListener('click', function() {
+        const sizeBtn = document.querySelector('.size-btn.selected');
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        if (!sizeBtn) {
+            alert("Please select a size first.");
+            return;
+        }
+        if (!startDate || !endDate) {
+            alert("Please select your rental dates first.");
+            return;
+        }
+
+        const size = sizeBtn.dataset.size;
+        const productId = document.getElementById('productId').value;
+
+        if (confirm(`You selected size ${size}\nFrom ${startDate} to ${endDate}`)) {
+            // Send data to add_to_cart.php
+            const formData = new FormData();
+            formData.append('product_id', productId);
+            formData.append('size', size);
+            formData.append('start_date', startDate);
+            formData.append('end_date', endDate);
+
+            fetch('add_to_cart.php', {
+                method: 'POST',
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    window.location.href = 'cart.php';
+                } else {
+                    alert("Something went wrong. Please try again.");
+                }
+            });
+        }
+    });
+
+    // Add click handler for size buttons
+    const sizeButtons = document.querySelectorAll('.size-btn');
+    sizeButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            sizeButtons.forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
+});
+
+// Handle "Apply Dates" click
+applyDatesButton.addEventListener('click', function() {
+    if (!startDate || !endDate) {
+        alert('Please select a start and end date before applying.');
+        return;
+    }
+
+    const formattedStart = formatDate(startDate);
+    const formattedEnd = formatDate(endDate);
+
+    // Show confirmation popup
+    alert(`You selected:\nStart: ${formattedStart}\nEnd: ${formattedEnd}`);
+
+    // Send data to server to add product to cart
+    const productId = new URLSearchParams(window.location.search).get('product_id');
+    const selectedSize = document.querySelector('.size-btn.selected')?.dataset.size;
+
+    // Handle "Apply Dates" click
+applyDatesButton.addEventListener('click', function() {
+    if (!startDate || !endDate) {
+        alert('Please select a start and end date before applying.');
+        return;
+    }
+
+    const formattedStart = formatDate(startDate);
+    const formattedEnd = formatDate(endDate);
+
+    // Show confirmation popup
+    alert(`You selected:\nStart: ${formattedStart}\nEnd: ${formattedEnd}`);
+
+    // Send data to server to add product to cart
+    const productId = new URLSearchParams(window.location.search).get('product_id');
+    const selectedSize = document.querySelector('.size-btn.selected')?.dataset.size;
+
+    
+
+    fetch('add_to_cart.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+            product_id: productId,
+            size: selectedSize,
+            start_date: formattedStart,
+            end_date: formattedEnd
+        })
+    })
+    .then(response => response.text())
+    .then(result => {
+        console.log(result);
+        // Redirect to cart after success
+        window.location.href = 'cart.php';
+    })
+    .catch(error => console.error('Error adding to cart:', error));
+});
+
+
+    fetch('add_to_cart.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+            product_id: productId,
+            size: selectedSize,
+            start_date: formattedStart,
+            end_date: formattedEnd
+        })
+    })
+    .then(response => response.text())
+    .then(result => {
+        console.log(result);
+        // Redirect to cart after success
+        window.location.href = 'cart.php';
+    })
+    .catch(error => console.error('Error adding to cart:', error));
+});
+
+
+});
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Checkout — OZYDE</title>
+    <style>
+        :root {
+            --bg: #fff;
+            --text: #222;
+            --muted: #7a7a7a;
+            --accent: #111;
+            --card-bg: #0b0b0b;
+            --radius: 14px;
+            --max-width: 1100px;
+            --gold: #c6a04a;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            font-family: Inter, "Helvetica Neue", Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            color: var(--text);
+            background: linear-gradient(180deg, #ffffff 0%, #f5f5f7 100%);
+            padding: 28px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .wrap {
+            width: 100%;
+            max-width: var(--max-width);
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 20px 60px rgba(16, 16, 24, 0.06);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 28px;
+            padding: 28px;
+        }
+        
+        @media (max-width: 980px) {
+            .wrap {
+                grid-template-columns: 1fr;
+                padding: 18px;
+                gap: 18px;
+            }
+        }
+        
+        .left {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        
+        .group {
+            background: #fff;
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+        
+        h2 {
+            margin: 0 0 6px 0;
+            font-size: 20px;
+        }
+        
+        .muted {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        
+        .small {
+            font-size: 13px;
+            color: var(--muted);
+        }
+        
+        .right {
+            padding: 12px 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        
+        label {
+            font-size: 13px;
+            color: var(--muted);
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        select {
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #e8e8e8;
+            font-size: 14px;
+            width: 100%;
+        }
+        
+        .delivery-options {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .opt {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            cursor: pointer;
+            font-weight: 600;
+            background: #fff;
+            color: var(--muted);
+        }
+        
+        .opt.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        
+        .methods {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+        
+        .method {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            cursor: pointer;
+            font-weight: 600;
+            background: #fff;
+            color: var(--muted);
+        }
+        
+        .method.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        
+        .payment-row {
+            display: flex;
+            gap: 18px;
+            align-items: start;
+            flex-wrap: wrap;
+        }
+        
+        .card-preview {
+            width: 320px;
+            border-radius: 12px;
+            padding: 16px;
+            position: sticky;
+            top: 24px;
+            align-self: flex-start;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(30, 30, 30, 0.95));
+            color: #fff;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+        }
+        
+        @media (max-width:980px) {
+            .card-preview {
+                position: static;
+                width: 100%;
+            }
+        }
+        
+        .card-preview .inner {
+            position: relative;
+            min-height: 120px;
+            padding-right: 10px;
+        }
+        
+        .card-bank {
+            position: absolute;
+            right: 16px;
+            top: 12px;
+            font-weight: 700;
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .card-chip {
+            width: 44px;
+            height: 32px;
+            border-radius: 6px;
+            background: linear-gradient(#eee, #bbb);
+            margin-bottom: 12px;
+        }
+        
+        .card-number {
+            font-family: "Courier New", monospace;
+            letter-spacing: 3px;
+            font-size: 18px;
+            margin-top: 8px;
+            padding-right: 68px;
+        }
+        
+        .card-name {
+            text-transform: uppercase;
+            font-size: 12px;
+            margin-top: 12px;
+        }
+        
+        .card-exp {
+            font-size: 13px;
+            opacity: 0.95;
+            padding-right: 68px;
+        }
+        
+        .card-icons {
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            z-index: 5;
+        }
+        
+        .brand-circle {
+            width: 22px;
+            height: 14px;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #fff2, #fff6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            color: #222;
+            font-weight: 700;
+            padding: 2px 4px;
+        }
+        
+        .return-options {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .return-btn {
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: #fff;
+            border: 1px solid #eee;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--muted);
+        }
+        
+        .return-btn.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            align-items: center;
+        }
+        
+        .summary-total {
+            font-weight: 800;
+            font-size: 18px;
+            margin-top: 8px;
+        }
+        
+        .btn {
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 0;
+            cursor: pointer;
+            background: var(--accent);
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        
+        .btn.ghost {
+            background: #fff;
+            color: var(--accent);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+        
+        .thumb {
+            width: 72px;
+            height: 50px;
+            border-radius: 6px;
+            background: #f0f0f0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e6e6e6;
+        }
+        
+        .notice {
+            background: #fff6;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #333;
+            border-left: 4px solid #ffa500;
+        }
+        
+        .success {
+            padding: 12px;
+            background: #e8ffef;
+            border-left: 4px solid #2fa46b;
+            border-radius: 8px;
+            color: #075;
+        }
+        
+        .error {
+            padding: 12px;
+            background: #ffe8e8;
+            border-left: 4px solid #ef4444;
+            border-radius: 8px;
+            color: #700;
+        }
+        
+        .foot-note {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 8px;
+        }
+        
+        .glam-line {
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold), #ffd27a);
+            border-radius: 2px;
+            margin: 10px 0;
+        }
+        
+        /* Store Reference Card Styles */
+        .store-ref-card {
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            margin-top: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .store-ref-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--gold), #ffd27a);
+        }
+
+        .ref-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ozyde-logo {
+            font-weight: 800;
+            font-size: 20px;
+            letter-spacing: 1px;
+            color: var(--accent);
+        }
+
+        .logo-accent {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--gold);
+            box-shadow: 0 0 0 2px rgba(198, 160, 74, 0.2);
+        }
+
+        .ref-badge {
+            background: rgba(198, 160, 74, 0.1);
+            color: var(--gold);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid rgba(198, 160, 74, 0.2);
+        }
+
+        .ref-content {
+            margin-bottom: 24px;
+        }
+
+        .ref-number-container {
+            text-align: center;
+            margin-bottom: 24px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .ref-label {
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ref-number {
+            font-family: 'Courier New', monospace;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin: 12px 0;
+            padding: 12px 20px;
+            background: #fff;
+            border-radius: 8px;
+            border: 2px dashed rgba(198, 160, 74, 0.3);
+            display: inline-block;
+        }
+
+        .ref-subtitle {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .deadline-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding: 16px;
+            background: rgba(255, 245, 230, 0.5);
+            border-radius: 10px;
+            border-left: 4px solid var(--gold);
+        }
+
+        .deadline-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .deadline-text {
+            flex: 1;
+        }
+
+        .deadline-label {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        .deadline-date {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 16px;
+        }
+
+        .ref-note {
+            display: flex;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.4;
+        }
+
+        .note-icon {
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        .note-text {
+            flex: 1;
+        }
+
+        .ref-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-action {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .btn-copy {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-copy:hover {
+            background: #000;
+            transform: translateY(-1px);
+        }
+
+        .btn-print {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-print:hover {
+            background: rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .btn-icon {
+            font-size: 16px;
+        }
+
+        /* Animation for copy feedback */
+        @keyframes copied {
+            0% { background: var(--accent); }
+            50% { background: #2fa46b; }
+            100% { background: var(--accent); }
+        }
+
+        .copied {
+            animation: copied 0.5s ease;
+        }
+
+        .upload-preview {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 8px;
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+
+        .upload-preview .meta {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <main class="wrap" aria-label="Checkout page">
+
+        <!-- LEFT: order summary & notes -->
+        <section class="left" aria-hidden="false">
+            <div class="group">
+                <h3 style="margin:0 0 8px 0">Order Summary</h3>
+                <div class="small">Review your items and order details</div>
+
+                <!-- Items list will be populated by JavaScript -->
+                <div id="itemsList" style="margin-top:12px">
+                    <div class="notice">Loading your cart items...</div>
+                </div>
+                
+                <div class="glam-line"></div>
+
+                <div class="summary-row">
+                    <div class="small">Subtotal</div>
+                    <div id="subtotal" class="small">R0.00</div>
+                </div>
+                <div class="summary-row">
+                    <div class="small">VAT (15%)</div>
+                    <div id="vat" class="small">R0.00</div>
+                </div>
+                <div class="summary-row">
+                    <div class="small">Delivery fee</div>
+                    <div id="deliveryFee" class="small">R0.00</div>
+                </div>
+                <div class="summary-row">
+                    <div class="small">Return fee</div>
+                    <div id="returnFee" class="small">R0.00</div>
+                </div>
+                <div class="summary-row">
+                    <div class="small">Deposit (refundable)</div>
+                    <div id="deposit" class="small">R0.00</div>
+                </div>
+
+                <div class="summary-total" id="totalRow">
+                    <div style="display:flex; justify-content:space-between;">
+                        <div>Total</div>
+                        <div id="totalAmount">R0.00</div>
+                    </div>
+                </div>
+
+                <div class="foot-note" style="margin-top:10px">
+                    Deposit returned after inspection if items are returned on time and undamaged.
+                </div>
+            </div>
+
+            <div class="group">
+                <h3>Return instructions</h3>
+                <div class="small">Choose how you'll return items:</div>
+                <ul style="margin-top:10px; padding-left:18px; color:var(--muted)">
+                    <li><strong>Drop-off:</strong> Return to our store within the agreed timeframe.</li>
+                    <li><strong>Pickup:</strong> Schedule a pickup, additional fee may apply.</li>
+                </ul>
+
+                <div style="margin-top:10px">
+                    <div class="small">Return method</div>
+                    <div class="return-options">
+                        <button id="returnDrop" class="return-btn active" data-return="drop">Drop-off (Free)</button>
+                        <button id="returnPickup" class="return-btn" data-return="pickup">Pickup (R120)</button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- RIGHT: forms & payment -->
+        <section class="right" aria-labelledby="checkout-heading">
+            <div>
+                <h2 id="checkout-heading">Checkout</h2>
+                <div class="muted">Complete your details and choose a payment method</div>
+            </div>
+
+            <div class="group" aria-label="Shipping details">
+                <h3 style="margin:0 0 8px 0">Shipping & Contact</h3>
+
+                <div class="grid" style="margin-bottom:8px">
+                    <div class="field">
+                        <label for="firstName">First name *</label>
+                        <input id="firstName" type="text" placeholder="Full name" required>
+                    </div>
+                    <div class="field">
+                        <label for="lastName">Last name *</label>
+                        <input id="lastName" type="text" placeholder="Surname" required>
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <div class="field">
+                        <label for="email">Email *</label>
+                        <input id="email" type="email" placeholder="your@email.com" required>
+                    </div>
+                    <div class="field">
+                        <label for="phone">Phone *</label>
+                        <input id="phone" type="tel" placeholder="+27 ** *** ****" required>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="addr1">Address 1 *</label>
+                    <input id="addr1" type="text" placeholder="Street address" required>
+                </div>
+                <div class="field">
+                    <label for="addr2">Address 2 (optional)</label>
+                    <input id="addr2" type="text" placeholder="Unit / complex">
+                </div>
+
+                <div class="grid">
+                    <div class="field">
+                        <label for="city">City *</label>
+                        <input id="city" type="text" placeholder="" required>
+                    </div>
+                    <div class="field">
+                        <label for="province">Province *</label>
+                        <select id="province" required>
+                            <option value="">Select Province</option>
+                            <option>Gauteng</option>
+                            <option>Western Cape</option>
+                            <option>KwaZulu-Natal</option>
+                            <option>Eastern Cape</option>
+                            <option>North West</option>
+                            <option>Mpumalanga</option>
+                            <option>Northern Cape</option>
+                            <option>Free State</option>
+                            <option>Limpopo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <div class="field">
+                        <label for="postal">Postal code *</label>
+                        <input id="postal" type="text" placeholder="" required>
+                    </div>
+                    <div class="field">
+                        <label for="country">Country</label>
+                        <input id="country" type="text" value="South Africa" readonly>
+                    </div>
+                </div>
+
+                <div style="margin-top:8px;">
+                    <div class="small">Delivery options</div>
+                    <div class="delivery-options" role="radiogroup" aria-label="Delivery options">
+                        <button class="opt active" data-delivery="collect" id="optCollect">Collect in store (Free)</button>
+                        <button class="opt" data-delivery="standard" id="optDeliver">Deliver Fee (R250)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- payment & card preview row -->
+            <div class="payment-row">
+                <!-- card preview -->
+                <div class="card-preview" id="cardPreview" aria-hidden="false">
+                    <div class="inner">
+                        <div class="card-bank">OZYDE</div>
+                        <div class="card-chip" aria-hidden="true"></div>
+
+                        <div class="card-number" id="cardNumberPreview">0000 0000 0000 0000</div>
+
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                            <div>
+                                <div style="font-size:10px; opacity:0.85">Card holder</div>
+                                <div class="card-name" id="cardNamePreview">NAME SURNAME</div>
+                            </div>
+                            <div style="text-align:right">
+                                <div style="font-size:10px; opacity:0.85">Expires</div>
+                                <div class="card-exp" id="cardExpiryPreview">MM/YY</div>
+                            </div>
+                        </div>
+
+                        <div class="card-icons" aria-hidden="true" style="right:12px; top:12px;">
+                            <div class="brand-circle" title="Visa">V</div>
+                            <div class="brand-circle" title="Mastercard" style="background:linear-gradient(90deg,#ff5b5b,#ffd66b); color:#fff">M</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- payment fields -->
+                <div style="flex:1; min-width:280px;">
+                    <div class="group">
+                        <h3 style="margin:0 0 8px 0">Payment method</h3>
+                        <div class="muted">Choose a payment option</div>
+                        <div class="methods" role="tablist" aria-label="Payment options" style="margin-top:10px">
+                            <button class="method active" data-method="card" role="tab" aria-selected="true">Card</button>
+                            <button class="method" data-method="store" role="tab" aria-selected="false">Pay in store</button>
+                            <button class="method" data-method="eft" role="tab" aria-selected="false">EFT / Bank transfer</button>
+                        </div>
+
+                        <!-- CARD FORM -->
+                        <div id="method-card" style="margin-top:12px">
+                            <div class="card-form">
+                                <div class="field">
+                                    <label for="cardNumber">Card number *</label>
+                                    <input id="cardNumber" type="text" inputmode="numeric" maxlength="19" placeholder="0000 0000 0000 0000" autocomplete="cc-number" aria-label="Card number">
+                                </div>
+
+                                <div class="grid">
+                                    <div class="field">
+                                        <label for="cardName">Name on card *</label>
+                                        <input id="cardName" type="text" placeholder="Name Surname" autocomplete="cc-name">
+                                    </div>
+                                    <div class="field">
+                                        <label for="cardExpiry">Expiry (MM/YY) *</label>
+                                        <input id="cardExpiry" type="text" maxlength="5" placeholder="MM/YY" autocomplete="cc-exp">
+                                    </div>
+                                </div>
+                                <div class="grid">
+                                    <div class="field">
+                                        <label for="cardCvv">CVV *</label>
+                                        <input id="cardCvv" type="text" maxlength="3" placeholder="123" autocomplete="cc-csc">
+                                    </div>
+                                    <div style="display:flex; align-items:end; gap:8px">
+                                        <button id="payCardBtn" class="btn" style="width:100%">Pay <span id="payAmountText">R0.00</span></button>
+                                    </div>
+                                </div>
+                                <div class="foot-note">We use secure payment processing. Card details are not stored.</div>
+                            </div>
+                        </div>
+
+                        <!-- PAY IN STORE -->
+                        <div id="method-store" style="margin-top:12px; display:none">
+                            <div class="notice">
+                                Reserve now and pay in store within <strong>2 days</strong> (by <span id="storeDeadlineStatic"></span>). A reference will be generated for your booking.
+                            </div>
+                            <div style="margin-top:12px; display:flex; gap:8px">
+                                <button id="generateRef" class="btn">Generate payment reference</button>
+                            </div>
+                            <div id="storeResult" style="margin-top:12px"></div>
+                        </div>
+
+                        <!-- EFT -->
+                        <div id="method-eft" style="margin-top:12px; display:none">
+                            <div class="muted">Transfer the total amount to our bank account and upload proof of payment below.</div>
+                            <div class="bank-details" style="margin-top:10px;">
+                                <div style="font-weight:700">Ozyde Rentals (PTY)</div>
+                                <div class="small">Bank: <strong>Standard Bank</strong></div>
+                                <div class="small">Account: <strong>10202732310</strong></div>
+                                <div class="small">Branch code: <strong>051001</strong> </div>
+                                <div class="small">Reference: use your <strong>Full name + Surname </strong> </div>
+                            </div>
+
+                            <div style="margin-top:10px">
+                                <label for="proof">Upload proof of payment (jpg/png/pdf)</label>
+                                <input id="proof" type="file" accept=".png,.jpg,.jpeg,.pdf">
+                                <div id="proofPreview" class="upload-preview" style="display:none"></div>
+                                <div style="margin-top:10px; display:flex; gap:8px">
+                                    <button id="submitProof" class="btn" disabled>Submit proof</button>
+                                    <button id="clearProof" class="btn ghost" style="display:none">Clear</button>
+                                </div>
+                                <div id="proofMsg" class="small" style="margin-top:8px"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- finalize -->
+            <div style="display:flex; gap:12px; align-items:center; justify-content:flex-end">
+                <button id="cancelBtn" class="btn ghost">Cancel</button>
+                <button id="finalizeBtn" class="btn">Finalize booking</button>
+            </div>
+
+            <div id="statusArea" style="margin-top:8px"></div>
+        </section>
+
+    </main>
+
+    <script>
+        // Demo cart data - in a real app, this would come from your backend
+        
+         
+        // State
+        let cartItems = [];
+        let deliveryFee = 0;
+        let returnFee = 0;
+        let proofFile = null;
+        let activeMethod = 'card';
+        let bookingReference = '';
+
+        // Utilities
+        const q = (s) => document.querySelector(s);
+        const qa = (s) => Array.from(document.querySelectorAll(s));
+        const formatR = (n) => 'R' + Number(n).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+        const fmtCardNumber = (v) => {
+            const digits = v.replace(/\D/g, '').slice(0, 16);
+            return digits.replace(/(.{4})/g, '$1 ').trim();
+        };
+        const fmtExpiry = (v) => {
+            const d = v.replace(/\D/g, '').slice(0, 4);
+            if (d.length <= 2) return d;
+            return d.slice(0, 2) + '/' + d.slice(2, 4);
+        };
+        const randRef = (len = 6) => {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let s = 'OZY-';
+            for (let i = 0; i < len; i++) s += chars[Math.floor(Math.random() * chars.length)];
+            return s;
+        };
+        const addDays = (d, days) => {
+            const out = new Date(d);
+            out.setDate(out.getDate() + days);
+            return out;
+        };
+        const formatDateShort = (d) => d.toLocaleDateString(undefined, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+
+        // Initialize cart from sessionStorage or use demo data
+        function initializeCart() {
+            try {
+                const stored = sessionStorage.getItem('ozyde_cart');
+                if (stored) {
+                    cartItems = JSON.parse(stored);
+                } else {
+                    cartItems = demoCartItems;
+                    sessionStorage.setItem('ozyde_cart', JSON.stringify(cartItems));
+                }
+            } catch (e) {
+                cartItems = demoCartItems;
+            }
+            renderOrderSummary();
+        }
+
+        // Render order summary
+        function renderOrderSummary() {
+            const itemsList = q('#itemsList');
+            let subtotal = 0;
+
+            if (cartItems.length === 0) {
+                itemsList.innerHTML = '<div class="notice">Your cart is empty. <a href="catalog.php">Continue shopping</a></div>';
+            } else {
+                itemsList.innerHTML = '';
+                cartItems.forEach(item => {
+                    subtotal += item.price;
+                    const el = document.createElement('div');
+                    el.style.display = 'flex';
+                    el.style.justifyContent = 'space-between';
+                    el.style.marginBottom = '8px';
+                    el.innerHTML = `
+                        <div>
+                            <div style="font-weight:700">${item.name}</div>
+                            <div class="small">Size: ${item.size} • ${item.days} days</div>
+                            <div class="small">${formatDateShort(new Date(item.start_date))} - ${formatDateShort(new Date(item.end_date))}</div>
+                        </div>
+                        <div style="font-weight:700">${formatR(item.price)}</div>
+                    `;
+                    itemsList.appendChild(el);
+                });
+            }
+
+            const vat = subtotal * 0.15;
+            const deposit = 800; // Fixed deposit
+            const total = subtotal + vat + deliveryFee + returnFee + deposit;
+
+            q('#subtotal').textContent = formatR(subtotal);
+            q('#vat').textContent = formatR(vat);
+            q('#deposit').textContent = formatR(deposit);
+            q('#deliveryFee').textContent = formatR(deliveryFee);
+            q('#returnFee').textContent = formatR(returnFee);
+            q('#totalAmount').textContent = formatR(total);
+            q('#payAmountText').textContent = formatR(total);
+
+            // Store totals for later use
+            window.orderTotals = { subtotal, vat, deposit, total };
+        }
+
+        // Update totals when options change
+        function updateTotals() {
+            renderOrderSummary();
+        }
+
+        // Delivery options wiring
+        const delButtons = [q('#optCollect'), q('#optDeliver')];
+        delButtons.forEach(b => {
+            b.addEventListener('click', () => {
+                delButtons.forEach(x => x.classList.remove('active'));
+                b.classList.add('active');
+                const t = b.dataset.delivery;
+                deliveryFee = t === 'collect' ? 0 : 250;
+                updateTotals();
+            });
+        });
+
+        // Return options
+        const returnDrop = q('#returnDrop');
+        const returnPickup = q('#returnPickup');
+
+        function setReturnMethod(m) {
+            returnFee = m === 'drop' ? 0 : 120;
+            returnDrop.classList.toggle('active', m === 'drop');
+            returnPickup.classList.toggle('active', m === 'pickup');
+            updateTotals();
+        }
+        returnDrop.addEventListener('click', () => setReturnMethod('drop'));
+        returnPickup.addEventListener('click', () => setReturnMethod('pickup'));
+
+        // Payment method toggles
+        qa('.methods .method').forEach(btn => {
+            btn.addEventListener('click', () => {
+                qa('.methods .method').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                activeMethod = btn.dataset.method;
+                showMethod(activeMethod);
+            });
+        });
+
+        function showMethod(m) {
+            q('#method-card').style.display = m === 'card' ? '' : 'none';
+            q('#method-store').style.display = m === 'store' ? '' : 'none';
+            q('#method-eft').style.display = m === 'eft' ? '' : 'none';
+            q('#statusArea').innerHTML = '';
+        }
+
+        // Set static store deadline
+        const storeDeadlineStatic = q('#storeDeadlineStatic');
+        if (storeDeadlineStatic) {
+            const dl = addDays(new Date(), 2);
+            storeDeadlineStatic.textContent = formatDateShort(dl);
+        }
+
+        // Card preview bindings
+        const cardNumberInput = q('#cardNumber');
+        const cardNameInput = q('#cardName');
+        const cardExpiryInput = q('#cardExpiry');
+        const cardCvvInput = q('#cardCvv');
+
+        if (cardNumberInput) {
+            cardNumberInput.addEventListener('input', (e) => {
+                e.target.value = fmtCardNumber(e.target.value);
+                q('#cardNumberPreview').textContent = e.target.value || '0000 0000 0000 0000';
+            });
+        }
+
+        if (cardNameInput) {
+            cardNameInput.addEventListener('input', (e) => {
+                q('#cardNamePreview').textContent = (e.target.value || 'NAME SURNAME').toUpperCase();
+            });
+        }
+
+        if (cardExpiryInput) {
+            cardExpiryInput.addEventListener('input', (e) => {
+                e.target.value = fmtExpiry(e.target.value);
+                q('#cardExpiryPreview').textContent = e.target.value || 'MM/YY';
+            });
+        }
+
+        // Card pay functionality
+        const payCardBtn = q('#payCardBtn');
+        if (payCardBtn) {
+            payCardBtn.addEventListener('click', (ev) => {
+                ev.preventDefault();
+                if (!validateShippingDetails()) return;
+                
+                const num = (q('#cardNumber')?.value.replace(/\s/g, '') || '');
+                const name = (q('#cardName')?.value.trim() || '');
+                const exp = (q('#cardExpiry')?.value || '');
+                const cvv = (q('#cardCvv')?.value || '');
+                
+                const errs = [];
+                if (num.length < 13) errs.push('Enter a valid card number.');
+                if (!name) errs.push('Enter the cardholder name.');
+                if (!/^\d{2}\/\d{2}$/.test(exp)) errs.push('Enter expiry as MM/YY.');
+                if (!/^\d{3}$/.test(cvv)) errs.push('Enter a 3-digit CVV.');
+                
+                if (errs.length) {
+                    showStatus(errs.join('<br>'), 'error');
+                    return;
+                }
+
+                processBooking('card');
+            });
+        }
+
+        // Pay-in-store functionality
+        const genRefBtn = q('#generateRef');
+        if (genRefBtn) {
+            genRefBtn.addEventListener('click', () => {
+                if (!validateShippingDetails()) return;
+                
+                bookingReference = randRef(6);
+                const deadline = addDays(new Date(), 2);
+                
+                const firstName = q('#firstName')?.value.trim() || '';
+                const lastName = q('#lastName')?.value.trim() || '';
+                const customerName = `${firstName} ${lastName}`.trim() || 'Customer';
+                
+                q('#storeResult').innerHTML = `
+                    <div class="store-ref-card">
+                        <div class="ref-header">
+                            <div class="brand-logo">
+                                <span class="ozyde-logo">OZYDE</span>
+                                <div class="logo-accent"></div>
+                            </div>
+                            <div class="ref-badge">Payment Reference</div>
+                        </div>
+                        
+                        <div class="ref-content">
+                            <div class="ref-number-container">
+                                <div class="ref-label">Your Reference Code</div>
+                                <div class="ref-number">${bookingReference}</div>
+                                <div class="ref-subtitle">Present this code when paying in store</div>
+                            </div>
+                            
+                            <div class="deadline-container">
+                                <div class="deadline-icon">📅</div>
+                                <div class="deadline-text">
+                                    <div class="deadline-label">Payment Due By</div>
+                                    <div class="deadline-date">${formatDateShort(deadline)}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="ref-note">
+                                <div class="note-icon">ℹ️</div>
+                                <div class="note-text">If payment is not received by this deadline, your reservation may be cancelled.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="ref-actions">
+                            <button id="copyRefBtn" class="btn-action btn-copy">
+                                <span class="btn-icon">📋</span>
+                                Copy Reference
+                            </button>
+                            <button id="printRef" class="btn-action btn-print">
+                                <span class="btn-icon">🖨️</span>
+                                Print / Save
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                // Set up copy and print buttons
+                setTimeout(() => {
+                    const copyRefBtn = q('#copyRefBtn');
+                    const printRef = q('#printRef');
+                    
+                    if (copyRefBtn) {
+                        copyRefBtn.addEventListener('click', () => copyToClipboard(bookingReference, copyRefBtn));
+                    }
+                    
+                    if (printRef) {
+                        printRef.addEventListener('click', () => printReference(bookingReference, customerName, deadline));
+                    }
+                }, 50);
+            });
+        }
+
+        // EFT functionality
+        const proofInput = q('#proof');
+        const submitProof = q('#submitProof');
+        const clearProofBtn = q('#clearProof');
+
+        if (proofInput) {
+            proofInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                proofFile = file;
+                const preview = q('#proofPreview');
+                preview.style.display = 'flex';
+                preview.innerHTML = '';
+                
+                const thumb = document.createElement('div');
+                thumb.className = 'thumb';
+                
+                if (file.type === 'application/pdf') {
+                    thumb.innerHTML = '📄';
+                } else {
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        thumb.innerHTML = `<img src="${ev.target.result}" alt="proof" style="width:100%;height:100%;object-fit:cover">`;
+                    };
+                    reader.readAsDataURL(file);
+                }
+                
+                preview.appendChild(thumb);
+                
+                const meta = document.createElement('div');
+                meta.className = 'meta';
+                meta.innerHTML = `<div>${file.name}</div><div class="small">${Math.round(file.size/1024)} KB</div>`;
+                preview.appendChild(meta);
+                
+                if (submitProof) submitProof.disabled = false;
+                if (clearProofBtn) clearProofBtn.style.display = '';
+                q('#proofMsg').textContent = '';
+            });
+        }
+
+        if (submitProof) {
+            submitProof.addEventListener('click', () => {
+                if (!proofFile) {
+                    showStatus('Please upload proof of payment first.', 'error');
+                    return;
+                }
+                submitProof.disabled = true;
+                submitProof.textContent = 'Submitting...';
+                
+                setTimeout(() => {
+                    processBooking('eft');
+                }, 1000);
+            });
+        }
+
+        if (clearProofBtn) {
+            clearProofBtn.addEventListener('click', () => {
+                proofInput.value = '';
+                proofFile = null;
+                q('#proofPreview').style.display = 'none';
+                submitProof.disabled = true;
+                clearProofBtn.style.display = 'none';
+                q('#proofMsg').textContent = '';
+            });
+        }
+
+        // Finalize booking button - FIXED
+        q('#finalizeBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            if (cartItems.length === 0) {
+                showStatus('Your cart is empty. Please add items before checking out.', 'error');
+                return;
+            }
+            
+            if (!validateShippingDetails()) {
+                return;
+            }
+
+            switch (activeMethod) {
+                case 'card':
+                    payCardBtn?.click();
+                    break;
+                    
+                case 'store':
+                    if (!bookingReference) {
+                        showStatus('Please generate a payment reference first.', 'error');
+                    } else {
+                        processBooking('store');
+                    }
+                    break;
+                    
+                case 'eft':
+                    if (!proofFile) {
+                        showStatus('Please upload proof of payment before finalizing.', 'error');
+                    } else {
+                        submitProof?.click();
+                    }
+                    break;
+                    
+                default:
+                    showStatus('Please select a payment method.', 'error');
+            }
+        });
+
+        // Cancel button
+        q('#cancelBtn').addEventListener('click', () => {
+            if (confirm('Cancel checkout and return to cart?')) {
+                window.location.href = 'cart.html';
+            }
+        });
+
+               // Helper functions
+        function validateShippingDetails() {
+            const fields = {
+                firstName: q('#firstName')?.value.trim(),
+                lastName: q('#lastName')?.value.trim(),
+                email: q('#email')?.value.trim(),
+                phone: q('#phone')?.value.trim(),
+                addr1: q('#addr1')?.value.trim(),
+                city: q('#city')?.value.trim(),
+                province: q('#province')?.value,
+                postal: q('#postal')?.value.trim()
+            };
+
+            const errors = [];
+            if (!fields.firstName) errors.push('First name is required');
+            if (!fields.lastName) errors.push('Last name is required');
+            if (!fields.email) errors.push('Email is required');
+            if (!fields.phone) errors.push('Phone number is required');
+            if (!fields.addr1) errors.push('Address is required');
+            if (!fields.city) errors.push('City is required');
+            if (!fields.province) errors.push('Province is required');
+            if (!fields.postal) errors.push('Postal code is required');
+            
+            if (fields.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email)) {
+                errors.push('Please enter a valid email address');
+            }
+
+            if (errors.length > 0) {
+                showStatus('Please fix the following errors:<br>' + errors.join('<br>'), 'error');
+                return false;
+            }
+            
+            return true;
+        }
+
+        function processBooking(method) {
+            const booking = {
+                ref: bookingReference || randRef(6),
+                method: method,
+                items: cartItems,
+                totals: window.orderTotals,
+                customer: {
+                    firstName: q('#firstName')?.value.trim(),
+                    lastName: q('#lastName')?.value.trim(),
+                    email: q('#email')?.value.trim(),
+                    phone: q('#phone')?.value.trim(),
+                    address: q('#addr1')?.value.trim(),
+                    city: q('#city')?.value.trim(),
+                    province: q('#province')?.value,
+                    postalCode: q('#postal')?.value.trim()
+                },
+                deliveryFee: deliveryFee,
+                returnFee: returnFee,
+                createdAt: new Date().toISOString()
+            };
+
+            // Store booking in sessionStorage
+            sessionStorage.setItem('ozyde_booking', JSON.stringify(booking));
+
+            let message = '';
+            switch (method) {
+                case 'card':
+                    message = 'Payment successful! Your booking is confirmed.';
+                    break;
+                case 'store':
+                    message = 'Booking confirmed! Please pay in store with your reference.';
+                    break;
+                case 'eft':
+                    message = 'Booking submitted! We will verify your payment and confirm shortly.';
+                    break;
+            }
+
+            showStatus(message, 'success');
+
+            // In a real app, you would submit to your backend here
+            console.log('Submitting booking to backend:', booking);
+
+            // Redirect to success page after delay
+            setTimeout(() => {
+                // Clear cart
+                sessionStorage.removeItem('ozyde_cart');
+                window.location.href = 'success.html';
+            }, 2000);
+        }
+
+        function showStatus(message, type = 'notice') {
+            const statusArea = q('#statusArea');
+            statusArea.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+
+        function copyToClipboard(text, button) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    button.innerHTML = '<span class="btn-icon">✓</span> Copied!';
+                    button.classList.add('copied');
+                    setTimeout(() => {
+                        button.innerHTML = '<span class="btn-icon">📋</span> Copy Reference';
+                        button.classList.remove('copied');
+                    }, 1500);
+                }).catch(() => {
+                    fallbackCopy(text, button);
+                });
+            } else {
+                fallbackCopy(text, button);
+            }
+        }
+
+        function fallbackCopy(text, button) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-9999px';
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                button.innerHTML = '<span class="btn-icon">✓</span> Copied!';
+                button.classList.add('copied');
+                setTimeout(() => {
+                    button.innerHTML = '<span class="btn-icon">📋</span> Copy Reference';
+                    button.classList.remove('copied');
+                }, 1500);
+            } catch (err) {
+                alert('Could not copy - please copy manually: ' + text);
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function printReference(ref, name, deadline) {
+            const printWindow = window.open('', '_blank');
+            if (printWindow) {
+                printWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>OZYDE Payment Reference</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; padding: 20px; }
+                            .header { text-align: center; margin-bottom: 20px; }
+                            .reference { font-size: 24px; font-weight: bold; text-align: center; margin: 20px 0; }
+                            .details { margin: 20px 0; }
+                            .footer { margin-top: 30px; font-size: 12px; color: #666; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>OZYDE</h1>
+                            <p>Payment Reference Slip</p>
+                        </div>
+                        <div class="reference">${ref}</div>
+                        <div class="details">
+                            <p><strong>Customer:</strong> ${name}</p>
+                            <p><strong>Due Date:</strong> ${formatDateShort(deadline)}</p>
+                            <p><strong>Total Amount:</strong> ${q('#totalAmount')?.textContent || 'R0.00'}</p>
+                        </div>
+                        <div class="footer">
+                            <p>Please present this slip when paying in store</p>
+                            <p>OZYDE Boutique • 5 Liebenberg Rd, Noordwyk, Midrand</p>
+                        </div>
+                    </body>
+                    </html>
+                `);
+                printWindow.document.close();
+                printWindow.print();
+            }
+        }
+
+        // Initialize the page
+        function init() {
+            initializeCart();
+            showMethod('card');
+            setReturnMethod('drop');
+            
+            // Set store deadline
+            const storeDeadlineStatic = q('#storeDeadlineStatic');
+            if (storeDeadlineStatic) {
+                const dl = addDays(new Date(), 2);
+                storeDeadlineStatic.textContent = formatDateShort(dl);
+            }
+        }
+
+        // Start the application
+        init();
+    </script>
+</body>
+</html>
