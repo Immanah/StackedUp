@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product Details - Ozyde</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="topbar">
+    <a href="loggedincatalog.html" class="btn-back">← Back to Catalog</a>
+  </header>
+
+  <main class="product-details">
+    <div class="product-details-image"></div>
+    <div class="product-details-info"></div>
+  </main>
+
+  <script>
+  // Get product id from URL
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+
+  fetch("get_product.php?id=" + id)
+    .then(res => res.json())
+    .then(p => {
+      if (p.error) {
+        document.querySelector(".product-details").innerHTML = "<p>" + p.error + "</p>";
+        return;
+      }
+      document.querySelector(".product-details-image").innerHTML =
+        `<img src="${p.image}" alt="${p.name}">`;
+
+      document.querySelector(".product-details-info").innerHTML = `
+        <h1>${p.name}</h1>
+        <p>${p.description}</p>
+        <div class="product-price">R${parseFloat(p.price).toFixed(2)}</div>
+        <button class="btn-primary">Add to Cart</button>
+      `;
+    });
+  </script>
+</body>
+</html>
