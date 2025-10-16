@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Admin Messages - Ozyde Boutique</title>
+    <style>
+        /* Uses the exact header/nav styling from the Admin Orders file + message page styles */
+        
+         :root {
+            --bg: #fff;
+            --text: #222;
+            --muted: #7a7a7a;
+            --accent: #111;
+            --max-width: 1200px;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e6e6e6;
+            --dark-gray: #333;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --badge-bg: #ff4d4f;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+        
+        body {
+            margin: 0;
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+        
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%
+        }
+        /* Header - identical to your orders page header */
+        
+        .header {
+            background: var(--accent);
+            color: #fff;
+            padding: 12px 0;
+            box-shadow: 0 4px 12px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 120
+        }
+        
+        .header .container {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            justify-content: space-between
+        }
+        
+        .logo {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-weight: 800;
+            letter-spacing: 1px;
+            font-size: 18px
+        }
+        
+        .logo-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-weight: 900;
+            font-size: 16px
+        }
+        
+        .nav {
+            display: flex;
+            gap: 18px;
+            align-items: center
+        }
+        
+        .nav a {
+            font-size: 14px;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all .18s ease;
+            text-decoration: none
+        }
+        
+        .nav a:hover,
+        .nav a.active {
+            background: rgba(255, 255, 255, 0.08)
+        }
+        
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+        
+        .user-name {
+            font-weight: 600
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-weight: 800
+        }
+        
+        .logout-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.06)
+        }
+        /* icons */
+        
+        .icon-btn {
+            position: relative;
+            background: transparent;
+            border: 0;
+            color: #fff;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center
+        }
+        
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.04)
+        }
+        
+        .icon-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--badge-bg);
+            color: #fff;
+            border-radius: 12px;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1
+        }
+        /* dropdowns */
+        
+        .dropdown-list {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: #fff;
+            color: #222;
+            min-width: 320px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            display: none;
+            z-index: 130
+        }
+        
+        .dropdown-list.visible {
+            display: block
+        }
+        
+        .dropdown-list header {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f1f1f1;
+            font-weight: 700;
+            background: #fafafa
+        }
+        
+        .dropdown-list .item {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            align-items: flex-start;
+            border-bottom: 1px solid #f6f6f6
+        }
+        
+        .dropdown-list .item:last-child {
+            border-bottom: 0
+        }
+        
+        .dropdown-list .item img {
+            width: 44px;
+            height: 44px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1px solid #eee
+        }
+        
+        .dropdown-list .item .meta {
+            flex: 1
+        }
+        
+        .dropdown-list .muted {
+            color: var(--muted);
+            font-size: 13px
+        }
+        /* Main layout for messages page */
+        
+        .main {
+            display: flex;
+            gap: 20px;
+            padding: 22px 0;
+            background: var(--light-gray);
+            min-height: calc(100vh - 80px)
+        }
+        
+        .sidebar {
+            width: 360px;
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid var(--medium-gray);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-direction: column;
+            gap: 12px
+        }
+        
+        .sidebar .controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap
+        }
+        
+        .filter-btn {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--medium-gray);
+            background: white;
+            cursor: pointer;
+            font-weight: 700
+        }
+        
+        .filter-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent)
+        }
+        
+        .search {
+            position: relative
+        }
+        
+        .search input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--medium-gray)
+        }
+        
+        .convo-list {
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-top: 4px
+        }
+        
+        .convo {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            align-items: center;
+            border: 1px solid transparent;
+            cursor: pointer
+        }
+        
+        .convo:hover {
+            background: #fafafa
+        }
+        
+        .convo.unread {
+            background: #fffaf0;
+            border-color: #ffe9c7
+        }
+        
+        .convo.urgent {
+            border-color: #ffcccc;
+            box-shadow: 0 6px 18px rgba(255, 77, 79, 0.06)
+        }
+        
+        .convo img {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid #eee
+        }
+        
+        .convo .meta {
+            flex: 1
+        }
+        
+        .convo .meta .title {
+            font-weight: 800
+        }
+        
+        .convo .meta .snippet {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 6px
+        }
+        
+        .convo .meta .meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 6px
+        }
+        
+        .badge-small {
+            background: #111;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 800
+        }
+        
+        .chat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid var(--medium-gray);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04)
+        }
+        
+        .chat-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 8px;
+            border-bottom: 1px solid #f1f1f1
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px
+        }
+        
+        .msg-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end
+        }
+        
+        .msg-row.me {
+            justify-content: flex-end
+        }
+        
+        .bubble {
+            max-width: 65%;
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: #f1f1f1;
+            font-size: 14px;
+            line-height: 1.4
+        }
+        
+        .bubble.me {
+            background: #111;
+            color: #fff;
+            border-radius: 12px
+        }
+        
+        .msg-meta {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 6px
+        }
+        
+        .composer {
+            display: flex;
+            gap: 8px;
+            padding: 10px;
+            border-top: 1px solid #f1f1f1
+        }
+        
+        .composer textarea {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--medium-gray);
+            min-height: 52px;
+            resize: vertical
+        }
+        
+        .btn {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 0;
+            cursor: pointer;
+            font-weight: 700
+        }
+        
+        .btn.send {
+            background: var(--accent);
+            color: #fff
+        }
+        
+        .btn.secondary {
+            background: var(--light-gray);
+            border: 1px solid var(--medium-gray)
+        }
+        
+        .empty-state {
+            padding: 40px;
+            text-align: center;
+            color: var(--muted)
+        }
+        /* Mobile tweaks: stack sidebar + chat; reduce widths */
+        
+        @media (max-width:980px) {
+            .main {
+                flex-direction: column;
+                padding: 18px
+            }
+            .sidebar {
+                width: 100%
+            }
+            .chat {
+                width: 100%
+            }
+            .chat .bubble {
+                max-width: 100%
+            }
+        }
+        /* Ensure header stacks on smaller screens the same as orders page */
+        
+        @media (max-width:900px) {
+            .header .container {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px
+            }
+            .nav {
+                justify-content: center;
+                flex-wrap: wrap
+            }
+        }
+        
+        @media (max-width:560px) {
+            .logo {
+                font-size: 16px
+            }
+            .logo-badge {
+                width: 36px;
+                height: 36px;
+                font-size: 14px
+            }
+            .convo img {
+                width: 48px;
+                height: 48px
+            }
+            .convo {
+                padding: 8px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header (copied/identical to orders header) -->
+    <header class="header">
+        <div class="container" style="position:relative;">
+            <div style="display:flex;align-items:center;gap:18px">
+                <div class="logo">
+                    <div class="logo-badge">OZ</div>
+                    <div>OZYDE ADMIN</div>
+                </div>
+            </div>
+
+            <nav class="nav" aria-label="Admin navigation">
+                <a href="admindashboard.html">Dashboard</a>
+                <a href="adminproducts.html">Products</a>
+                <a href="adminorders.html">Orders</a>
+                <a href="admincustomers.html">Customers</a>
+                <a href="admininventory.html">Inventory</a>
+                <a href="adminreports.html">Reports</a>
+                <a href="adminmessages.html" class="active">Messages</a>
+            </nav>
+
+            <div class="header-user" style="position:relative;">
+                <!-- Notifications icon + dropdown -->
+                <div style="position:relative;">
+                    <button id="notifBtn" class="icon-btn" aria-haspopup="true" aria-expanded="false" title="Notifications" aria-label="Notifications">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14V11c0-3.1-1.6-5.7-4.5-6.5V4a1.5 1.5 0 1 0-3 0v.5C7.6 5.3 6 7.9 6 11v3c0 .5-.2 1-.6 1.4L4 17h11z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="icon-badge" id="notifCount">3</span>
+          </button>
+
+                    <div class="dropdown-list" id="notifDropdown" role="region" aria-label="Notifications menu">
+                        <header>Notifications</header>
+                        <div class="item">
+                            <img src="thumb-1.jpg" alt="thumb">
+                            <div class="meta">
+                                <div style="font-weight:700">Low stock: Red Evening Gown</div>
+                                <div class="muted">Only 1 left</div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="thumb-2.jpg" alt="thumb">
+                            <div class="meta">
+                                <div style="font-weight:700">New order #1008</div>
+                                <div class="muted">K. Mthembu</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages icon + dropdown -->
+                <div style="position:relative;">
+                    <button id="msgBtn" class="icon-btn" aria-haspopup="true" aria-expanded="false" title="Messages" aria-label="Messages">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="icon-badge" id="msgCount">2</span>
+          </button>
+
+                    <div class="dropdown-list" id="msgDropdown" role="region" aria-label="Messages menu">
+                        <header>Recent messages</header>
+                        <div class="item">
+                            <img src="profile1.jpg" alt="user">
+                            <div class="meta">
+                                <div style="font-weight:700">Clara C.</div>
+                                <div class="muted">Is the red gown available on 25th?</div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="profile2.jpg" alt="user">
+                            <div class="meta">
+                                <div style="font-weight:700">M. Dlamini</div>
+                                <div class="muted">Change pickup to evening?</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="user-info" style="gap:12px;">
+                    <div style="text-align:right">
+                        <div class="user-name">Admin</div>
+                        <div class="small muted" style="font-size:12px">Manager</div>
+                    </div>
+                    <div class="user-avatar" aria-hidden="true">A</div>
+                </div>
+
+                <button class="logout-btn" id="logoutBtn">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main: sidebar + chat -->
+    <div class="main container">
+        <aside class="sidebar" aria-label="Conversations">
+            <div class="controls">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="unread">Unread</button>
+                <button class="filter-btn" data-filter="important">Important</button>
+                <div style="flex:1"></div>
+                <button class="filter-btn" id="newMsgBtn">+ New</button>
+            </div>
+
+            <div style="margin-top:8px" class="search">
+                <input id="convoSearch" placeholder="Search conversations by name, query or ID">
+            </div>
+
+            <div class="convo-list" id="convoList" role="list" aria-live="polite" style="margin-top:8px">
+                <!-- items inserted by JS -->
+            </div>
+        </aside>
+
+        <section class="chat" aria-label="Message thread">
+            <div class="chat-header" id="chatHeader">
+                <div style="display:flex;align-items:center;gap:12px">
+                    <img id="chatAvatar" src="profile-placeholder.jpg" alt="" style="width:44px;height:44px;border-radius:8px;border:1px solid #eee;object-fit:cover">
+                    <div>
+                        <div id="chatTitle" style="font-weight:800">Select a conversation</div>
+                        <div id="chatMeta" style="font-size:12px;color:var(--muted)">Customer queries will appear here</div>
+                    </div>
+                </div>
+                <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+                    <button class="filter-btn" id="markReadBtn">Mark Read</button>
+                    <button class="filter-btn" id="markImportantBtn">Mark Important</button>
+                    <button class="filter-btn" id="openFullBtn">Open full</button>
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="empty-state" id="emptyState">No conversation selected — pick one from the left</div>
+            </div>
+
+            <div class="composer" id="composerBar" style="display:none">
+                <textarea id="replyText" placeholder="Write a reply..."></textarea>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                    <button class="btn send" id="sendBtn">Send</button>
+                    <button class="btn secondary" id="quickReplyBtn">Quick reply</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer style="background:var(--light-gray);padding:12px 0;text-align:center;color:var(--muted)">
+        <div class="container small">&copy; 2025 Ozyde Boutique Admin Dashboard. All rights reserved.</div>
+    </footer>
+
+    <script>
+        /* Keep the same JS behavior as the provided messages implementation.
+               This file preserves IDs and dropdown logic so it plugs into the rest of your admin UI. */
+        const sampleConvos = [{
+            id: 'm2001',
+            name: 'Clara C.',
+            lastSnippet: 'Hi — is the red gown available on 25th?',
+            avatar: 'profile1.jpg',
+            unreadCount: 1,
+            important: false,
+            createdAt: '2025-09-01T13:00:00Z',
+            updatedAt: '2025-09-01T13:00:00Z',
+            messages: [{
+                id: 'ms1',
+                from: 'Clara C.',
+                text: 'Hi — is the red gown available on 25th?',
+                createdAt: '2025-09-01T13:00:00Z',
+                read: false
+            }]
+        }, {
+            id: 'm2002',
+            name: 'M. Dlamini',
+            lastSnippet: 'Can I change my pickup to evening?',
+            avatar: 'profile2.jpg',
+            unreadCount: 0,
+            important: true,
+            createdAt: '2025-08-30T10:20:00Z',
+            updatedAt: '2025-08-30T11:01:00Z',
+            messages: [{
+                id: 'ms1',
+                from: 'M. Dlamini',
+                text: 'Can I change my pickup to evening?',
+                createdAt: '2025-08-30T10:20:00Z',
+                read: true
+            }, {
+                id: 'ms2',
+                from: 'Ozyde Admin',
+                text: 'Yes you can. Which date?',
+                createdAt: '2025-08-30T11:01:00Z',
+                read: true
+            }]
+        }, {
+            id: 'm2003',
+            name: 'Z. Nkosi',
+            lastSnippet: 'I want a custom dress quote',
+            avatar: 'profile3.jpg',
+            unreadCount: 2,
+            important: false,
+            createdAt: '2025-08-28T08:00:00Z',
+            updatedAt: '2025-08-29T09:30:00Z',
+            messages: [{
+                id: 'ms1',
+                from: 'Z. Nkosi',
+                text: 'I want a custom dress quote',
+                createdAt: '2025-08-28T08:00:00Z',
+                read: false
+            }, {
+                id: 'ms2',
+                from: 'Z. Nkosi',
+                text: 'My measurements are ...',
+                createdAt: '2025-08-29T09:30:00Z',
+                read: false
+            }]
+        }];
+
+        let convos = [];
+        let activeConvoId = null;
+        const $ = s => document.querySelector(s);
+        const $$ = s => Array.from(document.querySelectorAll(s));
+
+        function timeAgo(iso) {
+            if (!iso) return '';
+            const d = new Date(iso);
+            const diff = Date.now() - d.getTime();
+            const mins = Math.floor(diff / 60000);
+            if (mins < 1) return 'just now';
+            if (mins < 60) return mins + 'm';
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24) return hrs + 'h';
+            const days = Math.floor(hrs / 24);
+            return days + 'd';
+        }
+
+        function isUrgent(convo) {
+            const updated = new Date(convo.updatedAt).getTime();
+            const ageHours = (Date.now() - updated) / (1000 * 60 * 60);
+            return convo.unreadCount > 0 && ageHours > 24;
+        }
+
+        function renderConvoList(list = convos, filter = 'all', query = '') {
+            const container = $('#convoList');
+            container.innerHTML = '';
+            let filtered = list.slice();
+            if (filter === 'unread') filtered = filtered.filter(c => c.unreadCount > 0);
+            if (filter === 'important') filtered = filtered.filter(c => c.important);
+            if (query) {
+                const q = query.toLowerCase();
+                filtered = filtered.filter(c => c.name.toLowerCase().includes(q) || (c.lastSnippet && c.lastSnippet.toLowerCase().includes(q)) || c.id.toLowerCase().includes(q));
+            }
+            filtered.sort((a, b) => {
+                const aU = isUrgent(a) ? 1 : 0;
+                const bU = isUrgent(b) ? 1 : 0;
+                if (aU !== bU) return bU - aU;
+                return new Date(b.updatedAt) - new Date(a.updatedAt);
+            });
+            if (filtered.length === 0) {
+                container.innerHTML = '<div style="padding:12px;color:var(--muted)">No conversations</div>';
+                return;
+            }
+            filtered.forEach(c => {
+                        const div = document.createElement('div');
+                        div.className = 'convo' + (c.unreadCount > 0 ? ' unread' : '') + (isUrgent(c) ? ' urgent' : '');
+                        div.dataset.id = c.id;
+                        div.innerHTML = `
+          <img src="${c.avatar || 'profile-placeholder.jpg'}" alt="${c.name}">
+          <div class="meta">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div class="title">${c.name}</div>
+              <div style="font-size:12px;color:var(--muted)">${timeAgo(c.updatedAt)}</div>
+            </div>
+            <div class="snippet">${c.lastSnippet || ''}</div>
+            <div class="meta-row">
+              <div class="muted">${c.id}</div>
+              <div style="display:flex;gap:8px;align-items:center">
+                ${c.important?'<div class="badge-small">Important</div>':''}
+                ${c.unreadCount>0?`<div class="badge-small">${c.unreadCount}</div>`:''}
+                ${isUrgent(c)?'<div style="color:#ff4d4f;font-weight:800;font-size:12px">URGENT</div>':''}
+              </div>
+            </div>
+          </div>
+        `;
+        div.addEventListener('click', ()=> openConversation(c.id));
+        container.appendChild(div);
+      });
+    }
+
+    function renderThread(convo){
+      const messagesEl = $('#chatMessages'); messagesEl.innerHTML = '';
+      if(!convo){ $('#emptyState').style.display = 'block'; $('#composerBar').style.display = 'none'; $('#chatTitle').textContent='Select a conversation'; $('#chatMeta').textContent='Customer queries will appear here'; $('#chatAvatar').src='profile-placeholder.jpg'; activeConvoId=null; return; }
+      $('#emptyState').style.display = 'none'; $('#composerBar').style.display = 'flex';
+      $('#chatTitle').textContent = `${convo.name} — ${convo.id}`; $('#chatMeta').textContent = convo.lastSnippet || ''; $('#chatAvatar').src = convo.avatar || 'profile-placeholder.jpg';
+      convo.messages.forEach(m => {
+        const row = document.createElement('div');
+        row.className = 'msg-row' + (m.from === 'Ozyde Admin' ? ' me' : '');
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble' + (m.from === 'Ozyde Admin' ? ' me' : '');
+        bubble.textContent = m.text;
+        row.appendChild(bubble);
+        const meta = document.createElement('div');
+        meta.className = 'msg-meta';
+        meta.textContent = `${m.from} • ${new Date(m.createdAt).toLocaleString()}`;
+        if (m.from === 'Ozyde Admin') {
+          const wrapper = document.createElement('div');
+          wrapper.style.maxWidth = '65%';
+          wrapper.style.marginLeft = 'auto';
+          wrapper.appendChild(bubble);
+          wrapper.appendChild(meta);
+          row.innerHTML = '';
+          row.appendChild(wrapper);
+        } else {
+          row.appendChild(meta);
+        }
+        messagesEl.appendChild(row);
+      });
+      setTimeout(()=>{ messagesEl.scrollTop = messagesEl.scrollHeight; },50);
+      if(convo.unreadCount>0){ convo.messages.forEach(m=>m.read=true); convo.unreadCount=0; updateMsgCount(); renderConvoList(); }
+    }
+
+    function openConversation(id){
+      const convo = convos.find(c=>c.id===id);
+      if(!convo) return;
+      activeConvoId = id;
+      renderThread(convo);
+      history.replaceState(null,'',`#${id}`);
+    }
+
+    function sendReply(){
+      const text = $('#replyText').value.trim();
+      if(!text) return alert('Type a message to send');
+      if(!activeConvoId) return alert('Select a conversation first');
+      const convo = convos.find(c=>c.id===activeConvoId);
+      const msg = { id:'ms'+Date.now(), from:'Ozyde Admin', text, createdAt:new Date().toISOString(), read:true };
+      convo.messages.push(msg); convo.lastSnippet = text; convo.updatedAt = new Date().toISOString(); convo.unreadCount = 0;
+      renderThread(convo); renderConvoList(); $('#replyText').value = ''; updateMsgCount();
+      // TODO: POST reply to backend at /api/admin/messages/:id/reply
+    }
+
+    function markActiveImportant(toggle=true){
+      if(!activeConvoId) return alert('Select a conversation');
+      const convo = convos.find(c=>c.id===activeConvoId);
+      convo.important = toggle;
+      renderConvoList();
+    }
+
+    function markActiveRead(){
+      if(!activeConvoId) return alert('Select a conversation');
+      const convo = convos.find(c=>c.id===activeConvoId);
+      convo.unreadCount = 0; convo.messages.forEach(m=>m.read=true);
+      renderConvoList(); renderThread(convo); updateMsgCount();
+      // TODO: persist read state to backend
+    }
+
+    function updateMsgCount(){
+      const totalUnread = convos.reduce((s,c)=>s+(c.unreadCount||0),0);
+      const el = document.getElementById('msgCount');
+      if(el){ el.textContent = totalUnread || 0; el.style.display = totalUnread ? 'inline-block' : 'none'; }
+    }
+
+    document.addEventListener('DOMContentLoaded', function(){
+      convos = sampleConvos.map(c=>({...c, messages:c.messages.slice()}));
+      renderConvoList(convos,'all','');
+      updateMsgCount();
+
+      $$('.filter-btn').forEach(btn=>{
+        btn.addEventListener('click', function(){
+          const filter = this.dataset.filter || null;
+          if(this.parentElement && this.parentElement.classList.contains('controls')){
+            $$('.controls .filter-btn').forEach(b=>b.classList.remove('active'));
+            this.classList.add('active');
+            renderConvoList(convos, filter || 'all', $('#convoSearch').value.trim());
+          }
+        });
+      });
+
+      const search = $('#convoSearch');
+      if(search){
+        let t;
+        search.addEventListener('input', function(){
+          clearTimeout(t);
+          t = setTimeout(()=> {
+            const activeFilter = $('.controls .filter-btn.active') ? $('.controls .filter-btn.active').dataset.filter : 'all';
+            renderConvoList(convos, activeFilter || 'all', search.value.trim());
+          }, 200);
+        });
+      }
+
+      $('#sendBtn') && $('#sendBtn').addEventListener('click', sendReply);
+      $('#quickReplyBtn') && $('#quickReplyBtn').addEventListener('click', ()=> { $('#replyText').value = 'Thanks! We will get back to you shortly.'; });
+
+      $('#markReadBtn') && $('#markReadBtn').addEventListener('click', markActiveRead);
+      $('#markImportantBtn') && $('#markImportantBtn').addEventListener('click', ()=> {
+        if(!activeConvoId) return alert('Select a conversation');
+        const convo = convos.find(c=>c.id===activeConvoId);
+        markActiveImportant(!convo.important);
+      });
+
+      $('#newMsgBtn') && $('#newMsgBtn').addEventListener('click', ()=> {
+        const newId = 'm' + (Date.now());
+        const newConvo = { id:newId, name:'New Customer', lastSnippet:'', avatar:'profile-placeholder.jpg', unreadCount:0, important:false, createdAt:new Date().toISOString(), updatedAt:new Date().toISOString(), messages:[] };
+        convos.unshift(newConvo);
+        renderConvoList(); openConversation(newId); $('#replyText').focus();
+      });
+
+      // notifications/messages dropdown logic (identical to orders)
+      const notifBtn = document.getElementById('notifBtn');
+      const msgBtn = document.getElementById('msgBtn');
+      const notifDropdown = document.getElementById('notifDropdown');
+      const msgDropdown = document.getElementById('msgDropdown');
+      function closeAllDropdowns(){ notifDropdown && notifDropdown.classList.remove('visible'); msgDropdown && msgDropdown.classList.remove('visible'); notifBtn && notifBtn.setAttribute('aria-expanded','false'); msgBtn && msgBtn.setAttribute('aria-expanded','false'); }
+      if(notifBtn && notifDropdown){
+        notifBtn.addEventListener('click', (e)=>{ const vis = notifDropdown.classList.toggle('visible'); notifBtn.setAttribute('aria-expanded',String(vis)); if(msgDropdown) msgDropdown.classList.remove('visible'); if(msgBtn) msgBtn.setAttribute('aria-expanded','false'); e.stopPropagation(); });
+      }
+      if(msgBtn && msgDropdown){
+        msgBtn.addEventListener('click', (e)=>{ const vis = msgDropdown.classList.toggle('visible'); msgBtn.setAttribute('aria-expanded',String(vis)); if(notifDropdown) notifDropdown.classList.remove('visible'); if(notifBtn) notifBtn.setAttribute('aria-expanded','false'); e.stopPropagation(); });
+      }
+      document.addEventListener('click', function(e){
+        const target = e.target;
+        if(notifDropdown && !notifDropdown.contains(target) && notifBtn && !notifBtn.contains(target)){ notifDropdown.classList.remove('visible'); notifBtn && notifBtn.setAttribute('aria-expanded','false'); }
+        if(msgDropdown && !msgDropdown.contains(target) && msgBtn && !msgBtn.contains(target)){ msgDropdown.classList.remove('visible'); msgBtn && msgBtn.setAttribute('aria-expanded','false'); }
+      });
+      document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeAllDropdowns(); });
+
+      // logout button
+      const logoutBtn = document.getElementById('logoutBtn');
+      logoutBtn && logoutBtn.addEventListener('click', ()=> {
+        if(confirm('Are you sure you want to log out?')) { alert('Logging out...'); /* redirect in real app */ }
+      });
+
+      // deep-link support
+      const hash = location.hash && location.hash.slice(1);
+      if(hash){ setTimeout(()=>{ if(convos.some(c=>c.id===hash)) openConversation(hash); },200); }
+    });
+    </script>
+</body>
+
+</html>

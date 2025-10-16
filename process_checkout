@@ -1,0 +1,75 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
+    header('Location: cart.php');
+    exit;
+}
+
+// Process the checkout
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Validate required fields
+    $required = ['first_name', 'last_name', 'email', 'phone', 'address1', 'city', 'province', 'postal_code'];
+    $errors = [];
+    
+    foreach ($required as $field) {
+        if (empty($_POST[$field])) {
+            $errors[] = "Please fill in all required fields.";
+            break;
+        }
+    }
+    
+    if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+        $errors[] = "Please enter a valid email address.";
+    }
+    
+    // If no errors, process the order
+    if (empty($errors)) {
+        // Generate order reference
+        $orderRef = 'OZY-' . strtoupper(substr(uniqid(), -6));
+        
+        // Prepare order data
+        $orderData = [
+            'order_ref' => $orderRef,
+            'customer' => [
+                'first_name' => $_POST['first_name'],
+                'last_name' => $_POST['last_name'],
+                'email' => $_POST['email'],
+                'phone' => $_POST['phone'],
+                'address' => [
+                    'address1' => $_POST['address1'],
+                    'address2' => $_POST['address2'] ?? '',
+                    'city' => $_POST['city'],
+                    'province' => $_POST['province'],
+                    'postal_code' => $_POST['postal_code'],
+                    'country' => $_POST['country']
+                ]
+            ],
+            'items' => $_SESSION['cart'],
+            'delivery_method' => $_POST['delivery_method'],
+            'return_method' => $_POST['return_method'],
+            'payment_method' => $_POST['payment_method'],
+            'total_amount' => $_POST['total_amount'],
+            'order_date' => date('Y-m-d H:i:s')
+        ];
+        
+        // Store order in session (in real application, save to database)
+        $_SESSION['current_order'] = $orderData;
+        
+        // Clear cart
+        $_SESSION['cart'] = [];
+        
+        // Redirect to success page
+        header('Location: success.php?ref=' . $orderRef);
+        exit;
+    } else {
+        // Redirect back with errors
+        $_SESSION['checkout_errors'] = $errors;
+        header('Location: checkout.php');
+        exit;
+    }
+} else {
+    header('Location: checkout.php');
+    exit;
+}
+?>

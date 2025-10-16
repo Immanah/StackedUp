@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Customers - Ozyde Boutique</title>
+    <style>
+        /* Ozyde Boutique monochromatic styling */
+        
+         :root {
+            --bg: #fff;
+            --text: #222;
+            --muted: #7a7a7a;
+            --accent: #111;
+            --max-width: 1200px;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e6e6e6;
+            --dark-gray: #333;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --badge-bg: #ff4d4f;
+            /* added so header badges match Orders */
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            margin: 0;
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+        /* Header - unified (changed to match Orders header exactly) */
+        
+        .header {
+            background: var(--accent);
+            color: #fff;
+            padding: 12px 0;
+            box-shadow: 0 4px 12px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 120
+        }
+        
+        .header .container {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            justify-content: space-between
+        }
+        
+        .logo {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-weight: 800;
+            letter-spacing: 1px;
+            font-size: 18px
+        }
+        
+        .logo-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-weight: 900;
+            font-size: 16px
+        }
+        
+        .nav {
+            display: flex;
+            gap: 18px;
+            align-items: center
+        }
+        
+        .nav a {
+            font-size: 14px;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all .18s ease;
+            text-decoration: none
+        }
+        
+        .nav a:hover,
+        .nav a.active {
+            background: rgba(255, 255, 255, 0.08)
+        }
+        
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+        
+        .user-name {
+            font-weight: 600
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-weight: 800
+        }
+        
+        .logout-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.06)
+        }
+        /* icons */
+        
+        .icon-btn {
+            position: relative;
+            background: transparent;
+            border: 0;
+            color: #fff;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center
+        }
+        
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.04)
+        }
+        
+        .icon-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--badge-bg);
+            color: #fff;
+            border-radius: 12px;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1
+        }
+        /* dropdowns for notifications/messages */
+        
+        .dropdown-list {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: #fff;
+            color: #222;
+            min-width: 320px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            display: none;
+            z-index: 130
+        }
+        
+        .dropdown-list.visible {
+            display: block
+        }
+        
+        .dropdown-list header {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f1f1f1;
+            font-weight: 700;
+            background: #fafafa
+        }
+        
+        .dropdown-list .item {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            align-items: flex-start;
+            border-bottom: 1px solid #f6f6f6
+        }
+        
+        .dropdown-list .item:last-child {
+            border-bottom: 0
+        }
+        
+        .dropdown-list .item img {
+            width: 44px;
+            height: 44px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1px solid #eee
+        }
+        
+        .dropdown-list .item .meta {
+            flex: 1
+        }
+        
+        .dropdown-list .muted {
+            color: var(--muted);
+            font-size: 13px
+        }
+        /* Main Content */
+        
+        .main-content {
+            flex: 1;
+            padding: 30px 0;
+            background: var(--light-gray);
+        }
+        
+        .page-title {
+            margin: 0 0 30px 0;
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--accent);
+        }
+        /* Search and Filter */
+        
+        .search-filter {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            transition: border-color 0.2s ease;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--dark-gray);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+        }
+        
+        .filter-select {
+            padding: 12px 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            min-width: 180px;
+            cursor: pointer;
+        }
+        /* Customer Stats */
+        
+        .customer-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px var(--shadow);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--muted);
+        }
+        /* Table Styles */
+        
+        .table-wrapper {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px var(--shadow);
+            border: 1px solid var(--medium-gray);
+            margin-bottom: 30px;
+        }
+        
+        .customers-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .customers-table th {
+            background: var(--light-gray);
+            padding: 15px 20px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--accent);
+            border-bottom: 1px solid var(--medium-gray);
+        }
+        
+        .customers-table td {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+        
+        .customers-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .customers-table tr:hover {
+            background: rgba(0, 0, 0, 0.02);
+        }
+        
+        .customer-name {
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        .booking-history {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--muted);
+            font-size: 14px;
+        }
+        /* Action Buttons */
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .contact-btn {
+            background: var(--light-gray);
+            color: var(--accent);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .contact-btn:hover {
+            background: var(--medium-gray);
+        }
+        
+        .delete-btn {
+            background: var(--light-gray);
+            color: var(--accent);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .delete-btn:hover {
+            background: var(--medium-gray);
+        }
+        /* Footer Styles */
+        
+        footer {
+            border-top: 1px solid var(--medium-gray);
+            padding: 30px 0;
+            color: var(--muted);
+            background: var(--light-gray);
+            margin-top: auto;
+            text-align: center;
+        }
+        /* Pagination */
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .pagination-btn {
+            padding: 8px 12px;
+            border: 1px solid var(--medium-gray);
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .pagination-btn:hover,
+        .pagination-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        /* Responsive Design */
+        
+        @media (max-width: 768px) {
+            .header .container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .nav {
+                order: 2;
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            .header-user {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+            }
+            .search-filter {
+                flex-direction: column;
+            }
+            .search-box,
+            .filter-select {
+                min-width: 100%;
+            }
+            .customer-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+            .table-wrapper {
+                overflow-x: auto;
+            }
+            .customers-table {
+                min-width: 700px;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .customer-stats {
+                grid-template-columns: 1fr;
+            }
+            .page-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header (replaced only header to match Orders header exactly) -->
+    <header class="header">
+        <div class="container" style="position:relative;">
+            <div style="display:flex;align-items:center;gap:18px">
+                <div class="logo">
+                    <div class="logo-badge">OZ</div>
+                    <div>OZYDE ADMIN</div>
+                </div>
+            </div>
+
+            <nav class="nav" aria-label="Admin navigation">
+                <a href="admindashboard.html">Dashboard</a>
+                <a href="adminproducts.html">Products</a>
+                <a href="adminorders.html">Orders</a>
+                <a href="admincustomers.html" class="active">Customers</a>
+                <a href="admininventory.html">Inventory</a>
+                <a href="adminreports.html">Reports</a>
+            </nav>
+
+            <div class="header-user" style="position:relative;">
+                <!-- Notifications icon + dropdown -->
+                <div style="position:relative;">
+                    <button id="notifBtn" class="icon-btn" aria-haspopup="true" aria-expanded="false" title="Notifications" aria-label="Notifications">
+                        <!-- bell icon -->
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14V11c0-3.1-1.6-5.7-4.5-6.5V4a1.5 1.5 0 1 0-3 0v.5C7.6 5.3 6 7.9 6 11v3c0 .5-.2 1-.6 1.4L4 17h11z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="icon-badge" id="notifCount">3</span>
+                    </button>
+
+                    <div class="dropdown-list" id="notifDropdown" role="region" aria-label="Notifications menu">
+                        <header>Notifications</header>
+                        <div class="item">
+                            <img src="thumb-1.jpg" alt="thumb">
+                            <div class="meta">
+                                <div style="font-weight:700">Low stock: Red Evening Gown</div>
+                                <div class="muted">Only 1 left in inventory</div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="thumb-2.jpg" alt="thumb">
+                            <div class="meta">
+                                <div style="font-weight:700">New order received</div>
+                                <div class="muted">#1008 — K. Mthembu</div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="thumb-3.jpg" alt="thumb">
+                            <div class="meta">
+                                <div style="font-weight:700">Customer query</div>
+                                <div class="muted">Question about pickup times</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages icon + dropdown -->
+                <div style="position:relative;">
+                    <button id="msgBtn" class="icon-btn" aria-haspopup="true" aria-expanded="false" title="Messages" aria-label="Messages">
+                        <!-- chat icon -->
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="icon-badge" id="msgCount">2</span>
+                    </button>
+
+                    <div class="dropdown-list" id="msgDropdown" role="region" aria-label="Messages menu">
+                        <header>Messages</header>
+                        <div class="item">
+                            <img src="profile1.jpg" alt="user">
+                            <div class="meta">
+                                <div style="font-weight:700">Clara C.</div>
+                                <div class="muted">Hi — is the red gown available on 25th?</div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="profile2.jpg" alt="user">
+                            <div class="meta">
+                                <div style="font-weight:700">M. Dlamini</div>
+                                <div class="muted">Can I change my pickup to evening?</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="user-info" style="gap:12px;">
+                    <div style="text-align:right">
+                        <div class="user-name">Admin</div>
+                        <div class="small muted" style="font-size:12px">Manager</div>
+                    </div>
+                    <div class="user-avatar" aria-hidden="true">A</div>
+                </div>
+
+                <button class="logout-btn" id="logoutBtn">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <h1 class="page-title">Customer Database</h1>
+
+            <!-- Customer Stats -->
+            <div class="customer-stats">
+                <div class="stat-card">
+                    <div class="stat-number">342</div>
+                    <div class="stat-label">Total Customers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">89</div>
+                    <div class="stat-label">Active Rentals</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">127</div>
+                    <div class="stat-label">Repeat Customers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">4.7/5</div>
+                    <div class="stat-label">Average Rating</div>
+                </div>
+            </div>
+
+            <!-- Search / Filter -->
+            <div class="search-filter">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Search customers by name or email..." id="customerSearch">
+                </div>
+                <select class="filter-select">
+                    <option value="">All Customers</option>
+                    <option value="active">Active Rentals</option>
+                    <option value="repeat">Repeat Customers</option>
+                    <option value="new">New Customers</option>
+                </select>
+            </div>
+
+            <!-- Customers Table -->
+            <div class="table-wrapper">
+                <table class="customers-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Booking History</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="customer-name">Jane Doe</td>
+                            <td>jane.doe@email.com</td>
+                            <td>+27 72 123 4567</td>
+                            <td class="booking-history">Red Evening Gown (12 Sep - 15 Sep 2025), Black Cocktail Dress (5 Aug - 8 Aug 2025)</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn contact-btn">Contact</button>
+                                    <button class="btn delete-btn">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="customer-name">John Smith</td>
+                            <td>john.smith@email.com</td>
+                            <td>+27 83 987 6543</td>
+                            <td class="booking-history">Black Cocktail Dress (18 Sep - 20 Sep 2025)</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn contact-btn">Contact</button>
+                                    <button class="btn delete-btn">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="customer-name">Mary Johnson</td>
+                            <td>mary.johnson@email.com</td>
+                            <td>+27 71 555 1234</td>
+                            <td class="booking-history">Blue Maxi Dress (22 Sep - 25 Sep 2025), White Evening Gown (15 Jul - 18 Jul 2025)</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn contact-btn">Contact</button>
+                                    <button class="btn delete-btn">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="customer-name">David Wilson</td>
+                            <td>david.wilson@email.com</td>
+                            <td>+27 82 444 7890</td>
+                            <td class="booking-history">Emerald Green Prom Dress (30 Sep - 3 Oct 2025)</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn contact-btn">Contact</button>
+                                    <button class="btn delete-btn">Delete</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="customer-name">Sarah Brown</td>
+                            <td>sarah.brown@email.com</td>
+                            <td>+27 76 333 4567</td>
+                            <td class="booking-history">Pink Wedding Guest Dress (8 Oct - 11 Oct 2025), Navy Formal Dress (20 Aug - 23 Aug 2025)</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn contact-btn">Contact</button>
+                                    <button class="btn delete-btn">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="customer-name">Michael Davis</td>
+                            <td>michael.davis@email.com</td>
+                            <td>+27 84 222 3456</td>
+                            <td class="booking-history">Gold Sequin Party Dress (15 Oct - 18 Oct 2025)</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn contact-btn">Contact</button>
+                                    <button class="btn delete-btn">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    <button class="pagination-btn">Previous</button>
+                    <button class="pagination-btn active">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">3</button>
+                    <button class="pagination-btn">Next</button>
+                </div>
+            </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 Ozyde Boutique Admin Dashboard. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Simple interactions for the customers page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Search functionality
+            const searchInput = document.getElementById('customerSearch');
+            searchInput.addEventListener('keyup', function() {
+                const filter = searchInput.value.toLowerCase();
+                const rows = document.querySelectorAll('.customers-table tbody tr');
+
+                rows.forEach(row => {
+                    const name = row.cells[0].textContent.toLowerCase();
+                    const email = row.cells[1].textContent.toLowerCase();
+                    if (name.includes(filter) || email.includes(filter)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+
+            // Contact buttons
+            document.querySelectorAll('.contact-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const customerName = row.cells[0].textContent;
+                    const customerEmail = row.cells[1].textContent;
+                    alert(`Opening contact form for: ${customerName} (${customerEmail})`);
+                    // In a real application, this would open a contact form/modal
+                });
+            });
+
+            // Delete buttons
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const customerName = row.cells[0].textContent;
+
+                    if (confirm(`Are you sure you want to delete customer "${customerName}"? This action cannot be undone.`)) {
+                        alert(`Customer "${customerName}" has been deleted.`);
+                        // In a real application, this would remove the customer from the database
+                    }
+                });
+            });
+
+            // Logout button
+            document.querySelector('.logout-btn').addEventListener('click', function() {
+                if (confirm('Are you sure you want to log out?')) {
+                    alert('Logging out...');
+                    // In a real application, this would redirect to login page
+                }
+            });
+
+            // --- Notifications & messages dropdown toggles (added to match Orders header) ---
+            const notifBtn = document.getElementById('notifBtn');
+            const msgBtn = document.getElementById('msgBtn');
+            const notifDropdown = document.getElementById('notifDropdown');
+            const msgDropdown = document.getElementById('msgDropdown');
+
+            function closeAllDropdowns() {
+                if (notifDropdown) notifDropdown.classList.remove('visible');
+                if (msgDropdown) msgDropdown.classList.remove('visible');
+                if (notifBtn) notifBtn.setAttribute('aria-expanded', 'false');
+                if (msgBtn) msgBtn.setAttribute('aria-expanded', 'false');
+            }
+
+            if (notifBtn && notifDropdown) {
+                notifBtn.addEventListener('click', (e) => {
+                    const vis = notifDropdown.classList.toggle('visible');
+                    notifBtn.setAttribute('aria-expanded', String(vis));
+                    if (msgDropdown) msgDropdown.classList.remove('visible');
+                    if (msgBtn) msgBtn.setAttribute('aria-expanded', 'false');
+                    e.stopPropagation();
+                });
+            }
+
+            if (msgBtn && msgDropdown) {
+                msgBtn.addEventListener('click', (e) => {
+                    const vis = msgDropdown.classList.toggle('visible');
+                    msgBtn.setAttribute('aria-expanded', String(vis));
+                    if (notifDropdown) notifDropdown.classList.remove('visible');
+                    if (notifBtn) notifBtn.setAttribute('aria-expanded', 'false');
+                    e.stopPropagation();
+                });
+            }
+
+            // close dropdowns on outside click or escape
+            document.addEventListener('click', function(e) {
+                const target = e.target;
+                if (notifDropdown && !notifDropdown.contains(target) && notifBtn && !notifBtn.contains(target)) {
+                    notifDropdown.classList.remove('visible');
+                    notifBtn && notifBtn.setAttribute('aria-expanded', 'false');
+                }
+                if (msgDropdown && !msgDropdown.contains(target) && msgBtn && !msgBtn.contains(target)) {
+                    msgDropdown.classList.remove('visible');
+                    msgBtn && msgBtn.setAttribute('aria-expanded', 'false');
+                }
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeAllDropdowns();
+            });
+        });
+    </script>
+</body>
+
+</html>
