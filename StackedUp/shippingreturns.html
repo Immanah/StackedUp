@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Shipping & Returns Info — Ozyde</title>
+    <style>
+        /* Ozyde Boutique consistent styling - matching catalog */
+        
+         :root {
+            --bg: #fff;
+            --text: #222;
+            --muted: #7a7a7a;
+            --accent: #111;
+            --max-width: 1200px;
+            --chip-bg: #f3f3f3;
+            --chip-border: #e6e6e6;
+            --primary: #111;
+            --success: #2fa46b;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --airbnb-pink: #FF5A5F;
+            --hero-height: 420px;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1.6;
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        /* Header and Navigation Styles (Consistent) */
+        
+        header {
+            border-bottom: 1px solid var(--chip-border);
+            padding: 15px 0;
+            margin-bottom: 40px;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo a {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .nav-icons a {
+            font-size: 20px;
+            margin-left: 15px;
+            color: var(--text);
+            position: relative;
+        }
+        
+        .nav-icons a svg {
+            vertical-align: middle;
+        }
+        
+        /* Footer Styles (Consistent) */
+        
+        footer {
+            background-color: var(--chip-bg);
+            padding: 40px 0;
+            margin-top: 60px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+        }
+        
+        @media (min-width: 768px) {
+            .footer-content {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        footer h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        footer ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        footer ul li {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        footer ul li a:hover {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+        
+        /* Main Content Styling */
+        
+        .content-area {
+            padding: 20px 0 80px 0;
+        }
+        
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            color: var(--primary);
+        }
+        
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 40px;
+            margin-bottom: 15px;
+            color: var(--primary);
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--chip-border);
+        }
+        
+        h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+        
+        p,
+        ul {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: var(--text);
+        }
+        
+        ul {
+            padding-left: 20px;
+        }
+        
+        .info-card {
+            background-color: var(--chip-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid var(--chip-border);
+        }
+
+        .alert-box {
+            background-color: #ffe8e8; /* Light Red/Pink */
+            color: var(--danger);
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid var(--danger);
+            margin: 30px 0;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header/Navigation -->
+    <header>
+        <div class="container navbar">
+            <div class="logo">
+                <a href="finalhomepage.html" id="brandLink">OZYDE</a>
+            </div>
+            <div class="nav-links">
+                <a href="catalog.html">Shop</a>
+                <a href="blog.html">Blog</a>
+                <a href="about.html">About</a>
+            </div>
+            <div class="nav-icons">
+                <a href="wishlist.html" title="Wishlist">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                </a>
+                <a href="cart.html" title="Cart">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-bag"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                </a>
+                <a href="orders.html" title="Orders">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-package"><path d="m7.5 4.27 9 5.14"/><path d="m21 13.9-9 5.14-9-5.14"/><path d="m3 9 9 5.14 9-5.14"/><path d="M12 2v10.5"/><path d="M12 19.5V22"/></svg>
+                </a>
+                <!-- Help Icon linked to the main Help Center page -->
+                <a href="help.html" title="Help Center" style="color: var(--airbnb-pink);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-help"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container content-area">
+        <h1>Shipping & Returns Information</h1>
+        <p style="text-align: center; max-width: 800px; margin: 0 auto 40px auto; color: var(--muted);">
+            Everything you need to know about getting your rental delivered and what to do if you need to return or exchange an item.
+        </p>
+
+        <div class="alert-box">
+            Please note: This page outlines general policy. Refer to your specific **rental agreement** for binding terms regarding your order.
+        </div>
+
+        <!-- Shipping Section -->
+        <section>
+            <h2>Delivery Information</h2>
+            
+            <h3>1. Standard Delivery Times</h3>
+            <p>We aim to deliver all rental items promptly to ensure you have them ready for your event.</p>
+            <ul>
+                <li>**Processing Time:** 1-2 business days (for cleaning and quality check).</li>
+                <li>**Shipping Time:** 3-5 business days (depending on your location).</li>
+                <li>**Total Time:** Please allow **5-7 business days** for your dress to arrive after placing your order. We strongly recommend booking at least 10 days in advance of your event date.</li>
+            </ul>
+
+            <h3>2. Express Shipping</h3>
+            <p>Need it faster? Express shipping is available for an additional charge during checkout. This service guarantees delivery within **2 business days** after processing.</p>
+
+            <h3>3. Delivery Costs</h3>
+            <p>Our delivery structure is simple and transparent:</p>
+            <div class="info-card">
+                <p><strong>Standard Delivery:</strong> R50.00</p>
+                <p><strong>Express Delivery:</strong> R150.00</p>
+                <p>We offer free standard shipping on rentals over R1000.</p>
+            </div>
+
+            <h3>4. Return Shipping</h3>
+            <p>A pre-paid return shipping label is included in your delivery box. Simply use the same packaging to return the item to us on the last day of your rental period. Drop the package off at any designated drop-off point.</p>
+        </section>
+
+        <!-- Returns Section -->
+        <section>
+            <h2>Returns & Exchanges Policy</h2>
+
+            <h3>1. Standard Return Procedure (End of Rental)</h3>
+            <p>All rental items must be shipped back on the final day of your rental term, as indicated on your order confirmation. Late returns may incur daily late fees.</p>
+            <ul>
+                <li>Place the item in the original packaging.</li>
+                <li>Affix the pre-paid return shipping label.</li>
+                <li>Drop it off at the courier's designated location before the end of the day.</li>
+                <li>**No cleaning is required** — we handle all dry cleaning.</li>
+            </ul>
+
+            <h3>2. Returns Due to Fit/Defect (Pre-Event)</h3>
+            <p>If the dress doesn't fit correctly, or if you notice a major defect upon arrival that was not disclosed:</p>
+            <p>You must notify us within **24 hours** of delivery. The item must be unworn and all tags/seals must remain attached. We can offer:</p>
+            <ul>
+                <li>A credit for the full rental price for a future rental.</li>
+                <li>An exchange for a different size or item (subject to availability and price difference).</li>
+                <li>A full refund only if a suitable replacement cannot be provided.</li>
+            </ul>
+
+            <h3>3. Cancellations</h3>
+            <div class="info-card">
+                <p><strong>Cancellations 14+ days before rental date:</strong> Full refund or credit.</p>
+                <p><strong>Cancellations 7-13 days before rental date:</strong> Full credit only.</p>
+                <p><strong>Cancellations less than 7 days before rental date:</strong> No refund or credit will be issued.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <h4>Shopping</h4>
+                    <ul>
+                        <li><a href="catalog.html">Dresses</a></li>
+                        <li><a href="wishlist.html">Wishlist</a></li>
+                        <li><a href="cart.html">Cart</a></li>
+                        <li><a href="orders.html">My Orders</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Information</h4>
+                    <ul>
+                        <li><a href="infopayments.html">How It Works</a></li>
+                        <li><a href="sizingguide.html">Size Guide</a></li>
+                        <li><a href="cleaning.html">Care Instructions</a></li>
+                        <li><a href="shippingreturns.html">Returns & Policy</a></li>
+                        <li><a href="help.html">Help Center</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Terms</a></li>
+                        <li><a href="#">Privacy</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="cleaning.html">Cleaning & Care Guide</a></li>
+                        <li><a href="#">Partnerships</a></li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <div style="margin-top:24px;text-align:center;padding-top:24px;border-top:1px solid #e6e6e6;color:var(--muted)">
+                © 2025 Ozyde. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Basic navigation functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Logo click to go home (using finalhomepage.html as seen in other files)
+            const brandLink = document.getElementById('brandLink');
+            if (brandLink) {
+                brandLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.location.href = 'finalhomepage.html';
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
