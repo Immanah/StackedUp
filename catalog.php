@@ -87,6 +87,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wishlist_action']) &&
     exit;
 }
 
+// Get view type (Shop or For You) - FIXED: using same logic as old file
+$view_type = isset($_GET['view']) && $_GET['view'] === 'for-you' ? 'for-you' : 'shop';
+
 // Get filter parameters - now handling arrays for multiple selection
 $category_filter = isset($_GET['category']) ? (array)$_GET['category'] : [];
 $size_filter = isset($_GET['size']) ? (array)$_GET['size'] : [];
@@ -97,7 +100,6 @@ $price_max = isset($_GET['price_max']) ? (float)$_GET['price_max'] : 10000;
 $sort_by = isset($_GET['sort']) ? $_GET['sort'] : 'newest';
 $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 20;
 $search_query = isset($_GET['search']) ? trim($_GET['search']) : '';
-$view_mode = isset($_GET['view']) ? $_GET['view'] : 'shop'; // 'shop' or 'for-you'
 
 // DEBUG: Show all products regardless of filters for testing
 $debug_mode = false;
@@ -149,8 +151,8 @@ if (!empty($search_query)) {
     $types .= "ssss";
 }
 
-// FOR YOU FUNCTIONALITY - Apply user preferences if in "for-you" view
-if ($view_mode === 'for-you' && $logged_in) {
+// FOR YOU VIEW: Filter by user preferences - FIXED: Using same logic as old catalog.php
+if ($view_type === 'for-you' && $logged_in) {
     // Get user preferences
     $user_sizes = [];
     $user_styles = [];
@@ -166,36 +168,55 @@ if ($view_mode === 'for-you' && $logged_in) {
     }
     $size_pref_stmt->close();
     
-    // Get user style preferences
+    // Get user style preferences - FIXED: Using same UNION query as old file
     $style_pref_query = "SELECT ds.style_id 
                          FROM user_style_preferences usp 
                          JOIN dress_styles ds ON usp.style_id = ds.style_id 
-                         WHERE usp.user_id = ?";
+                         WHERE usp.user_id = ?
+                         UNION
+                         SELECT NULL as style_id FROM user_custom_styles ucs WHERE ucs.user_id = ?";
     $style_pref_stmt = $mysqli->prepare($style_pref_query);
-    $style_pref_stmt->bind_param("i", $user_id);
+    $style_pref_stmt->bind_param("ii", $user_id, $user_id);
     $style_pref_stmt->execute();
     $style_pref_result = $style_pref_stmt->get_result();
     while ($row = $style_pref_result->fetch_assoc()) {
-        $user_styles[] = $row['style_id'];
+        if ($row['style_id']) {
+            $user_styles[] = $row['style_id'];
+        }
     }
     $style_pref_stmt->close();
     
-    // Apply user preferences to filters
-    if (!empty($user_sizes)) {
-        $size_conditions = [];
-        foreach ($user_sizes as $size) {
-            $size_conditions[] = "p.size LIKE ?";
-            $params[] = "%$size%";
-            $types .= "s";
+    // Apply For You filters if user has preferences - FIXED: Using same logic as old file
+    if (!empty($user_sizes) || !empty($user_styles)) {
+        $query .= " AND (1=0"; // Start with false condition
+        
+        // Size preferences
+        if (!empty($user_sizes)) {
+            $size_conditions = [];
+            foreach ($user_sizes as $size) {
+                $size_conditions[] = "p.size LIKE ?";
+                $params[] = "%$size%";
+                $types .= "s";
+            }
+            $query .= " OR (" . implode(" OR ", $size_conditions) . ")";
         }
-        $query .= " AND (" . implode(" OR ", $size_conditions) . ")";
-    }
-    
-    if (!empty($user_styles)) {
-        $placeholders = str_repeat('?,', count($user_styles) - 1) . '?';
-        $query .= " AND ps.style_id IN ($placeholders)";
-        $params = array_merge($params, $user_styles);
-        $types .= str_repeat('i', count($user_styles));
+        
+        // Style preferences
+        if (!empty($user_styles)) {
+            if (!empty($style_filter)) {
+                // If style filter is already applied, combine with user preferences
+                $style_filter = array_merge($style_filter, $user_styles);
+                $style_filter = array_unique($style_filter);
+            } else {
+                // Apply user style preferences
+                $query .= " OR EXISTS (SELECT 1 FROM product_styles ps WHERE ps.product_id = p.product_id AND ps.style_id IN (" . 
+                         implode(',', array_fill(0, count($user_styles), '?')) . "))";
+                $params = array_merge($params, $user_styles);
+                $types .= str_repeat('i', count($user_styles));
+            }
+        }
+        
+        $query .= ")";
     }
 }
 
@@ -770,6 +791,20 @@ function getImagePath($image_path) {
             border-radius: 8px;
             font-size: 14px;
         }
+
+        /* For You Indicator */
+        .for-you-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--airbnb-pink);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            z-index: 5;
+        }
         
         /* For You Banner */
         .for-you-banner {
@@ -909,7 +944,7 @@ function getImagePath($image_path) {
                         <a href="customerdashboard.php">Customer Dashboard</a>
                         <a href="my-account.html">My Account</a>
                         <div class="dropdown-divider"></div>
-                        <a href="#" id="logout.php">Sign Out</a>
+                        <a href="logout.php" id="logoutLink">Sign Out</a>
                     </div>
                 </div>
                 <?php else: ?>
@@ -943,18 +978,22 @@ function getImagePath($image_path) {
 
         <div class="container">
             <!-- Debug Information -->
-            <?php if ($debug_mode): ?>
             <div class="debug-info">
-                <strong>Debug Info:</strong> Showing <?php echo count($products); ?> products. 
-                <span style="color: var(--success);">DEBUG MODE: Showing all products</span>
+                <strong>Debug Info:</strong> 
+                Showing <?php echo count($products); ?> products in <strong><?php echo $view_type === 'for-you' ? 'For You' : 'Shop'; ?></strong> view.
+                <?php if ($debug_mode): ?>
+                    <span style="color: var(--success);">DEBUG MODE: Showing all products</span>
+                <?php endif; ?>
+                <?php if ($view_type === 'for-you'): ?>
+                    <br><span style="color: var(--airbnb-pink);">Personalised recommendations based on your preferences</span>
+                <?php endif; ?>
             </div>
-            <?php endif; ?>
 
             <!-- For You Banner -->
-            <?php if ($view_mode === 'for-you'): ?>
+            <?php if ($view_type === 'for-you'): ?>
             <div class="for-you-banner">
-                <h3>✨ Recommended For You</h3>
-                <p>Personalized recommendations based on your style preferences and measurements</p>
+                <h3>Recommended For You</h3>
+                <p>Personalised recommendations based on your style preferences and measurements</p>
             </div>
             <?php endif; ?>
 
@@ -984,7 +1023,7 @@ function getImagePath($image_path) {
                     <form method="GET" id="filterForm">
                         <!-- Hidden fields for search and view mode -->
                         <input type="hidden" name="search" value="<?php echo esc($search_query); ?>">
-                        <input type="hidden" name="view" value="<?php echo esc($view_mode); ?>">
+                        <input type="hidden" name="view" value="<?php echo $view_type; ?>">
                         
                         <!-- Category Filter -->
                         <div class="filter-section">
@@ -1103,8 +1142,8 @@ function getImagePath($image_path) {
                 <section class="products-section">
                     <div class="section-header">
                         <h2>
-                            <?php if ($view_mode === 'for-you'): ?>
-                                Recommended For You
+                            <?php if ($view_type === 'for-you'): ?>
+                                For You (<?php echo count($products); ?> recommendations)
                             <?php elseif (!empty($search_query)): ?>
                                 Search Results for "<?php echo esc($search_query); ?>"
                             <?php else: ?>
@@ -1124,19 +1163,37 @@ function getImagePath($image_path) {
                             </div>
 
                             <div class="view-toggle" role="tablist" aria-label="View toggle">
-                                <button class="toggle <?php echo $view_mode === 'shop' ? 'active' : ''; ?>" data-view="shop" role="tab" aria-selected="<?php echo $view_mode === 'shop' ? 'true' : 'false'; ?>">Shop</button>
-                                <button class="toggle <?php echo $view_mode === 'for-you' ? 'active' : ''; ?>" data-view="for-you" role="tab" aria-selected="<?php echo $view_mode === 'for-you' ? 'true' : 'false'; ?>">For you</button>
+                                <a href="?view=shop<?php echo !empty($_GET) ? '&' . http_build_query(array_diff_key($_GET, ['view' => ''])) : ''; ?>" 
+                                   class="toggle <?php echo $view_type === 'shop' ? 'active' : ''; ?>" 
+                                   data-view="shop" 
+                                   role="tab" 
+                                   aria-selected="<?php echo $view_type === 'shop' ? 'true' : 'false'; ?>">Shop</a>
+                                <a href="?view=for-you<?php echo !empty($_GET) ? '&' . http_build_query(array_diff_key($_GET, ['view' => ''])) : ''; ?>" 
+                                   class="toggle <?php echo $view_type === 'for-you' ? 'active' : ''; ?>" 
+                                   data-view="for-you" 
+                                   role="tab" 
+                                   aria-selected="<?php echo $view_type === 'for-you' ? 'true' : 'false'; ?>">For you</a>
                             </div>
                         </div>
                     </div>
 
+                    <?php if ($view_type === 'for-you' && !$logged_in): ?>
+                        <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+                            <p style="margin: 0; color: #856404;">
+                                <strong>Sign in to see personalized recommendations!</strong><br>
+                                The "For You" section shows dresses that match your size and style preferences.
+                            </p>
+                            <a href="register.php" class="btn btn-primary" style="margin-top: 10px; display: inline-block; padding: 10px 20px; background: var(--accent); color: white; border-radius: 4px;">Sign In / Register</a>
+                        </div>
+                    <?php endif; ?>
+
                     <div class="products-grid" id="productsGrid">
                         <?php if (empty($products)): ?>
                             <div style="grid-column:1/-1; background:#fff;border:1px solid #f1f1f1;padding:20px;border-radius:8px;text-align:center;">
-                                <?php if ($view_mode === 'for-you'): ?>
+                                <?php if ($view_type === 'for-you'): ?>
                                     No personalized recommendations found. 
                                     <div style="margin-top:10px;">
-                                        <a href="customerdashboard.php" class="btn btn-primary" style="padding:10px 20px;background:var(--accent);color:white;border-radius:4px;">Update Your Preferences</a>
+                                        <p>Update your <a href="customerdashboard.php">profile preferences</a> to get better recommendations, or try the <a href="?view=shop">Shop view</a>.</p>
                                     </div>
                                 <?php else: ?>
                                     No products found matching your filters.
@@ -1169,9 +1226,15 @@ function getImagePath($image_path) {
                                     $status_class = 'status-outofstock';
                                     $status_text = 'Out of Stock';
                                 }
+
+                                // Check if this is a "For You" recommendation
+                                $is_for_you = $view_type === 'for-you';
                             ?>
                             <a href="productdetail.php?product_id=<?php echo $pid; ?>" class="product-link" style="text-decoration:none;">
                                 <div class="product-card" data-id="<?php echo $pid; ?>">
+                                    <?php if ($is_for_you): ?>
+                                        <div class="for-you-badge">For You</div>
+                                    <?php endif; ?>
                                     <div class="product-image">
                                         <img src="<?php echo $img; ?>" alt="<?php echo $title; ?>" onerror="this.onerror=null;this.src='images/placeholder.png'">
                                         <button class="wishlist-btn <?php echo $is_wishlisted ? 'active' : ''; ?>" data-product-id="<?php echo $pid; ?>" aria-label="Add to wishlist">
@@ -1630,17 +1693,19 @@ function getImagePath($image_path) {
             loginModal.setAttribute('aria-hidden', 'true');
         });
 
-        // For You toggle functionality
+        // View type handling
         const viewToggles = document.querySelectorAll('.view-toggle .toggle');
+        const currentView = '<?php echo $view_type; ?>';
 
+        // Set active state for view toggles
         viewToggles.forEach(toggle => {
-            toggle.addEventListener('click', function() {
-                const view = this.getAttribute('data-view');
-                
-                // Update the view mode in the form and submit
-                document.querySelector('input[name="view"]').value = view;
-                document.getElementById('filterForm').submit();
-            });
+            if (toggle.getAttribute('data-view') === currentView) {
+                toggle.classList.add('active');
+                toggle.setAttribute('aria-selected', 'true');
+            } else {
+                toggle.classList.remove('active');
+                toggle.setAttribute('aria-selected', 'false');
+            }
         });
         
         // Initialize active filters display
