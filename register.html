@@ -4,9 +4,9 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Sign In / Sign Up — Ozyde</title>
+    <title>Sign In / Sign Up — Ozyde Boutique</title>
     <style>
-        /* Ozyde Boutique consistent styling - matching homepage */
+        /* Combined CSS - taking the best from both versions */
         
          :root {
             --bg: #fff;
@@ -14,7 +14,7 @@
             --muted: #7a7a7a;
             --accent: #111;
             --max-width: 1200px;
-            --chip-bg: #f3f3f3;
+            --chip-bg: #f3f3f4;
             --chip-border: #e6e6e6;
             --primary: #111;
             --success: #2fa46b;
@@ -47,6 +47,7 @@
             margin: 0 auto;
             padding: 0 20px;
         }
+        /* Header Styles - matching homepage */
         
         .nav-wrap {
             background: #0b0b0b;
@@ -117,20 +118,6 @@
             color: #ddd;
         }
         
-        .btn-signup {
-            background: var(--accent);
-            color: #fff;
-            padding: 8px 14px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 14px;
-            transition: background 0.2s ease;
-        }
-        
-        .btn-signup:hover {
-            background: #333;
-        }
-        
         .icons {
             display: flex;
             gap: 14px;
@@ -159,6 +146,17 @@
             padding: 48px 0;
             min-height: 70vh;
         }
+        
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 18px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: #111;
+            color: #fff;
+            text-decoration: none;
+        }
+        /* Auth Container */
         
         .auth-container {
             max-width: 500px;
@@ -253,6 +251,7 @@
             outline: none;
             border-color: var(--accent);
         }
+        /* Enhanced Country Code Selector (from your version) */
         
         .phone-input-group {
             display: flex;
@@ -267,14 +266,124 @@
             flex: 1;
         }
         
-        select {
+        .country-select-wrapper {
+            position: relative;
             width: 100%;
+        }
+        
+        .selected-country {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             padding: 12px;
             border: 1px solid #ddd;
             border-radius: 6px;
-            font-size: 16px;
             background: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
         }
+        
+        .selected-country:hover {
+            border-color: #bbb;
+        }
+        
+        .country-flag {
+            font-size: 16px;
+        }
+        
+        .country-code-text {
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        .country-name {
+            flex: 1;
+            text-align: left;
+            color: var(--text);
+            font-size: 13px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        
+        .dropdown-arrow {
+            color: var(--muted);
+            font-size: 10px;
+        }
+        
+        .country-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: none;
+            max-height: 300px;
+            overflow: hidden;
+        }
+        
+        .country-dropdown.show {
+            display: block;
+        }
+        
+        .country-search {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .country-search:focus {
+            border-bottom-color: var(--accent);
+        }
+        
+        .country-list {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        
+        .country-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f5f5f5;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .country-option:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .country-option.active {
+            background-color: #e9ecef;
+        }
+        
+        .country-option-flag {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .country-option-name {
+            flex: 1;
+            text-align: left;
+        }
+        
+        .country-option-code {
+            color: var(--muted);
+            font-weight: 600;
+        }
+        /* Password strength (from group member) */
         
         .password-strength {
             margin-top: 8px;
@@ -433,6 +542,7 @@
             color: var(--accent);
             font-weight: 500;
         }
+        /* Error and validation messages */
         
         .error-message {
             color: var(--danger);
@@ -441,125 +551,6 @@
             display: flex;
             align-items: center;
             gap: 5px;
-        }
-        /* Country Code Dropdown Styles */
-        
-        .country-select-wrapper {
-            position: relative;
-            width: 100%;
-        }
-        
-        .selected-country {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            background: white;
-            cursor: pointer;
-            font-size: 14px;
-            transition: border-color 0.2s ease;
-        }
-        
-        .selected-country:hover {
-            border-color: #bbb;
-        }
-        
-        .country-flag {
-            font-size: 16px;
-        }
-        
-        .country-code-text {
-            font-weight: 600;
-            color: var(--accent);
-        }
-        
-        .country-name {
-            flex: 1;
-            text-align: left;
-            color: var(--text);
-            font-size: 13px;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
-        
-        .dropdown-arrow {
-            color: var(--muted);
-            font-size: 10px;
-        }
-        
-        .country-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            display: none;
-            max-height: 300px;
-            overflow: hidden;
-        }
-        
-        .country-dropdown.show {
-            display: block;
-        }
-        
-        .country-search {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-bottom: 1px solid #eee;
-            font-size: 14px;
-            outline: none;
-        }
-        
-        .country-search:focus {
-            border-bottom-color: var(--accent);
-        }
-        
-        .country-list {
-            max-height: 250px;
-            overflow-y: auto;
-        }
-        
-        .country-option {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 12px;
-            cursor: pointer;
-            border-bottom: 1px solid #f5f5f5;
-            font-size: 14px;
-            transition: background-color 0.2s ease;
-        }
-        
-        .country-option:hover {
-            background-color: #f8f9fa;
-        }
-        
-        .country-option.active {
-            background-color: #e9ecef;
-        }
-        
-        .country-option-flag {
-            font-size: 16px;
-            width: 20px;
-            text-align: center;
-        }
-        
-        .country-option-name {
-            flex: 1;
-            text-align: left;
-        }
-        
-        .country-option-code {
-            color: var(--muted);
-            font-weight: 600;
         }
         
         .validation-valid {
@@ -570,82 +561,7 @@
             align-items: center;
             gap: 5px;
         }
-        
-        .validation-invalid {
-            color: var(--danger);
-            font-size: 13px;
-            margin-top: 5px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        footer {
-            border-top: 1px solid #eee;
-            padding: 36px 0;
-            margin-top: 28px;
-            color: var(--muted);
-            background: #fafafa;
-        }
-        
-        .footer-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 32px;
-        }
-        
-        .footer-grid h4 {
-            margin: 0 0 16px 0;
-            color: var(--accent);
-            font-weight: 600;
-        }
-        
-        .footer-grid ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .footer-grid li {
-            margin-bottom: 8px;
-        }
-        
-        .footer-grid a {
-            color: var(--muted);
-            transition: color 0.2s ease;
-        }
-        
-        .footer-grid a:hover {
-            color: var(--accent);
-        }
-        
-        .socials {
-            display: flex;
-            gap: 12px;
-            margin-top: 16px;
-        }
-        
-        .socials a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            border-radius: 6px;
-            background: #f5f5f5;
-            transition: all 0.2s ease;
-        }
-        
-        .socials a:hover {
-            background: var(--accent);
-        }
-        
-        .socials a:hover svg path,
-        .socials a:hover svg circle {
-            stroke: #fff;
-            fill: #fff;
-        }
-        /* Message Popup Styles */
+        /* Message Popup (from your version) */
         
         .message-popup {
             position: fixed;
@@ -713,30 +629,72 @@
             font-size: 14px;
             line-height: 1.4;
         }
+        /* Footer Styles */
         
-        .message-actions {
-            margin-top: 8px;
+        footer {
+            border-top: 1px solid #eee;
+            padding: 36px 0;
+            margin-top: 28px;
+            color: var(--muted);
+            background: #fafafa;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 32px;
+        }
+        
+        .footer-grid h4 {
+            margin: 0 0 16px 0;
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        .footer-grid ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-grid li {
+            margin-bottom: 8px;
+        }
+        
+        .footer-grid a {
+            color: var(--muted);
+            transition: color 0.2s ease;
+        }
+        
+        .footer-grid a:hover {
+            color: var(--accent);
+        }
+        
+        .socials {
             display: flex;
-            gap: 8px;
+            gap: 12px;
+            margin-top: 16px;
         }
         
-        .message-btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 4px;
-            font-size: 13px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-        
-        .message-btn.primary {
-            background: var(--accent);
-            color: white;
-        }
-        
-        .message-btn.secondary {
+        .socials a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
             background: #f5f5f5;
-            color: var(--text);
+            transition: all 0.2s ease;
+        }
+        
+        .socials a:hover {
+            background: var(--accent);
+        }
+        
+        .socials a:hover svg path,
+        .socials a:hover svg circle {
+            stroke: #fff;
+            fill: #fff;
         }
         
         @media (max-width: 640px) {
@@ -773,7 +731,6 @@
         <div class="message-content">
             <div class="message-title" id="messageTitle">Message</div>
             <div class="message-text" id="messageText">This is a message</div>
-            <div class="message-actions" id="messageActions"></div>
         </div>
     </div>
 
@@ -816,6 +773,11 @@
     </header>
 
     <main class="container">
+        <a class="back-btn" href="finalhomepage.html">← Back to home</a>
+
+        <h1>Welcome to Ozyde</h1>
+        <p class="lead">Sign in to your account or create a new one to access exclusive rentals.</p>
+
         <div class="auth-container">
             <div class="auth-toggle">
                 <div class="toggle-option active" data-target="login">Sign In</div>
@@ -829,11 +791,10 @@
                     <p class="auth-subtitle">Access your Ozyde dashboard</p>
                 </div>
 
-                <form id="login-form">
+                <form id="login-form" action="login.php" method="post">
                     <div class="form-group">
                         <label for="email">Email address</label>
                         <input type="email" name="email" id="email" placeholder="Enter your email" required>
-                        <div class="error-message" id="email-error-login"></div>
                     </div>
 
                     <div class="form-group">
@@ -843,7 +804,7 @@
 
                     <div class="form-options">
                         <div class="checkbox-group">
-                            <input type="checkbox" id="remember">
+                            <input type="checkbox" id="remember" name="remember">
                             <label for="remember" class="checkbox-label">Remember me</label>
                         </div>
                         <a href="#" class="forgot-link">Forgot password?</a>
@@ -853,7 +814,7 @@
                 </form>
 
                 <div class="social-auth">
-                    <button class="btn-google" onclick="signInWithGoogle()">
+                    <button type="button" class="btn-google" onclick="signInWithGoogle()">
                         <svg width="18" height="18" viewBox="0 0 24 24">
                             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                             <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -861,12 +822,6 @@
                             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                         </svg>
                         Sign in with Google
-                    </button>
-                    <button class="btn-apple" onclick="signInWithApple()">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="#000">
-                            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-                        </svg>
-                        Sign in with Apple
                     </button>
                 </div>
 
@@ -879,10 +834,22 @@
             <div class="auth-panel" id="register-panel">
                 <div class="auth-header">
                     <h2 class="auth-title">Create your account</h2>
-                    <p class="auth-subtitle">Join Ozyde for exclusive access</p>
+                    <p class="auth-subtitle">Join OZYDE for exclusive access</p>
                 </div>
 
-                <form id="register-form">
+                <!-- Display PHP errors if any -->
+                <?php if (isset($_SESSION['registration_errors']) && !empty($_SESSION['registration_errors'])): ?>
+                <div style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px; margin-bottom: 20px;">
+                    <?php 
+                            foreach ($_SESSION['registration_errors'] as $error) {
+                                echo htmlspecialchars($error) . " ";
+                            }
+                            unset($_SESSION['registration_errors']);
+                        ?>
+                </div>
+                <?php endif; ?>
+
+                <form id="register-form" action="register.php" method="POST">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="firstName">First name</label>
@@ -961,6 +928,18 @@
                     <button type="submit" class="btn-primary">Create account</button>
                 </form>
 
+                <div class="social-auth">
+                    <button type="button" class="btn-google" onclick="signUpWithGoogle()">
+                        <svg width="18" height="18" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        Sign up with Google
+                    </button>
+                </div>
+
                 <div class="auth-footer">
                     Already have an account? <a href="#" class="toggle-link" data-target="login">Sign in</a>
                 </div>
@@ -1035,7 +1014,7 @@
     </footer>
 
     <script>
-        // Country code data with flags and names
+        // Country code data with flags and names (from your version)
         const countryCodes = [{
             code: "+27",
             flag: "🇿🇦",
@@ -1270,33 +1249,20 @@
             name: "Lebanon"
         }];
 
-        // Message popup functions
-        function showMessage(type, title, message, actions = []) {
+        // Message popup functions (from your version)
+        function showMessage(type, title, message) {
             const popup = document.getElementById('messagePopup');
             const messageTitle = document.getElementById('messageTitle');
             const messageText = document.getElementById('messageText');
-            const messageActions = document.getElementById('messageActions');
 
             popup.className = `message-popup ${type}`;
             messageTitle.textContent = title;
             messageText.textContent = message;
 
-            // Clear previous actions
-            messageActions.innerHTML = '';
-
-            // Add new actions
-            actions.forEach(action => {
-                const button = document.createElement('button');
-                button.className = `message-btn ${action.type}`;
-                button.textContent = action.text;
-                button.onclick = action.handler;
-                messageActions.appendChild(button);
-            });
-
             popup.classList.add('show');
 
-            // Auto-hide success messages after 5 seconds if no actions
-            if (type === 'success' && actions.length === 0) {
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
                 setTimeout(() => {
                     hideMessage();
                 }, 5000);
@@ -1308,7 +1274,7 @@
             popup.classList.remove('show');
         }
 
-        // Email domain validation
+        // Email domain validation (from your version)
         function validateEmailDomain(email) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -1329,15 +1295,13 @@
                 'cim': 'com',
                 'vom': 'com',
                 'xom': 'com',
-                'comm': 'com',
                 'cmo': 'com',
                 'cop': 'com',
                 'co': 'com',
                 'cm': 'com',
                 'c': 'com',
                 'om': 'com',
-                'ocm': 'com',
-                'comm': 'com'
+                'ocm': 'com'
             };
 
             if (commonTypos[tld]) {
@@ -1383,7 +1347,7 @@
                 });
             });
 
-            // Email validation with domain checking
+            // Email validation with domain checking (from your version)
             const emailInput = document.getElementById('signupEmail');
             const emailError = document.getElementById('email-error');
 
@@ -1420,7 +1384,7 @@
                 });
             }
 
-            // Phone number validation
+            // Phone number validation (combined from both)
             const phoneInput = document.getElementById('phone');
             const phoneError = document.getElementById('phone-error');
 
@@ -1452,7 +1416,7 @@
                 phoneInput.addEventListener('input', validatePhone);
             }
 
-            // Password strength validation
+            // Password strength validation (from group member)
             const passwordInput = document.getElementById('newPassword');
             const strengthMeter = document.getElementById('strength-meter-fill');
             const requirements = {
@@ -1551,13 +1515,13 @@
                 passwordInput.addEventListener('input', validatePasswordMatch);
             }
 
-            // Form submission handlers
+            // Registration form submission
             const registerForm = document.getElementById('register-form');
             if (registerForm) {
                 registerForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-
+                    // Client-side validation
                     if (!validateEmail() || !validatePhone()) {
+                        e.preventDefault();
                         showMessage('error', 'Validation Error', 'Please fix the errors in the form before submitting.');
                         return;
                     }
@@ -1567,46 +1531,36 @@
                     const confirmPassword = document.getElementById('confirmPassword').value;
 
                     if (password !== confirmPassword) {
+                        e.preventDefault();
                         showMessage('error', 'Password Mismatch', 'Passwords do not match. Please check and try again.');
+                        return;
+                    }
+
+                    // Check password strength
+                    if (password.length < 8 || !/\d/.test(password) || !/[!@#$%^&*]/.test(password)) {
+                        e.preventDefault();
+                        showMessage('error', 'Weak Password', 'Password must be at least 8 characters with a number and special character!');
                         return;
                     }
 
                     // Check terms agreement
                     const termsAgreed = document.getElementById('terms').checked;
                     if (!termsAgreed) {
+                        e.preventDefault();
                         showMessage('error', 'Terms Required', 'Please agree to the Terms of Service and Privacy Policy.');
                         return;
                     }
 
-                    // Simulate successful registration
-                    showMessage('success', 'Account Created!', 'Your account has been successfully created. You can now sign in with your credentials.', [{
-                        text: 'Go to Sign In',
-                        type: 'primary',
-                        handler: function() {
-                            hideMessage();
-                            switchPanel('login');
-                            // Clear the register form
-                            registerForm.reset();
-                            // Reset password strength meter
-                            checkPasswordStrength('');
-                            validatePasswordMatch();
-                        }
-                    }]);
+                    // If all validations pass, form will submit normally to register.php
                 });
             }
 
+            // Login form submission
             const loginForm = document.getElementById('login-form');
             if (loginForm) {
                 loginForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-
-                    // Simulate successful login
-                    showMessage('success', 'Welcome Back!', 'You have successfully signed in. Redirecting to your dashboard...');
-
-                    // Redirect to final homepage after 2 seconds
-                    setTimeout(() => {
-                        window.location.href = 'finalhomepage.php';
-                    }, 2000);
+                    // Form will submit normally to login.php
+                    // Any client-side validation can be added here if needed
                 });
             }
         });
@@ -1683,13 +1637,22 @@
             populateCountryList(countryCodes);
         }
 
+        // Google Auth functions (from group member)
         function signInWithGoogle() {
-            showMessage('info', 'Google Sign In', 'Google sign-in would be implemented here.');
+            window.location.href = 'google_auth.php';
         }
 
-        function signInWithApple() {
-            showMessage('info', 'Apple Sign In', 'Apple sign-in would be implemented here.');
+        function signUpWithGoogle() {
+            window.location.href = 'google_auth.php';
         }
+
+        // Check for success parameter in URL (from group member)
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('registration') === 'success') {
+                showMessage('success', 'Account Created!', 'Your account has been successfully created. Please check your email to verify your account.');
+            }
+        });
     </script>
 </body>
 

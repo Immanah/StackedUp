@@ -156,7 +156,7 @@
         .icon-only:hover {
             background: rgba(255, 255, 255, 0.1);
         }
-        /* HERO - UPDATED FOR VIDEO AND SLIDESHOW */
+        /* HERO - VIDEO ONLY (No slideshow) */
         
         .hero {
             position: relative;
@@ -180,30 +180,7 @@
             object-fit: cover;
             z-index: 1;
         }
-        
-        .hero-video.hidden {
-            display: none;
-        }
-        /* slideshow images stack - KEPT FOR AFTER VIDEO */
-        
-        .hero .slide {
-            position: absolute;
-            inset: 0;
-            background-size: cover;
-            background-position: center top;
-            opacity: 0;
-            transition: opacity 1s ease;
-            filter: grayscale(60%) contrast(95%);
-            transform: scale(1.03);
-            z-index: 1;
-        }
-        
-        .hero .slide.show {
-            opacity: 1;
-            transform: scale(1);
-            z-index: 2;
-        }
-        /* hero text - transparent box with text shadow and overlay for readability */
+        /* hero text */
         
         .hero-inner {
             position: relative;
@@ -606,7 +583,7 @@
             <nav aria-label="Main navigation">
                 <ul id="main-nav">
                     <li><a href="finalhomepage.html" class="active">Home</a></li>
-                    <li><a href="catalog.php">Browse</a></li>
+                    <li><a href="catalog_guest.php">Browse</a></li>
                     <li><a href="custommade.html">Custom Made</a></li>
                     <li><a href="about.html">About</a></li>
                     <li><a href="blog.html">Blog</a></li>
@@ -615,13 +592,7 @@
             </nav>
 
             <div class="icons" role="group" aria-label="User actions">
-                <a href="register.html" class="icon-only" title="Login/Register" aria-label="Login/Register">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-                        <polyline points="10 17 15 12 10 7" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                        <line x1="15" y1="12" x2="3" y2="12" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-                    </svg>
-                </a>
+                <a href="register.html" class="btn-signup">Sign Up / Login</a>
 
                 <a href="help.html" class="icon-only" title="Help" aria-label="Help">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -634,18 +605,13 @@
         </div>
     </header>
 
-    <!-- HERO - FIXED VERSION -->
+    <!-- HERO - VIDEO ONLY (No slideshow) -->
     <section class="hero" aria-label="Hero section">
-        <!-- Video plays first -->
+        <!-- Video plays continuously -->
         <video class="hero-video" autoplay muted loop playsinline id="heroVideo">
             <source src="SAPPHIRE.mp4" type="video/mp4">
-            <!-- Fallback message if video doesn't load -->
+            Your browser does not support the video tag.
         </video>
-
-        <!-- Original slideshow - will start after video or if video fails -->
-        <div class="slide" id="slide-0" style="background-image:url('PIC3.jpg')" aria-hidden="true"></div>
-        <div class="slide" id="slide-1" style="background-image:url('PIC2.jpg')" aria-hidden="true"></div>
-        <div class="slide" id="slide-2" style="background-image:url('PIC10.jpg')" aria-hidden="true"></div>
 
         <div class="hero-inner container">
             <h1>Be Best Dressed</h1>
@@ -658,26 +624,25 @@
         </div>
     </section>
 
-
     <!-- Shop By Collections -->
     <section class="section center">
         <div class="container">
             <h3>Shop By Collections</h3>
             <div class="collections" aria-label="Collections">
                 <div class="collection-item">
-                    <a href="signup.html" class="collection" id="col-1" style="background-image:url('PIC10.jpg');"></a>
+                    <a href="register.html" class="collection" id="col-1" style="background-image:url('PIC10.jpg');"></a>
                     <div class="collection-label">Wedding</div>
                 </div>
                 <div class="collection-item">
-                    <a href="signup.html" class="collection" id="col-2" style="background-image:url('images/collection-matric.jpg');"></a>
+                    <a href="register.html" class="collection" id="col-2" style="background-image:url('images/collection-matric.jpg');"></a>
                     <div class="collection-label">Matric Dance</div>
                 </div>
                 <div class="collection-item">
-                    <a href="signup.html" class="collection" id="col-3" style="background-image:url('images/collection-bday.jpg');"></a>
+                    <a href="register.html" class="collection" id="col-3" style="background-image:url('images/collection-bday.jpg');"></a>
                     <div class="collection-label">Birthday</div>
                 </div>
                 <div class="collection-item">
-                    <a href="signup.html" class="collection" id="col-4" style="background-image:url('images/collection-custom.jpg');"></a>
+                    <a href="register.html" class="collection" id="col-4" style="background-image:url('images/collection-custom.jpg');"></a>
                     <div class="collection-label">Custom-made Dresses</div>
                 </div>
             </div>
@@ -846,79 +811,6 @@
 
     <script>
         /**********************
-         * FIXED Hero video then slideshow logic
-         **********************/
-        (function heroMedia() {
-            const video = document.getElementById('heroVideo');
-            const slides = [
-                document.getElementById('slide-0'),
-                document.getElementById('slide-1'),
-                document.getElementById('slide-2')
-            ];
-
-            let currentSlide = 0;
-            const totalSlides = slides.length;
-            let slideshowActive = false;
-            let slideshowInterval;
-
-            // Function to start slideshow
-            function startSlideshow() {
-                if (slideshowActive) return;
-                slideshowActive = true;
-
-                // Hide video and show first slide
-                if (video) {
-                    video.classList.add('hidden');
-                }
-
-                // Reset all slides
-                slides.forEach(s => s.classList.remove('show'));
-
-                // Show first slide
-                if (slides.length > 0) {
-                    slides[currentSlide].classList.add('show');
-                }
-
-                // Start slideshow interval
-                slideshowInterval = setInterval(() => {
-                    if (slides.length > 0) {
-                        slides[currentSlide].classList.remove('show');
-                        currentSlide = (currentSlide + 1) % totalSlides;
-                        slides[currentSlide].classList.add('show');
-                    }
-                }, 4000); // 4 second interval
-            }
-
-            // Check if video loads successfully
-            if (video) {
-                video.addEventListener('loadeddata', function() {
-                    console.log('Video loaded successfully');
-                    // Video loaded, set timeout to switch to slideshow after 8 seconds
-                    setTimeout(startSlideshow, 8000);
-                });
-
-                video.addEventListener('error', function() {
-                    console.log('Video failed to load, starting slideshow immediately');
-                    // Video failed to load, start slideshow immediately
-                    startSlideshow();
-                });
-
-                // Fallback: if video doesn't load within 3 seconds, start slideshow
-                setTimeout(function() {
-                    if (!slideshowActive && video.readyState < 2) {
-                        console.log('Video loading timeout, starting slideshow');
-                        startSlideshow();
-                    }
-                }, 3000);
-            } else {
-                // No video element, start slideshow immediately
-                console.log('No video element found, starting slideshow');
-                startSlideshow();
-            }
-
-        })();
-
-        /**********************
          * Reviews rotation logic
          **********************/
         (function reviewsCarousel() {
@@ -943,6 +835,21 @@
                 showIndex(idx);
             }, 5000);
         })();
+
+        // Logo click handler
+        document.getElementById('brandLink').addEventListener('click', function() {
+            window.location.href = 'finalhomepage.html';
+        });
+
+        // Video error handling
+        document.getElementById('heroVideo').addEventListener('error', function(e) {
+            console.error('Video failed to load:', e);
+        });
+
+        // Video loaded successfully
+        document.getElementById('heroVideo').addEventListener('loadeddata', function() {
+            console.log('Video loaded successfully');
+        });
     </script>
 </body>
 

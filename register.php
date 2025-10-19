@@ -1,23 +1,60 @@
 <?php
-// register.php
-header('Content-Type: text/plain');
+// register.php - FIXED VERSION FOR YOUR DATABASE
+session_start();
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reportING(E_ALL);
 
-// Database connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "ozyde";
+include 'db.php';
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+// For now, let's skip PHPMailer to make it work
+// require 'vendor/autoload.php';
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+// Email domain validation function
+function validateEmailDomain($email) {
+    // PHP email validation
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return ['isValid' => false];
+    }
+
+    // Check for common TLD typos
+    $domain = explode('@', $email)[1];
+    $tldParts = explode('.', $domain);
+    $tld = end($tldParts);
+    $tld = strtolower($tld);
+
+    $commonTypos = [
+        'cpm' => 'com',
+        'con' => 'com',
+        'comm' => 'com',
+        'coom' => 'com',
+        'cim' => 'com',
+        'vom' => 'com',
+        'commm' => 'com',
+        'cmo' => 'com',
+        'cop' => 'com',
+        'co' => 'com',
+        'cm' => 'com',
+        'om' => 'com',
+        'ocm' => 'com'
+    ];
+
+    if (isset($commonTypos[$tld])) {
+        $suggestion = str_replace('.' . $tld, '.' . $commonTypos[$tld], $domain);
+        $suggestion = explode('@', $email)[0] . '@' . $suggestion;
+        return [
+            'isValid' => false,
+            'suggestion' => $suggestion
+        ];
+    }
+
+    return ['isValid' => true];
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get form data
+    echo "<pre>"; // Debug output
+    echo "Starting registration process...\n";
+    
     $firstName = trim($_POST['firstName']);
     $lastName = trim($_POST['lastName']);
     $email = trim($_POST['signupEmail']);
@@ -26,73 +63,113 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['newPassword'];
     $confirm = $_POST['confirmPassword'];
 
-    // Basic validation
+    echo "Data received:\n";
+    echo "First: $firstName\nLast: $lastName\nEmail: $email\nCountry: $countryCode\nPhone: $phone\n";
+
     $errors = [];
 
-    // Check if email already exists
-    $checkEmail = $conn->prepare("SELECT user_id FROM users WHERE email = ?");
-    $checkEmail->bind_param("s", $email);
-    $checkEmail->execute();
-    $checkEmail->store_result();
-    
-    if ($checkEmail->num_rows > 0) {
-        $errors[] = "An account with this email already exists. Please use a different email or sign in.";
+    // Required fields validation
+    if (empty($firstName) || empty($lastName) || empty($email) || empty($phone) || empty($password)) {
+        $errors[] = "All fields are required";
     }
-    $checkEmail->close();
 
-    // Validate passwords match
+    // Email domain validation
+    if (empty($errors)) {
+        $emailCheck = validateEmailDomain($email);
+        if (!$emailCheck['isValid']) {
+            if (isset($emailCheck['suggestion'])) {
+                $errors[] = "Email domain might be incorrect. Did you mean: " . $emailCheck['suggestion'] . "?";
+            } else {
+                $errors[] = "Please enter a valid email address";
+            }
+        }
+    }
+
+    // Check if email exists
+    if (empty($errors)) {
+        $checkEmail = $conn->prepare("SELECT user_id FROM users WHERE email = ?");
+        $checkEmail->bind_param("s", $email);
+        $checkEmail->execute();
+        $checkEmail->store_result();
+
+        if ($checkEmail->num_rows > 0) {
+            $errors[] = "An account with this email already exists. Please use a different email or sign in.";
+        }
+        $checkEmail->close();
+    }
+
+    // Password validation
     if ($password !== $confirm) {
         $errors[] = "Passwords do not match";
     }
-    
-    // Validate password strength
-    if (strlen($password) < 8) {
-        $errors[] = "Password must be at least 8 characters";
-    }
-    
-    if (!preg_match("/[0-9]/", $password)) {
-        $errors[] = "Password must include at least one number";
-    }
-    
-    if (!preg_match("/[!@#$%^&*]/", $password)) {
-        $errors[] = "Password must include at least one special character (!@#$%^&*)";
+
+    if (strlen($password) < 8 || !preg_match("/[0-9]/", $password) || !preg_match("/[!@#$%^&*]/", $password)) {
+        $errors[] = "Password must be at least 8 characters, include a number and a special character (!@#$%^&*)";
     }
 
-    // If there are errors, return them
-    if (!empty($errors)) {
-        echo implode(", ", $errors);
-        exit;
+    // Phone validation
+    $cleanPhone = preg_replace('/\D/', '', $phone);
+    if ($countryCode === '+27' && strlen($cleanPhone) !== 9) {
+        $errors[] = "South African numbers must be 9 digits (without country code)";
     }
 
-    try {
+    if (strlen($cleanPhone) < 8 || strlen($cleanPhone) > 15) {
+        $errors[] = "Phone number must be between 8-15 digits";
+    }
+
+    if (empty($errors)) {
         // Hash password
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+        echo "Password hashed successfully\n";
 
-        // Insert into DB
+        // For now, let's do a simple insert without verification
+        // This matches your actual database structure
         $sql = "INSERT INTO users (first_name, last_name, email, password, phone, country_code, role) 
                 VALUES (?, ?, ?, ?, ?, ?, 'customer')";
+        
+        echo "SQL: $sql\n";
+        
         $stmt = $conn->prepare($sql);
-        
-        if (!$stmt) {
-            throw new Exception("Prepare failed: " . $conn->error);
-        }
-        
-        $stmt->bind_param("ssssss", $firstName, $lastName, $email, $hashedPassword, $phone, $countryCode);
-
-        if ($stmt->execute()) {
-            echo "success";
+        if ($stmt) {
+            $stmt->bind_param("ssssss", $firstName, $lastName, $email, $hashedPassword, $phone, $countryCode);
+            
+            if ($stmt->execute()) {
+                $user_id = $stmt->insert_id;
+                echo "✅ SUCCESS! User registered with ID: $user_id\n";
+                
+                // Simple success - we'll add email verification later
+                $_SESSION['success_message'] = "Registration successful! You can now sign in.";
+                echo "<script>alert('Registration successful!'); window.location.href = 'register.html';</script>";
+                exit();
+                
+            } else {
+                echo "❌ Execute failed: " . $stmt->error . "\n";
+                $errors[] = "Registration failed: " . $stmt->error;
+            }
+            $stmt->close();
         } else {
-            throw new Exception("Execute failed: " . $stmt->error);
+            echo "❌ Prepare failed: " . $conn->error . "\n";
+            $errors[] = "Database error: " . $conn->error;
         }
-
-        $stmt->close();
-        
-    } catch (Exception $e) {
-        echo "Error: " . $e->getMessage();
     }
 
-    $conn->close();
+    // Handle errors
+    if (!empty($errors)) {
+        echo "Errors found:\n";
+        foreach ($errors as $error) {
+            echo " - $error\n";
+        }
+        $_SESSION['registration_errors'] = $errors;
+        $_SESSION['form_data'] = $_POST;
+        // Don't redirect - show errors on same page for debugging
+        echo "<script>alert('" . implode("\\n", $errors) . "'); window.location.href = 'register.html';</script>";
+        exit();
+    }
+    
+    echo "</pre>";
 } else {
-    echo "Invalid request method";
+    echo "No POST data received";
 }
+
+$conn->close();
 ?>

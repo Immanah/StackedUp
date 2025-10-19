@@ -1,32 +1,41 @@
 <?php
 session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-// This page is intended for logged-in users only.
-// We don't check or branch for logged-in/guest view here — it always renders the logged-in UI.
-$user_id = $_SESSION['user_id'] ?? null;
+// Debug session
+error_log("Session user_id: " . (isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'not set'));
 
-// Get wishlist count for navigation (if user_id is available)
+$logged_in = isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
+
+// Get wishlist count for navigation if logged in
 $wishlist_count = 0;
-if ($user_id) {
+if ($logged_in) {
     $db_host = 'localhost';
     $db_user = 'root';
     $db_pass = '';
     $db_name = 'ozyde';
-
-    $mysqli = new mysqli($db_host, $db_user, $db_pass, $db_name);
-    if (!$mysqli->connect_errno) {
-        $count_sql = "SELECT COUNT(*) as count FROM wishlist WHERE user_id = ?";
-        if ($count_stmt = $mysqli->prepare($count_sql)) {
-            $count_stmt->bind_param("i", $user_id);
-            $count_stmt->execute();
-            $count_result = $count_stmt->get_result();
-            if ($wishlist_row = $count_result->fetch_assoc()) {
-                $wishlist_count = (int) $wishlist_row['count'];
+    
+    try {
+        $mysqli = new mysqli($db_host, $db_user, $db_pass, $db_name);
+        if (!$mysqli->connect_errno) {
+            $count_sql = "SELECT COUNT(*) as count FROM wishlist WHERE user_id = ?";
+            $count_stmt = $mysqli->prepare($count_sql);
+            if ($count_stmt) {
+                $count_stmt->bind_param("i", $_SESSION['user_id']);
+                $count_stmt->execute();
+                $count_result = $count_stmt->get_result();
+                if ($count_result) {
+                    $wishlist_row = $count_result->fetch_assoc();
+                    $wishlist_count = $wishlist_row['count'];
+                }
+                $count_stmt->close();
             }
-            $count_stmt->close();
         }
+        $mysqli->close();
+    } catch (Exception $e) {
+        error_log("Wishlist count error: " . $e->getMessage());
     }
-    $mysqli->close();
 }
 ?>
 <!doctype html>
@@ -65,7 +74,7 @@ if ($user_id) {
             color: var(--text);
             background: var(--bg);
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: gra-scale;
+            -moz-osx-font-smoothing: grayscale;
             line-height: 1.5;
         }
         
@@ -250,7 +259,7 @@ if ($user_id) {
             margin: 6px 0;
         }
 
-        /* Search Bar */
+        /* Search Bar - Only for logged-in users */
         .search {
             flex: 1;
             max-width: 400px;
@@ -286,7 +295,7 @@ if ($user_id) {
             justify-content: center;
         }
         
-        /* HERO - UPDATED FOR VIDEO AND SLIDESHOW */
+        /* HERO - VIDEO ONLY (No slideshow) */
         
         .hero {
             position: relative;
@@ -311,30 +320,7 @@ if ($user_id) {
             z-index: 1;
         }
         
-        .hero-video.hidden {
-            display: none;
-        }
-        /* slideshow images stack - KEPT FOR AFTER VIDEO */
-        
-        .hero .slide {
-            position: absolute;
-            inset: 0;
-            background-size: cover;
-            background-position: center top;
-            opacity: 0;
-            transition: opacity 1s ease;
-            filter: grayscale(60%) contrast(95%);
-            transform: scale(1.03);
-            z-index: 1;
-        }
-        
-        .hero .slide.show {
-            opacity: 1;
-            transform: scale(1);
-            z-index: 2;
-        }
-        /* hero text - transparent box with text shadow and overlay for readability */
-        
+        /* hero text */
         .hero-inner {
             position: relative;
             z-index: 3;
@@ -737,7 +723,8 @@ if ($user_id) {
                 <div>Ozyde</div>
             </div>
 
-            <!-- Search Bar (always visible for logged-in page) -->
+            <?php if ($logged_in): ?>
+            <!-- Search Bar - Only for logged-in users -->
             <div class="search" role="search" aria-label="Site search">
                 <input id="searchInput" type="search" placeholder="Search dresses, designers, collection..." aria-label="Search">
                 <button id="searchBtn" aria-label="Search">
@@ -747,6 +734,7 @@ if ($user_id) {
                     </svg>
                 </button>
             </div>
+            <?php endif; ?>
 
             <!-- UPDATED NAVIGATION ORDER -->
             <nav aria-label="Main navigation">
@@ -761,71 +749,82 @@ if ($user_id) {
             </nav>
 
             <div class="icons" role="group" aria-label="User actions">
-                <!-- Help Button -->
-                <a href="help.html" class="icon-only" title="Help" aria-label="Help">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.2" fill="none"/>
-                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-                        <line x1="12" y1="17" x2="12" y2="17" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-                    </svg>
-                </a>
-
-                <!-- Wishlist -->
-                <a href="wishlist.php" class="icon-only" title="Wishlist" aria-label="Wishlist">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="white" stroke-width="1.2" fill="none"/>
-                    </svg>
-                    <?php if ($wishlist_count > 0): ?>
-                        <span class="wishlist-count"><?php echo $wishlist_count; ?></span>
-                    <?php endif; ?>
-                </a>
-
-                <!-- Cart -->
-                <a href="cart.php" class="icon-only" title="Shopping Cart" aria-label="Shopping Cart">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                        <circle cx="9" cy="21" r="1" stroke="white" stroke-width="1.2" fill="none"/>
-                        <circle cx="20" cy="21" r="1" stroke="white" stroke-width="1.2" fill="none"/>
-                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" stroke="white" stroke-width="1.2" fill="none"/>
-                    </svg>
-                </a>
-
-                <!-- Profile Dropdown -->
-                <div class="profile-dropdown">
-                    <button class="icon-only" title="My Account" aria-label="My Account">
+                <?php if ($logged_in): ?>
+                    <!-- Help Button -->
+                    <a href="help.html" class="icon-only" title="Help" aria-label="Help">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="white" stroke-width="1.2" fill="none"/>
-                            <circle cx="12" cy="7" r="4" stroke="white" stroke-width="1.2" fill="none"/>
+                            <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.2" fill="none"/>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                            <line x1="12" y1="17" x2="12" y2="17" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
                         </svg>
-                    </button>
-                    <div class="dropdown-menu">
-                        <a href="customerdashboard.php">Customer Dashboard</a>
-                        <a href="my-account.html">My Account</a>
-                        <div class="dropdown-divider"></div>
-                        <a href="logout.php" id="logoutLink">Sign Out</a>
+                    </a>
+
+                    <!-- Wishlist -->
+                    <a href="wishlist.php" class="icon-only" title="Wishlist" aria-label="Wishlist">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="white" stroke-width="1.2" fill="none"/>
+                        </svg>
+                        <?php if ($wishlist_count > 0): ?>
+                            <span class="wishlist-count"><?php echo $wishlist_count; ?></span>
+                        <?php endif; ?>
+                    </a>
+
+                    <!-- Cart -->
+                    <a href="cart.php" class="icon-only" title="Shopping Cart" aria-label="Shopping Cart">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <circle cx="9" cy="21" r="1" stroke="white" stroke-width="1.2" fill="none"/>
+                            <circle cx="20" cy="21" r="1" stroke="white" stroke-width="1.2" fill="none"/>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" stroke="white" stroke-width="1.2" fill="none"/>
+                        </svg>
+                    </a>
+
+                    <!-- Profile Dropdown -->
+                    <div class="profile-dropdown">
+                        <button class="icon-only" title="My Account" aria-label="My Account">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="white" stroke-width="1.2" fill="none"/>
+                                <circle cx="12" cy="7" r="4" stroke="white" stroke-width="1.2" fill="none"/>
+                            </svg>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="customerdashboard.php">Customer Dashboard</a>
+                            <a href="my-account.html">My Account</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="logout.php" id="logoutLink">Sign Out</a>
+                        </div>
                     </div>
-                </div>
+                <?php else: ?>
+                    <!-- Guest View - Show login/register option -->
+                    <a href="register.html" class="btn-signup">Sign Up / Login</a>
+                    <a href="help.html" class="icon-only" title="Help" aria-label="Help">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.2" fill="none"/>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                            <line x1="12" y1="17" x2="12" y2="17" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                        </svg>
+                    </a>
+                <?php endif; ?>
             </div>
         </div>
     </header>
 
-    <!-- HERO - FIXED VERSION -->
+    <!-- HERO - VIDEO ONLY (No slideshow) -->
     <section class="hero" aria-label="Hero section">
-        <!-- Video plays first -->
+        <!-- Video plays continuously -->
         <video class="hero-video" autoplay muted loop playsinline id="heroVideo">
             <source src="SAPPHIRE.mp4" type="video/mp4">
-            <!-- Fallback message if video doesn't load -->
+            Your browser does not support the video tag.
         </video>
-
-        <!-- Original slideshow - will start after video or if video fails -->
-        <div class="slide" id="slide-0" style="background-image:url('PIC3.jpg')" aria-hidden="true"></div>
-        <div class="slide" id="slide-1" style="background-image:url('PIC2.jpg')" aria-hidden="true"></div>
-        <div class="slide" id="slide-2" style="background-image:url('PIC10.jpg')" aria-hidden="true"></div>
 
         <div class="hero-inner container">
             <h1>Be Best Dressed</h1>
             <p class="lead">Rent our luxury exquisite items that will have you looking and feeling like the best dressed in any occasion</p>
             <div class="cta">
-                <a href="catalog.php" class="btn primary">Browse Dresses</a>
+                <?php if ($logged_in): ?>
+                    <a href="catalog.php" class="btn primary">Browse Dresses</a>
+                <?php else: ?>
+                    <a href="register.html" class="btn primary">Sign Up</a>
+                <?php endif; ?>
                 <a href="magazine.pdf" class="btn" target="_blank" rel="noopener">View Magazine</a>
             </div>
             <div class="subtext">View our Magazine with our best looks and reserve items.</div>
@@ -838,19 +837,19 @@ if ($user_id) {
             <h3>Shop By Collections</h3>
             <div class="collections" aria-label="Collections">
                 <div class="collection-item">
-                    <a href="catalog.php?category=wedding" class="collection" id="col-1" style="background-image:url('PIC10.jpg');"></a>
+                    <a href="<?php echo $logged_in ? 'catalog.php?category=wedding' : 'register.html'; ?>" class="collection" id="col-1" style="background-image:url('PIC10.jpg');"></a>
                     <div class="collection-label">Wedding</div>
                 </div>
                 <div class="collection-item">
-                    <a href="catalog.php?category=matric" class="collection" id="col-2" style="background-image:url('images/collection-matric.jpg');"></a>
+                    <a href="<?php echo $logged_in ? 'catalog.php?category=matric' : 'register.html'; ?>" class="collection" id="col-2" style="background-image:url('images/collection-matric.jpg');"></a>
                     <div class="collection-label">Matric Dance</div>
                 </div>
                 <div class="collection-item">
-                    <a href="catalog.php?category=birthday" class="collection" id="col-3" style="background-image:url('images/collection-bday.jpg');"></a>
+                    <a href="<?php echo $logged_in ? 'catalog.php?category=birthday' : 'register.html'; ?>" class="collection" id="col-3" style="background-image:url('images/collection-bday.jpg');"></a>
                     <div class="collection-label">Birthday</div>
                 </div>
                 <div class="collection-item">
-                    <a href="custommade.html" class="collection" id="col-4" style="background-image:url('images/collection-custom.jpg');"></a>
+                    <a href="<?php echo $logged_in ? 'custommade.html' : 'register.html'; ?>" class="collection" id="col-4" style="background-image:url('images/collection-custom.jpg');"></a>
                     <div class="collection-label">Custom-made Dresses</div>
                 </div>
             </div>
@@ -1019,79 +1018,6 @@ if ($user_id) {
 
     <script>
         /**********************
-         * FIXED Hero video then slideshow logic
-         **********************/
-        (function heroMedia() {
-            const video = document.getElementById('heroVideo');
-            const slides = [
-                document.getElementById('slide-0'),
-                document.getElementById('slide-1'),
-                document.getElementById('slide-2')
-            ].filter(Boolean);
-
-            let currentSlide = 0;
-            const totalSlides = slides.length;
-            let slideshowActive = false;
-            let slideshowInterval;
-
-            // Function to start slideshow
-            function startSlideshow() {
-                if (slideshowActive) return;
-                slideshowActive = true;
-
-                // Hide video and show first slide
-                if (video) {
-                    video.classList.add('hidden');
-                }
-
-                // Reset all slides
-                slides.forEach(s => s.classList.remove('show'));
-
-                // Show first slide
-                if (slides.length > 0) {
-                    slides[currentSlide].classList.add('show');
-                }
-
-                // Start slideshow interval
-                slideshowInterval = setInterval(() => {
-                    if (slides.length > 0) {
-                        slides[currentSlide].classList.remove('show');
-                        currentSlide = (currentSlide + 1) % totalSlides;
-                        slides[currentSlide].classList.add('show');
-                    }
-                }, 4000); // 4 second interval
-            }
-
-            // Check if video loads successfully
-            if (video) {
-                video.addEventListener('loadeddata', function() {
-                    console.log('Video loaded successfully');
-                    // Video loaded, set timeout to switch to slideshow after 8 seconds
-                    setTimeout(startSlideshow, 8000);
-                });
-
-                video.addEventListener('error', function() {
-                    console.log('Video failed to load, starting slideshow immediately');
-                    // Video failed to load, start slideshow immediately
-                    startSlideshow();
-                });
-
-                // Fallback: if video doesn't load within 3 seconds, start slideshow
-                setTimeout(function() {
-                    if (!slideshowActive && video.readyState < 2) {
-                        console.log('Video loading timeout, starting slideshow');
-                        startSlideshow();
-                    }
-                }, 3000);
-            } else {
-                // No video element, start slideshow immediately
-                console.log('No video element found, starting slideshow');
-                startSlideshow();
-            }
-
-        })();
-
-        /**********************
          * Reviews rotation logic
          **********************/
         (function reviewsCarousel() {
@@ -1117,39 +1043,40 @@ if ($user_id) {
             }, 5000);
         })();
 
-        // Search functionality (unconditional)
-        (function initSearch() {
-            const searchBtn = document.getElementById('searchBtn');
-            const searchInput = document.getElementById('searchInput');
-            if (!searchBtn || !searchInput) return;
+        // Search functionality for logged-in users
+        <?php if ($logged_in): ?>
+        document.getElementById('searchBtn').addEventListener('click', function() {
+            const q = document.getElementById('searchInput').value.trim();
+            if (!q) { 
+                alert('Please enter a search term'); 
+                return; 
+            }
+            // Redirect to catalog with search parameter
+            window.location.href = 'catalog.php?search=' + encodeURIComponent(q);
+        });
 
-            searchBtn.addEventListener('click', function() {
-                const q = searchInput.value.trim();
-                if (!q) { 
-                    alert('Please enter a search term'); 
-                    return; 
-                }
-                // change to your real search endpoint if needed
-                window.location.href = 'search.html?q=' + encodeURIComponent(q);
-            });
-
-            // Enter key support for search
-            searchInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    searchBtn.click();
-                }
-            });
-        })();
+        // Enter key support for search
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('searchBtn').click();
+            }
+        });
+        <?php endif; ?>
 
         // Logo click handler
-        (function() {
-            const brand = document.getElementById('brandLink');
-            if (brand) {
-                brand.addEventListener('click', function() {
-                    window.location.href = 'finalhomepage.php';
-                });
-            }
-        })();
+        document.getElementById('brandLink').addEventListener('click', function() {
+            window.location.href = 'finalhomepage.php';
+        });
+
+        // Video error handling
+        document.getElementById('heroVideo').addEventListener('error', function(e) {
+            console.error('Video failed to load:', e);
+        });
+
+        // Video loaded successfully
+        document.getElementById('heroVideo').addEventListener('loadeddata', function() {
+            console.log('Video loaded successfully');
+        });
     </script>
 </body>
 </html>

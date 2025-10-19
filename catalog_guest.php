@@ -15,13 +15,6 @@ if ($mysqli->connect_errno) {
 }
 $mysqli->set_charset('utf8mb4');
 
-// Check logged in - REDIRECT TO LOGGED IN VERSION IF LOGGED IN
-if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
-    header("Location: catalog.php");
-    exit;
-}
-
-$logged_in = false;
 
 // Get filter parameters - now handling arrays for multiple selection
 $category_filter = isset($_GET['category']) ? (array)$_GET['category'] : [];
@@ -32,6 +25,7 @@ $price_min = isset($_GET['price_min']) ? (float)$_GET['price_min'] : 0;
 $price_max = isset($_GET['price_max']) ? (float)$_GET['price_max'] : 1000;
 $sort_by = isset($_GET['sort']) ? $_GET['sort'] : 'newest';
 $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 8;
+$search_query = isset($_GET['search']) ? trim($_GET['search']) : '';
 
 // Fetch categories from database
 $categories = [];
@@ -54,7 +48,7 @@ if ($style_result = $mysqli->query($style_query)) {
 }
 
 // Build query with filters
-$query = "SELECT DISTINCT p.product_id, p.category_id, p.name, p.description, p.size, p.color, p.price, p.rental_price, p.image, p.video_url, p.stock, p.is_rental, p.created_at 
+$query = "SELECT DISTINCT p.product_id, p.category_id, p.name, p.brand, p.description, p.size, p.color, p.price, p.rental_price, p.image, p.video_url, p.stock, p.is_rental, p.created_at 
           FROM products p";
 $params = [];
 $types = "";
@@ -64,7 +58,15 @@ if (!empty($style_filter)) {
     $query .= " INNER JOIN product_styles ps ON p.product_id = ps.product_id";
 }
 
-$query .= " WHERE 1=1";
+$query .= " WHERE p.is_rental = 1 AND p.stock > 0";
+
+// Search filter
+if (!empty($search_query)) {
+    $query .= " AND (p.name LIKE ? OR p.description LIKE ? OR p.brand LIKE ? OR p.color LIKE ?)";
+    $search_param = "%$search_query%";
+    $params = array_merge($params, [$search_param, $search_param, $search_param, $search_param]);
+    $types .= "ssss";
+}
 
 // Category filter (multiple selection)
 if (!empty($category_filter)) {
@@ -76,10 +78,13 @@ if (!empty($category_filter)) {
 
 // Size filter (multiple selection)
 if (!empty($size_filter)) {
-    $placeholders = str_repeat('?,', count($size_filter) - 1) . '?';
-    $query .= " AND p.size IN ($placeholders)";
-    $params = array_merge($params, $size_filter);
-    $types .= str_repeat('s', count($size_filter));
+    $size_conditions = [];
+    foreach ($size_filter as $size) {
+        $size_conditions[] = "p.size LIKE ?";
+        $params[] = "%$size%";
+        $types .= "s";
+    }
+    $query .= " AND (" . implode(" OR ", $size_conditions) . ")";
 }
 
 // Color filter (multiple selection)
@@ -134,7 +139,7 @@ if ($stmt = $mysqli->prepare($query)) {
     $stmt->close();
 } else {
     // fallback: try direct query without filters
-    $fallback_query = "SELECT product_id, category_id, name, description, size, color, price, rental_price, image, video_url, stock, is_rental, created_at FROM products ORDER BY created_at DESC LIMIT $limit";
+    $fallback_query = "SELECT product_id, category_id, name, brand, description, size, color, price, rental_price, image, video_url, stock, is_rental, created_at FROM products WHERE is_rental = 1 AND stock > 0 ORDER BY created_at DESC LIMIT $limit";
     if ($res = $mysqli->query($fallback_query)) {
         while ($row = $res->fetch_assoc()) $products[] = $row;
         $res->free();
@@ -142,7 +147,7 @@ if ($stmt = $mysqli->prepare($query)) {
 }
 
 // Get total count for pagination
-$count_query = "SELECT COUNT(*) as total FROM products";
+$count_query = "SELECT COUNT(*) as total FROM products WHERE is_rental = 1 AND stock > 0";
 $total_products = 0;
 if ($count_stmt = $mysqli->prepare($count_query)) {
     $count_stmt->execute();
@@ -157,7 +162,7 @@ function esc($s) {
     return htmlspecialchars((string)$s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
-// Helper to get correct image path - UPDATED FOR IMAGE ISSUE
+// Helper to get correct image path - IMPROVED FOR IMAGE ISSUE
 function getImagePath($image_path) {
     if (empty($image_path)) {
         return 'images/placeholder.png';
@@ -168,7 +173,10 @@ function getImagePath($image_path) {
         $image_path,
         'uploads/' . basename($image_path),
         'gallery/' . basename($image_path),
-        'images/' . basename($image_path)
+        'images/' . basename($image_path),
+        '../' . $image_path,
+        '../uploads/' . basename($image_path),
+        '../gallery/' . basename($image_path)
     ];
     
     foreach ($possible_paths as $path) {
@@ -520,6 +528,31 @@ function getImagePath($image_path) {
         footer { border-top:1px solid #eee; padding:36px 0; margin-top:28px; color:var(--muted); background:#fafafa; }
         .footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:32px; }
         
+        /* Search Results Header */
+        .search-results-header {
+            background: #f8f9fa;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        
+        .search-results-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .search-query {
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        .clear-search {
+            color: var(--muted);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        
         /* Mobile Responsive */
         @media (max-width: 880px) {
             .mobile-filter-toggle {
@@ -576,7 +609,7 @@ function getImagePath($image_path) {
 
             <!-- Search Bar -->
             <div class="search" role="search" aria-label="Site search">
-                <input id="searchInput" type="search" placeholder="Search dresses, designers, collection..." aria-label="Search">
+                <input id="searchInput" type="search" placeholder="Search dresses, designers, collection..." aria-label="Search" value="<?php echo esc($search_query); ?>">
                 <button id="searchBtn" aria-label="Search">
                     <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
                         <path d="M21 21l-4.35-4.35" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -587,7 +620,7 @@ function getImagePath($image_path) {
 
             <nav aria-label="Main navigation">
                 <ul id="main-nav">
-                    <li><a href="finalhomepage.html">Home</a></li>
+                    <li><a href="finalhomepage.php">Home</a></li>
                     <li><a href="catalog_guest.php" class="active">Browse</a></li>
                     <li><a href="custommade.html">Custom Made</a></li>
                     <li><a href="about.html">About</a></li>
@@ -646,6 +679,20 @@ function getImagePath($image_path) {
             </div>
         </section>
 
+        <?php if (!empty($search_query)): ?>
+        <!-- Search Results Header -->
+        <div class="search-results-header">
+            <div class="container">
+                <div>
+                    <span>Search results for: </span>
+                    <span class="search-query">"<?php echo esc($search_query); ?>"</span>
+                    <span> (<?php echo count($products); ?> results)</span>
+                </div>
+                <a href="catalog_guest.php" class="clear-search">Clear search</a>
+            </div>
+        </div>
+        <?php endif; ?>
+
         <div class="container">
             <!-- Mobile Filter Toggle -->
             <div class="mobile-filter-toggle">
@@ -671,6 +718,11 @@ function getImagePath($image_path) {
                     <div class="active-filters" id="activeFilters"></div>
 
                     <form method="GET" id="filterForm">
+                        <!-- Search input for filter form -->
+                        <?php if (!empty($search_query)): ?>
+                            <input type="hidden" name="search" value="<?php echo esc($search_query); ?>">
+                        <?php endif; ?>
+
                         <!-- Category Filter -->
                         <div class="filter-section">
                             <h4>Category</h4>
@@ -787,7 +839,7 @@ function getImagePath($image_path) {
                 <!-- Products Grid -->
                 <section class="products-section">
                     <div class="section-header">
-                        <h2>Available Dresses</h2>
+                        <h2>Available Dresses <?php echo !empty($search_query) ? ' - Search Results' : ''; ?> (<?php echo count($products); ?> found)</h2>
 
                         <div style="display:flex; align-items:center; gap:12px;">
                             <div class="sort-options">
@@ -810,12 +862,23 @@ function getImagePath($image_path) {
                     <div class="products-grid" id="productsGrid">
                         <?php if (empty($products)): ?>
                             <div style="grid-column:1/-1; background:#fff;border:1px solid #f1f1f1;padding:20px;border-radius:8px;text-align:center;">
-                                No products found matching your filters.
+                                <?php if (!empty($search_query)): ?>
+                                    No products found matching your search "<?php echo esc($search_query); ?>".
+                                    <div style="margin-top:10px;">
+                                        <a href="catalog_guest.php" class="btn btn-primary" style="padding:10px 20px;background:var(--accent);color:white;border-radius:4px;">Clear Search</a>
+                                    </div>
+                                <?php else: ?>
+                                    No products found matching your filters.
+                                    <div style="margin-top:10px;">
+                                        <button class="btn btn-primary" style="padding:10px 20px;background:var(--accent);color:white;border-radius:4px;" id="clearFiltersBtn">Clear All Filters</button>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         <?php else: ?>
                             <?php foreach ($products as $p): 
                                 $pid = (int)$p['product_id'];
                                 $title = esc($p['name'] ?? 'Untitled');
+                                $brand = esc($p['brand'] ?? 'Designer');
                                 // Use rental price instead of purchase price for rental business
                                 $price = is_numeric($p['rental_price']) ? number_format((float)$p['rental_price'], 2) : '0.00';
                                 $img = getImagePath($p['image']);
@@ -834,7 +897,7 @@ function getImagePath($image_path) {
                                     </div>
                                     <div class="product-info">
                                         <h3 class="product-title"><?php echo $title; ?></h3>
-                                        <p class="product-designer">By Designer</p>
+                                        <p class="product-designer">By <?php echo $brand; ?></p>
                                         <div class="product-details">
                                             <span class="rental-period">3-day rental</span>
                                         </div>
@@ -1086,6 +1149,13 @@ function getImagePath($image_path) {
                 const chip = createFilterChip('price', `${minValue}-${maxValue}`, `R${minValue} - R${maxValue}`);
                 activeFilters.appendChild(chip);
             }
+            
+            // Search filter
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput.value.trim() !== '') {
+                const chip = createFilterChip('search', searchInput.value, `Search: "${searchInput.value}"`);
+                activeFilters.appendChild(chip);
+            }
         }
         
         function createFilterChip(type, value, label) {
@@ -1100,6 +1170,9 @@ function getImagePath($image_path) {
                 if (type === 'price') {
                     setMinValue(minPrice);
                     setMaxValue(maxPrice);
+                } else if (type === 'search') {
+                    // Clear search
+                    document.getElementById('searchInput').value = '';
                 } else {
                     const checkbox = document.querySelector(`input[name="${type}[]"][value="${value}"]`);
                     if (checkbox) checkbox.checked = false;
@@ -1148,9 +1221,20 @@ function getImagePath($image_path) {
             setMinValue(minPrice);
             setMaxValue(maxPrice);
             
+            // Clear search
+            document.getElementById('searchInput').value = '';
+            
             // Apply filters
             applyFilters();
         });
+
+        // Clear filters button in no results
+        const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+        if (clearFiltersBtn) {
+            clearFiltersBtn.addEventListener('click', function() {
+                document.getElementById('clearFilters').click();
+            });
+        }
         
         // Sort handling
         document.getElementById('sort').addEventListener('change', function() {
@@ -1202,7 +1286,21 @@ function getImagePath($image_path) {
                 alert('Please enter a search term'); 
                 return; 
             }
-            window.location.href = 'search.html?q=' + encodeURIComponent(q);
+            // Add search parameter to filter form and submit
+            let form = document.getElementById('filterForm');
+            let searchInput = document.createElement('input');
+            searchInput.type = 'hidden';
+            searchInput.name = 'search';
+            searchInput.value = q;
+            form.appendChild(searchInput);
+            form.submit();
+        });
+
+        // Enter key for search
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('searchBtn').click();
+            }
         });
         
         // Login modal handling
