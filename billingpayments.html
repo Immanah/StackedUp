@@ -1,0 +1,905 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Billing & Payments Help — Ozyde</title>
+    <style>
+        /* Ozyde Boutique consistent styling - matching contact page */
+        
+         :root {
+            --bg: #fff;
+            --text: #222;
+            --muted: #7a7a7a;
+            --accent: #111;
+            --max-width: 1200px;
+            --chip-bg: #f3f3f3;
+            --chip-border: #e6e6e6;
+            --primary: #111;
+            --success: #2fa46b;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        /* Header Styles - matching contact page */
+        
+        .nav-wrap {
+            background: #0b0b0b;
+            color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 120;
+            box-shadow: 0 6px 20px rgba(2, 2, 2, 0.12);
+        }
+        
+        .nav {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-weight: 800;
+            letter-spacing: 1px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .logo-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #fff2, #fff6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #111;
+            font-weight: 900;
+            font-size: 16px;
+        }
+        
+        nav ul {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 18px;
+            list-style: none;
+            align-items: center;
+        }
+        
+        nav a {
+            font-size: 14px;
+            color: #fff;
+            display: block;
+            padding: 8px 6px;
+            transition: color 0.2s ease;
+        }
+        
+        nav a.active {
+            color: #fff;
+            font-weight: 600;
+            border-bottom: 2px solid #fff;
+        }
+        
+        nav a:hover {
+            color: #ddd;
+        }
+        
+        .btn-signup {
+            background: var(--accent);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background 0.2s ease;
+        }
+        
+        .btn-signup:hover {
+            background: #333;
+        }
+        
+        .icons {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+        
+        .icon-only {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 0;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .icon-only:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        /* Hero Section - matching contact page */
+        
+        .hero {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 60px 0;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .hero-content h1 {
+            margin: 0 0 16px 0;
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--accent);
+        }
+        
+        .hero-content p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 18px;
+        }
+        /* Main Content Styles */
+        
+        main {
+            padding: 32px 0;
+        }
+        
+        .content-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .page-title {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .lead {
+            color: var(--muted);
+            margin-top: 8px;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 40px;
+            align-items: start;
+        }
+        
+        .card {
+            background: #fff;
+            border: 1px solid #f0f0f0;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+        }
+        
+        .card h3 {
+            margin-top: 0;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .card h4 {
+            margin-top: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        /* Help Navigation */
+        .help-nav {
+            background: #fff;
+            border: 1px solid #f0f0f0;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+        }
+        
+        .help-nav h4 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        .help-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .help-nav li {
+            margin-bottom: 8px;
+        }
+        
+        .help-nav a {
+            color: var(--muted);
+            transition: color 0.2s ease;
+            display: block;
+            padding: 8px 0;
+        }
+        
+        .help-nav a:hover,
+        .help-nav a.active {
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        /* FAQ Styles */
+        .faq-item {
+            border-bottom: 1px solid #f0f0f0;
+            padding: 20px 0;
+        }
+        
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+        
+        .faq-question {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--accent);
+            margin-bottom: 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .faq-answer {
+            color: var(--muted);
+            line-height: 1.6;
+            display: none;
+        }
+        
+        .faq-answer.active {
+            display: block;
+        }
+        
+        .faq-toggle {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--accent);
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Payment Methods */
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 24px 0;
+        }
+        
+        .payment-method {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+        
+        .payment-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        /* Notice Box */
+        .notice {
+            background: #fff8e6;
+            border: 1px solid #ffeeba;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .notice strong {
+            color: var(--warning);
+        }
+        
+        /* Fee Structure */
+        .fee-structure {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .fee-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .fee-item:last-child {
+            border-bottom: none;
+        }
+        
+        .fee-amount {
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        /* Footer Styles - matching contact page */
+        
+        footer {
+            border-top: 1px solid #eee;
+            padding: 36px 0;
+            margin-top: 28px;
+            color: var(--muted);
+            background: #fafafa;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 32px;
+        }
+        
+        .footer-grid h4 {
+            margin: 0 0 16px 0;
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        .footer-grid ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-grid li {
+            margin-bottom: 8px;
+        }
+        
+        .footer-grid a {
+            color: var(--muted);
+            transition: color 0.2s ease;
+        }
+        
+        .footer-grid a:hover {
+            color: var(--accent);
+        }
+        
+        .socials {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .socials a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: #f5f5f5;
+            transition: all 0.2s ease;
+        }
+        
+        .socials a:hover {
+            background: var(--accent);
+        }
+        
+        .socials a:hover svg path,
+        .socials a:hover svg circle {
+            stroke: #fff;
+            fill: #fff;
+        }
+        
+        /* Responsive Design */
+        
+        @media (max-width: 880px) {
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 24px;
+            }
+            .payment-methods {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .nav {
+                flex-wrap: wrap;
+            }
+            nav ul {
+                order: 2;
+                width: 100%;
+                justify-content: center;
+                margin-top: 15px;
+            }
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+            .hero-content h1 {
+                font-size: 28px;
+            }
+            .hero-content p {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ===== Navigation Bar ===== -->
+    <header class="nav-wrap" role="banner">
+        <div class="nav" role="navigation" aria-label="Main navigation">
+            <div class="logo" id="brandLink">
+                <div class="logo-badge" aria-hidden="true">✦</div>
+                <div>Ozyde</div>
+            </div>
+
+            <nav aria-label="Main navigation">
+                <ul id="main-nav">
+                    <li><a href="finalhomepage.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="custommade.html">Custom Made</a></li>
+                    <li><a href="catalog.html">Browse</a></li>
+                    <li><a href="help.html" class="active">Help</a></li>
+                </ul>
+            </nav>
+
+            <div class="icons" role="group" aria-label="User actions">
+                <a href="login_register.php" class="icon-only" title="Login/Register" aria-label="Login/Register">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                        <polyline points="10 17 15 12 10 7" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="15" y1="12" x2="3" y2="12" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </a>
+
+                <a href="help.html" class="icon-only" title="Help" aria-label="Help">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.2" fill="none"/>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                        <line x1="12" y1="17" x2="12" y2="17" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Billing & Payments Help</h1>
+                <p>Comprehensive guide to payment methods, rental fees, security deposits, and billing policies</p>
+            </div>
+        </div>
+    </section>
+
+    <main class="container">
+        <div class="content-header">
+            <h2 class="page-title">Payment Information</h2>
+        </div>
+
+        <div class="grid">
+            <div>
+                <!-- Payment Methods -->
+                <div class="card">
+                    <h3>Accepted Payment Methods</h3>
+                    <p>We offer multiple secure payment options to ensure a seamless rental experience. All transactions are processed through encrypted, PCI-compliant systems.</p>
+                    
+                    <div class="payment-methods">
+                        <div class="payment-method">
+                            <div class="payment-icon">CD</div>
+                            <h4>Credit & Debit Cards</h4>
+                            <p>Visa, MasterCard, American Express accepted. 3D Secure authentication required for online payments.</p>
+                        </div>
+                        <div class="payment-method">
+                            <div class="payment-icon">BT</div>
+                            <h4>Bank Transfer</h4>
+                            <p>Direct EFT payments with instant verification. Use your online banking platform for secure transfers.</p>
+                        </div>
+                        <div class="payment-method">
+                            <div class="payment-icon">CS</div>
+                            <h4>Cash Payments</h4>
+                            <p>Available for in-store collections only. Exact change preferred, receipts provided for all transactions.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rental Fees & Pricing -->
+                <div class="card">
+                    <h3>Rental Fee Structure</h3>
+                    <p>Our transparent pricing ensures you know exactly what you're paying for. All prices include VAT.</p>
+                    
+                    <div class="fee-structure">
+                        <div class="fee-item">
+                            <span>Standard 3-Day Rental</span>
+                            <span class="fee-amount">R250 - R800</span>
+                        </div>
+                        <div class="fee-item">
+                            <span>Weekend Rental (Fri-Mon)</span>
+                            <span class="fee-amount">R350 - R950</span>
+                        </div>
+                        <div class="fee-item">
+                            <span>Extended Rental (7 days)</span>
+                            <span class="fee-amount">R450 - R1,200</span>
+                        </div>
+                        <div class="fee-item">
+                            <span>Express Cleaning Fee</span>
+                            <span class="fee-amount">R150</span>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            How are rental fees calculated?
+                            <button class="faq-toggle">+</button>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Rental fees are determined by several factors including:</p>
+                            <ul>
+                                <li><strong>Dress Category:</strong> Premium designer dresses command higher rates</li>
+                                <li><strong>Rental Duration:</strong> Longer rentals offer better daily rates</li>
+                                <li><strong>Seasonal Demand:</strong> Peak season (December, June) may have premium pricing</li>
+                                <li><strong>Dress Condition:</strong> New arrivals and exclusive pieces may have special rates</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            What's included in the rental fee?
+                            <button class="faq-toggle">+</button>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Your comprehensive rental package includes:</p>
+                            <ul>
+                                <li>Professional dry cleaning and steam pressing</li>
+                                <li>Minor alterations (hemming, taking in/out up to one size)</li>
+                                <li>Protective garment bag for transportation</li>
+                                <li>Damage insurance covering accidental stains and minor repairs</li>
+                                <li>24/7 style consultation during your rental period</li>
+                                <li>Emergency repair kit for minor on-site fixes</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Deposits -->
+                <div class="card">
+                    <h3>Security Deposit Policy</h3>
+                    <p>Security deposits protect both you and our collection. They're fully refundable when dresses are returned in original condition.</p>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            How much is the security deposit?
+                            <button class="faq-toggle">+</button>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Security deposits are calculated as follows:</p>
+                            <ul>
+                                <li><strong>Standard Dresses:</strong> R500 deposit</li>
+                                <li><strong>Premium Designer:</strong> R1,000 deposit</li>
+                                <li><strong>Luxury Collection:</strong> R2,000 deposit</li>
+                                <li><strong>Bridal & Special Occasion:</strong> R2,500 deposit</li>
+                            </ul>
+                            <p>The exact deposit amount is clearly displayed during checkout and confirmed in your rental agreement.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            Deposit refund process and timeline?
+                            <button class="faq-toggle">+</button>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Our streamlined refund process ensures you receive your deposit promptly:</p>
+                            <ul>
+                                <li><strong>Inspection:</strong> Dresses undergo quality inspection within 24 hours of return</li>
+                                <li><strong>Processing:</strong> Refunds are processed within 3 business days post-inspection</li>
+                                <li><strong>Bank Transfer:</strong> 3-5 business days for bank processing</li>
+                                <li><strong>Card Refunds:</strong> 5-7 business days depending on your bank</li>
+                            </ul>
+                            <p>You'll receive email confirmation at each stage of the refund process.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            What affects deposit refund eligibility?
+                            <button class="faq-toggle">+</button>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Deposit deductions may apply for the following:</p>
+                            <ul>
+                                <li><strong>Stains:</strong> Red wine, makeup, or permanent stains that require specialized cleaning</li>
+                                <li><strong>Damage:</strong> Tears, holes, broken zippers, or missing buttons</li>
+                                <li><strong>Alterations:</strong> Unauthorized alterations or modifications</li>
+                                <li><strong>Missing Items:</strong> Belts, sashes, or accessories not returned</li>
+                                <li><strong>Late Returns:</strong> Returns after 6pm on due date without prior arrangement</li>
+                                <li><strong>Smoke/Odor:</strong> Cigarette smoke or strong perfumes requiring ozone treatment</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Billing Questions -->
+                <div class="card">
+                    <h3>Billing & Account Management</h3>
+                    <p>Clear policies and procedures for all billing-related matters.</p>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            Payment requirements and timing?
+                            <button class="faq-toggle">+</button>
+                        </div>
+                        <div class="faq-answer">
+                            <p>To secure your reservation, we require:</p>
+                            <ul>
+                                <li><strong>Full Payment:</strong> Rental fee + security deposit due at booking</li>
+                                <li><strong>Confirmation:</strong> Booking confirmed immediately upon payment</li>
+                                <li><strong>Last-Minute Bookings:</strong> Same-day bookings require payment within 2 hours</li>
+                                <li><strong>Corporate Accounts:</strong> Net 30 terms available for approved business accounts</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            Invoices and documentation?
+                            <button class="faq-toggle">+</button>
+                        </div>
+                        <div class="faq-answer">
+                            <p>We provide comprehensive documentation:</p>
+                            <ul>
+                                <li><strong>Digital Invoice:</strong> Automatically emailed upon payment</li>
+                                <li><strong>Rental Agreement:</strong> Detailed terms and conditions</li>
+                                <li><strong>Receipts:</strong> Available for all transactions</li>
+                                <li><strong>Tax Documentation:</strong> VAT invoices for business claims</li>
+                                <li><strong>Re-issuing:</strong> Previous invoices available in your account dashboard</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            Cancellation and refund policies?
+                            <button class="faq-toggle">+</button>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Our cancellation policy is designed to be fair to all parties:</p>
+                            <ul>
+                                <li><strong>7+ Days Notice:</strong> Full refund of rental fee</li>
+                                <li><strong>48-168 Hours Notice:</strong> 50% refund of rental fee</li>
+                                <li><strong>Under 48 Hours:</strong> 25% refund of rental fee</li>
+                                <li><strong>Same Day Cancellation:</strong> Rental fee retained, security deposit refunded</li>
+                                <li><strong>No Show:</strong> Full rental fee retained</li>
+                            </ul>
+                            <p>Security deposits are always fully refundable for cancellations.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="notice">
+                    <strong>Need immediate billing assistance?</strong> Contact our dedicated billing team at <strong>+27 74 497 8123</strong> or email <strong>billing@ozyde.com</strong> for prompt resolution of payment-related inquiries.
+                </div>
+            </div>
+
+            <aside>
+                <div class="help-nav">
+                    <h4>Help Categories</h4>
+                    <ul>
+                        <li><a href="help.html">Getting Started</a></li>
+                        <li><a href="help-billing.html" class="active">Billing & Payments</a></li>
+                        <li><a href="help-rentals.html">Rental Process</a></li>
+                        <li><a href="help-sizing.html">Sizing & Fit</a></li>
+                        <li><a href="help-delivery.html">Delivery & Returns</a></li>
+                        <li><a href="help-cleaning.html">Cleaning & Care</a></li>
+                        <li><a href="help-account.html">Account Management</a></li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h4>Billing Support</h4>
+                    <p>Our specialized billing team handles all payment-related inquiries with expertise and discretion.</p>
+                    
+                    <div style="margin-top: 16px;">
+                        <a class="whatsapp-btn" href="https://wa.me/27744978123?text=Hi%20Ozyde!%20I%20have%20a%20billing%20question" target="_blank" rel="noopener" style="display: inline-flex; gap: 10px; align-items: center; padding: 10px 16px; border-radius: 8px; background: #25D366; color: #fff; font-weight: 700; text-decoration: none; transition: background 0.2s ease;">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style="width:18px;height:18px;display:block;filter:brightness(0) invert(1);"> 
+                            Billing Support
+                        </a>
+                    </div>
+                    
+                    <div style="margin-top: 12px;">
+                        <a href="mailto:billing@ozyde.com" style="color: var(--accent); font-weight: 600;">Email Billing Team</a>
+                    </div>
+                    
+                    <div style="margin-top: 16px; font-size: 14px; color: var(--muted);">
+                        <strong>Operating Hours:</strong><br>
+                        Mon-Fri: 8:00-18:00<br>
+                        Sat: 9:00-16:00<br>
+                        Sun: Closed
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- Footer - matching contact page -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4>Ozyde</h4>
+                    <p>Premium dress rentals for your special occasions. Quality, style, and affordability combined.</p>
+                    <div>Address:<br>5 Liebenberg Rd, Noordwyk, Midrand 1687</div>
+                    <div class="socials" aria-label="Social media">
+                        <a href="https://www.instagram.com/ozyde_?igsh=NWM0aTd4ZGFmeHVr" target="_blank" rel="noopener" aria-label="Instagram">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <rect x="3" y="3" width="18" height="18" rx="5" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <circle cx="12" cy="12" r="3.2" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <circle cx="17.5" cy="6.5" r="0.6" fill="#333"/>
+                            </svg>
+                        </a>
+                        <a href="https://www.tiktok.com/@ozyde_designs?_t=ZS-8zlyfPi8HHJ&_r=1" target="_blank" rel="noopener" aria-label="TikTok">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/TikTok_logo.svg/1200px-TikTok_logo.svg.png" alt="TikTok" style="width:18px;height:18px;display:block" />
+                        </a>
+                        <a href="mailto:ozydedesigns@gmail.com" aria-label="Email">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <rect x="3" y="6" width="18" height="12" rx="2" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <path d="M4 7.5l8 6 8-6" stroke="#333" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="howitworks.html">How It Works</a></li>
+                        <li><a href="sizingguide.html">Size Guide</a></li>
+                        <li><a href="#">Returns & Policy</a></li>
+                        <li><a href="delivery.html">Delivery</a></li>
+                        <li><a href="help.html">Help Center</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Terms</a></li>
+                        <li><a href="#">Privacy</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="cleaning.html">Cleaning & Care Guide</a></li>
+                        <li><a href="partnerships.html">Partnerships</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="margin-top:24px;text-align:center;padding-top:24px;border-top:1px solid #e6e6e6;color:var(--muted)">
+                © 2025 Ozyde. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Basic navigation functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Logo click to go home
+            document.getElementById('brandLink').addEventListener('click', function() {
+                window.location.href = 'finalhomepage.html';
+            });
+
+            // FAQ toggle functionality
+            const faqToggles = document.querySelectorAll('.faq-toggle');
+            faqToggles.forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const answer = this.parentElement.nextElementSibling;
+                    const isActive = answer.classList.contains('active');
+                    
+                    // Close all other answers
+                    document.querySelectorAll('.faq-answer').forEach(ans => {
+                        ans.classList.remove('active');
+                    });
+                    document.querySelectorAll('.faq-toggle').forEach(tog => {
+                        tog.textContent = '+';
+                    });
+                    
+                    // Toggle current answer
+                    if (!isActive) {
+                        answer.classList.add('active');
+                        this.textContent = '−';
+                    }
+                });
+            });
+
+            // Open first FAQ by default
+            const firstFaq = document.querySelector('.faq-answer');
+            const firstToggle = document.querySelector('.faq-toggle');
+            if (firstFaq && firstToggle) {
+                firstFaq.classList.add('active');
+                firstToggle.textContent = '−';
+            }
+        });
+    </script>
+</body>
+
+</html>
