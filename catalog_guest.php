@@ -677,7 +677,7 @@ function getImagePath($image_path) {
                 </button>
 
                 <!-- Sign In button instead of profile for guests -->
-                <a href="register.php" class="btn-signup">Sign Up</a>
+                <a href="register.html" class="btn-signup">Sign Up</a>
             </div>
         </div>
     </header>
@@ -685,7 +685,7 @@ function getImagePath($image_path) {
     <!-- User Status Banner -->
     <div class="user-status logged-out" id="userStatus">
         <div class="container">
-            You are browsing as a guest. <a href="register.php" id="loginLink">Sign in or register</a> to access wishlist and quick checkout.
+            You are browsing as a guest. <a href="register.html" id="loginLink">Sign in or register</a> to access wishlist and quick checkout.
         </div>
     </div>
 
@@ -895,7 +895,7 @@ function getImagePath($image_path) {
                                 <?php if ($view_mode === 'for-you'): ?>
                                     No personalized recommendations found.
                                     <div style="margin-top:10px;">
-                                        <a href="register.php" class="btn btn-primary" style="padding:10px 20px;background:var(--accent);color:white;border-radius:4px;">Create Account for Recommendations</a>
+                                        <a href="register.html" class="btn btn-primary" style="padding:10px 20px;background:var(--accent);color:white;border-radius:4px;">Create Account for Recommendations</a>
                                     </div>
                                 <?php else: ?>
                                     No products found matching your filters.
@@ -1303,7 +1303,7 @@ function getImagePath($image_path) {
         const closeModal = document.getElementById('closeModal');
 
         goToRegister.addEventListener('click', function() {
-            window.location.href = 'register.php?redirect=catalog_guest.php';
+            window.location.href = 'register.html?redirect=catalog_guest.php';
         });
         
         closeModal.addEventListener('click', function() {
