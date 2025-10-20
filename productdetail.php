@@ -884,21 +884,36 @@ $additional_images = [
         <div class="product-grid">
 
           <!-- Image Section -->
-          <div class="image-section">
-            <div class="main-image-container">
-              <img src="<?= $image_main ?>" alt="<?= $name ?>" class="main-image" id="mainImage">
-            </div>
-            
-            <div class="thumbnail-grid">
-              <?php foreach ($additional_images as $index => $image): ?>
-                <img src="<?= $image ?>" 
-                     alt="<?= $name ?> view <?= $index + 1 ?>" 
-                     class="thumbnail <?= $index === 0 ? 'active' : '' ?>" 
-                     data-image="<?= $image ?>"
-                     onerror="this.src='gallery/placeholder.png'">
-              <?php endforeach; ?>
-            </div>
-          </div>
+<div class="image-section">
+    <div class="main-image-container">
+        <img src="<?= $image_main ?>" alt="<?= $name ?>" class="main-image" id="mainImage">
+    </div>
+    
+    <div class="thumbnail-grid">
+        <?php 
+        // Get all product images from product_images table
+        $img_sql = "SELECT filename FROM product_images WHERE product_id = $product_id ORDER BY is_primary DESC";
+        $img_result = $conn->query($img_sql);
+        $all_images = [];
+        
+        if ($img_result && $img_result->num_rows > 0) {
+            while ($img_row = $img_result->fetch_assoc()) {
+                $all_images[] = $img_row['filename'];
+            }
+        } else {
+            // Fallback to single image if no multiple images found
+            $all_images = [$image_main];
+        }
+        
+        foreach ($all_images as $index => $image): ?>
+            <img src="<?= $image ?>" 
+                 alt="<?= $name ?> view <?= $index + 1 ?>" 
+                 class="thumbnail <?= $index === 0 ? 'active' : '' ?>" 
+                 data-image="<?= $image ?>"
+                 onerror="this.src='gallery/placeholder.png'">
+        <?php endforeach; ?>
+    </div>
+</div>
 
           <!-- Product Info -->
           <div class="product-info">
