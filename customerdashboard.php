@@ -1373,7 +1373,7 @@ function esc($s) {
                     <a href="orders.html" class="highlight-card">My Rentals</a>
                     <a href="orders.html" class="highlight-card">Orders</a>
                     <a href="wishlist.php" class="highlight-card">Wishlist</a>
-                    <a href="custommade.html" class="highlight-card">Custom Orders</a>
+                    <a href="custom_orders.php" class="highlight-card">Custom Orders</a>
                 </div>
             </section>
 

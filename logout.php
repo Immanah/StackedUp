@@ -1,6 +1,6 @@
 <?php
-session_start();
+require_once __DIR__ . '/config.php';
 session_unset();
 session_destroy();
-header('Location: finalhomepage.html');
+header('Location: admin_login.php');
 exit;

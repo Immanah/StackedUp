@@ -741,7 +741,7 @@ if ($logged_in) {
                 <ul id="main-nav">
                     <li><a href="finalhomepage.php" class="active">Home</a></li>
                     <li><a href="catalog.php">Browse</a></li>
-                    <li><a href="custommade.html">Custom Made</a></li>
+                    <li><a href="custommade_loggedin.php">Custom Made</a></li>
                     <li><a href="about.html">About</a></li>
                     <li><a href="blog.html">Blog</a></li>
                     <li><a href="contact.html">Contact Us</a></li>
@@ -788,7 +788,6 @@ if ($logged_in) {
                         </button>
                         <div class="dropdown-menu">
                             <a href="customerdashboard.php">Customer Dashboard</a>
-                            <a href="my-account.html">My Account</a>
                             <div class="dropdown-divider"></div>
                             <a href="logout.php" id="logoutLink">Sign Out</a>
                         </div>
