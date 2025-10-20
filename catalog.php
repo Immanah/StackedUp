@@ -15,15 +15,9 @@ if ($mysqli->connect_errno) {
 }
 $mysqli->set_charset('utf8mb4');
 
-// Check logged in - REDIRECT TO GUEST VERSION IF NOT LOGGED IN
-if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
-    header("Location: catalog_guest.php");
-    exit;
-}
-
 // Check logged in
 $logged_in = isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
-$user_id = $_SESSION['user_id'];
+$user_id = $_SESSION['user_id'] ?? null;
 
 // Get user's first name for welcome message
 $user_name = '';
@@ -87,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wishlist_action']) &&
     exit;
 }
 
-// Get view type (Shop or For You) - FIXED: using same logic as old file
+// Get view type (Shop or For You)
 $view_type = isset($_GET['view']) && $_GET['view'] === 'for-you' ? 'for-you' : 'shop';
 
 // Get filter parameters - now handling arrays for multiple selection
@@ -124,7 +118,7 @@ if ($style_result = $mysqli->query($style_query)) {
     $style_result->free();
 }
 
-// Build query with filters - FIXED PRICE FILTER AND DUPLICATE ISSUES
+// Build query with filters - USING HER SIMPLE QUERY STRUCTURE BUT WITH YOUR FILTER LOGIC
 if ($debug_mode) {
     $query = "SELECT DISTINCT p.product_id, p.category_id, p.name, p.brand, p.description, p.size, p.color, p.price, p.rental_price, p.image, p.video_url, p.stock, p.is_rental, p.created_at 
               FROM products p 
@@ -151,7 +145,7 @@ if (!empty($search_query)) {
     $types .= "ssss";
 }
 
-// FOR YOU VIEW: Filter by user preferences - FIXED: Using same logic as old catalog.php
+// FOR YOU VIEW: Filter by user preferences
 if ($view_type === 'for-you' && $logged_in) {
     // Get user preferences
     $user_sizes = [];
@@ -168,7 +162,7 @@ if ($view_type === 'for-you' && $logged_in) {
     }
     $size_pref_stmt->close();
     
-    // Get user style preferences - FIXED: Using same UNION query as old file
+    // Get user style preferences
     $style_pref_query = "SELECT ds.style_id 
                          FROM user_style_preferences usp 
                          JOIN dress_styles ds ON usp.style_id = ds.style_id 
@@ -186,7 +180,7 @@ if ($view_type === 'for-you' && $logged_in) {
     }
     $style_pref_stmt->close();
     
-    // Apply For You filters if user has preferences - FIXED: Using same logic as old file
+    // Apply For You filters if user has preferences
     if (!empty($user_sizes) || !empty($user_styles)) {
         $query .= " AND (1=0"; // Start with false condition
         
@@ -255,7 +249,7 @@ if (!empty($style_filter)) {
     $types .= str_repeat('i', count($style_filter));
 }
 
-// FIXED PRICE RANGE FILTER - Only add if not default values
+// PRICE RANGE FILTER - Only add if not default values
 if ($price_min > 0 || $price_max < 10000) {
     $query .= " AND p.rental_price BETWEEN ? AND ?";
     $params[] = $price_min;
@@ -263,7 +257,7 @@ if ($price_min > 0 || $price_max < 10000) {
     $types .= "dd";
 }
 
-// Add sorting - FIXED SORTING
+// Add sorting
 if ($sort_by === 'price-low') {
     $query .= " ORDER BY COALESCE(p.rental_price, 0) ASC";
 } elseif ($sort_by === 'price-high') {
@@ -278,10 +272,6 @@ if ($sort_by === 'price-low') {
 $query .= " LIMIT ?";
 $params[] = $limit;
 $types .= "i";
-
-// DEBUG: Output the query for testing
-// echo "<!-- Query: " . htmlspecialchars($query) . " -->";
-// echo "<!-- Params: " . htmlspecialchars(print_r($params, true)) . " -->";
 
 // Fetch products with PROPER ERROR HANDLING
 $products = [];
@@ -355,46 +345,19 @@ if ($logged_in) {
     $count_stmt->close();
 }
 
-// Helper to safe output
+// Helper to safe output - KEEPING HER SIMPLE APPROACH
 function esc($s) {
     return htmlspecialchars((string)$s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
-
-// FIXED IMAGE PATH FUNCTION - Better file checking
-function getImagePath($image_path) {
-    if (empty($image_path)) {
-        return 'images/placeholder.png';
-    }
-    
-    // Check if file exists in multiple possible locations
-    $possible_paths = [
-        $image_path,
-        'uploads/' . basename($image_path),
-        'gallery/' . basename($image_path),
-        'images/' . basename($image_path),
-        '../' . $image_path,
-        '../uploads/' . basename($image_path),
-        '../gallery/' . basename($image_path)
-    ];
-    
-    foreach ($possible_paths as $path) {
-        if (file_exists($path) && is_file($path)) {
-            return $path;
-        }
-    }
-    
-    return 'images/placeholder.png';
-}
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Dress Catalog — OZYDE</title>
     <style>
+        /* KEEPING ALL YOUR ADVANCED CSS STYLES */
         :root {
             --bg: #fff;
             --text: #222;
@@ -442,50 +405,50 @@ function getImagePath($image_path) {
             font-weight: 600;
         }
 
-        /* Profile Dropdown */
-.profile-dropdown {
-    position: relative;
-}
+        /* Profile Dropdown - MODIFIED: Removed "My Account" */
+        .profile-dropdown {
+            position: relative;
+        }
 
-.dropdown-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background: #0b0b0b;
-    border-radius: 8px;
-    padding: 8px 0;
-    min-width: 180px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-    z-index: 1000;
-}
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #0b0b0b;
+            border-radius: 8px;
+            padding: 8px 0;
+            min-width: 180px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
 
-.profile-dropdown:hover .dropdown-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
+        .profile-dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
 
-.dropdown-menu a {
-    display: block;
-    padding: 10px 16px;
-    color: #fff;
-    font-size: 14px;
-    transition: background 0.2s ease;
-}
+        .dropdown-menu a {
+            display: block;
+            padding: 10px 16px;
+            color: #fff;
+            font-size: 14px;
+            transition: background 0.2s ease;
+        }
 
-.dropdown-menu a:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
+        .dropdown-menu a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
 
-.dropdown-divider {
-    height: 1px;
-    background: rgba(255, 255, 255, 0.2);
-    margin: 6px 0;
-}
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            margin: 6px 0;
+        }
 
         .search { flex:1; max-width:400px; display:flex; align-items:center; gap:6px; margin:0 12px; }
         .search input { width:100%; padding:10px 12px; border-radius:999px 0 0 999px; border:0; outline:0; font-size:14px; background:rgba(255,255,255,0.06); color:#fff; }
@@ -500,7 +463,7 @@ function getImagePath($image_path) {
         .user-status.logged-out { background:#fff3cd; color:#856404; }
         .user-status a { color:var(--accent); text-decoration:underline; font-weight:600; margin-left:5px; }
 
-        /* New Filter Styles - Superlist Inspired */
+        /* YOUR ADVANCED FILTER STYLES - Superlist Inspired */
         .filters-container {
             display: grid;
             grid-template-columns: 280px 1fr;
@@ -942,8 +905,9 @@ function getImagePath($image_path) {
                     </button>
                     <div class="dropdown-menu">
                         <a href="customerdashboard.php">Customer Dashboard</a>
-                        <a href="my-account.html">My Account</a>
+                        <!-- REMOVED: My Account link as requested -->
                         <div class="dropdown-divider"></div>
+                        <!-- FIXED: Logout link to logout.php -->
                         <a href="logout.php" id="logoutLink">Sign Out</a>
                     </div>
                 </div>
@@ -1145,7 +1109,7 @@ function getImagePath($image_path) {
                             <?php if ($view_type === 'for-you'): ?>
                                 For You (<?php echo count($products); ?> recommendations)
                             <?php elseif (!empty($search_query)): ?>
-                                Search Results for "<?php echo esc($search_query); ?>"
+                                Search Results for "<?php echo esc($search_query); ?>" 
                             <?php else: ?>
                                 Available Dresses (<?php echo count($products); ?> found)
                             <?php endif; ?>
@@ -1209,7 +1173,8 @@ function getImagePath($image_path) {
                                 $brand = esc($p['brand'] ?? 'Designer');
                                 // Use rental price instead of purchase price for rental business
                                 $price = is_numeric($p['rental_price']) && $p['rental_price'] > 0 ? number_format((float)$p['rental_price'], 2) : (is_numeric($p['price']) && $p['price'] > 0 ? number_format((float)$p['price'], 2) : '0.00');
-                                $img = getImagePath($p['image']);
+                                // KEEPING HER SIMPLE IMAGE HANDLING - THIS IS WHAT WORKS
+                                $img = !empty($p['image']) ? esc($p['image']) : 'gallery/placeholder.png';
                                 $stock = isset($p['stock']) ? (int)$p['stock'] : 0;
                                 $is_rental = isset($p['is_rental']) ? (bool)$p['is_rental'] : false;
 
@@ -1236,7 +1201,8 @@ function getImagePath($image_path) {
                                         <div class="for-you-badge">For You</div>
                                     <?php endif; ?>
                                     <div class="product-image">
-                                        <img src="<?php echo $img; ?>" alt="<?php echo $title; ?>" onerror="this.onerror=null;this.src='images/placeholder.png'">
+                                        <!-- KEEPING HER SIMPLE IMAGE DISPLAY - THIS IS WHAT WORKS -->
+                                        <img src="<?php echo $img; ?>" alt="<?php echo $title; ?>" onerror="this.onerror=null;this.src='gallery/placeholder.png'">
                                         <button class="wishlist-btn <?php echo $is_wishlisted ? 'active' : ''; ?>" data-product-id="<?php echo $pid; ?>" aria-label="Add to wishlist">
                                             <svg viewBox="0 0 24 24" fill="<?php echo $is_wishlisted ? 'currentColor' : 'none'; ?>" stroke="currentColor" stroke-width="2" width="18" height="18">
                                                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -1350,14 +1316,13 @@ function getImagePath($image_path) {
                 </div>
             </div>
 
-
-
             <div style="margin-top:24px;text-align:center;padding-top:24px;border-top:1px solid #e6e6e6;color:var(--muted)">
                 © 2025 Ozyde. All rights reserved.
             </div>
         </div>
     </footer>
 
+    <!-- KEEPING ALL YOUR ADVANCED JAVASCRIPT FUNCTIONALITY -->
     <script>
         // Mobile filter toggle
         const mobileFilterToggle = document.getElementById('mobileFilterToggle');
@@ -1712,5 +1677,4 @@ function getImagePath($image_path) {
         updateActiveFilters();
     </script>
 </body>
-
 </html>
