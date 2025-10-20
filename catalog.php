@@ -5,6 +5,7 @@ $db_host = 'localhost';
 $db_user = 'root';
 $db_pass = '';
 $db_name = 'ozyde';
+// -----------------------------------------------------
 
 // Connect with mysqli
 $mysqli = new mysqli($db_host, $db_user, $db_pass, $db_name);
@@ -15,11 +16,17 @@ if ($mysqli->connect_errno) {
 }
 $mysqli->set_charset('utf8mb4');
 
+// Check logged in - REDIRECT TO GUEST VERSION IF NOT LOGGED IN (From your version)
+if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
+    header("Location: catalog_guest.php");
+    exit;
+}
+
 // Check logged in
 $logged_in = isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
-$user_id = $_SESSION['user_id'] ?? null;
+$user_id = $_SESSION['user_id'];
 
-// Get user's first name for welcome message
+// Get user's first name for welcome message (From your version)
 $user_name = '';
 if ($logged_in) {
     $user_query = "SELECT first_name FROM users WHERE user_id = ?";
@@ -81,10 +88,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wishlist_action']) &&
     exit;
 }
 
-// Get view type (Shop or For You)
+// Get view type (Shop or For You) - From your version
 $view_type = isset($_GET['view']) && $_GET['view'] === 'for-you' ? 'for-you' : 'shop';
 
-// Get filter parameters - now handling arrays for multiple selection
+// Get filter parameters - From your version (multiple selection)
 $category_filter = isset($_GET['category']) ? (array)$_GET['category'] : [];
 $size_filter = isset($_GET['size']) ? (array)$_GET['size'] : [];
 $color_filter = isset($_GET['color']) ? (array)$_GET['color'] : [];
@@ -92,13 +99,10 @@ $style_filter = isset($_GET['style']) ? (array)$_GET['style'] : [];
 $price_min = isset($_GET['price_min']) ? (float)$_GET['price_min'] : 0;
 $price_max = isset($_GET['price_max']) ? (float)$_GET['price_max'] : 10000;
 $sort_by = isset($_GET['sort']) ? $_GET['sort'] : 'newest';
-$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 20;
+$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 8;
 $search_query = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-// DEBUG: Show all products regardless of filters for testing
-$debug_mode = false;
-
-// Fetch categories from database
+// Fetch categories from database - From your version
 $categories = [];
 $cat_query = "SELECT category_id, category_name FROM categories";
 if ($cat_result = $mysqli->query($cat_query)) {
@@ -108,7 +112,7 @@ if ($cat_result = $mysqli->query($cat_query)) {
     $cat_result->free();
 }
 
-// Fetch dress styles from database
+// Fetch dress styles from database - From your version
 $styles = [];
 $style_query = "SELECT style_id, style_name FROM dress_styles WHERE is_custom = 0 ORDER BY style_name";
 if ($style_result = $mysqli->query($style_query)) {
@@ -118,26 +122,17 @@ if ($style_result = $mysqli->query($style_query)) {
     $style_result->free();
 }
 
-// Build query with filters - USING HER SIMPLE QUERY STRUCTURE BUT WITH YOUR FILTER LOGIC
-if ($debug_mode) {
-    $query = "SELECT DISTINCT p.product_id, p.category_id, p.name, p.brand, p.description, p.size, p.color, p.price, p.rental_price, p.image, p.video_url, p.stock, p.is_rental, p.created_at 
-              FROM products p 
-              WHERE 1=1";
-} else {
-    $query = "SELECT DISTINCT p.product_id, p.category_id, p.name, p.brand, p.description, p.size, p.color, p.price, p.rental_price, p.image, p.video_url, p.stock, p.is_rental, p.created_at 
-              FROM products p 
-              WHERE p.is_rental = 1 AND p.stock > 0";
-}
-
+// Build query with filters - Using her simple base but with your filter logic
+$query = "SELECT DISTINCT p.product_id, p.category_id, p.name, p.brand, p.description, p.size, p.color, p.price, p.rental_price, p.image, p.video_url, p.stock, p.is_rental, p.created_at FROM products p WHERE 1=1";
 $params = [];
 $types = "";
 
-// Add JOIN for styles if style filter is applied
+// Add JOIN for styles if style filter is applied - From your version
 if (!empty($style_filter)) {
     $query .= " INNER JOIN product_styles ps ON p.product_id = ps.product_id";
 }
 
-// SEARCH FUNCTIONALITY - Add search condition
+// SEARCH FUNCTIONALITY - From your version
 if (!empty($search_query)) {
     $query .= " AND (p.name LIKE ? OR p.brand LIKE ? OR p.description LIKE ? OR p.color LIKE ?)";
     $search_param = "%" . $search_query . "%";
@@ -145,7 +140,7 @@ if (!empty($search_query)) {
     $types .= "ssss";
 }
 
-// FOR YOU VIEW: Filter by user preferences
+// FOR YOU VIEW: Filter by user preferences - From your version
 if ($view_type === 'for-you' && $logged_in) {
     // Get user preferences
     $user_sizes = [];
@@ -214,7 +209,7 @@ if ($view_type === 'for-you' && $logged_in) {
     }
 }
 
-// Category filter (multiple selection)
+// Category filter (multiple selection) - From your version
 if (!empty($category_filter)) {
     $placeholders = str_repeat('?,', count($category_filter) - 1) . '?';
     $query .= " AND p.category_id IN ($placeholders)";
@@ -222,7 +217,7 @@ if (!empty($category_filter)) {
     $types .= str_repeat('i', count($category_filter));
 }
 
-// Size filter (multiple selection)
+// Size filter (multiple selection) - From your version
 if (!empty($size_filter)) {
     $size_conditions = [];
     foreach ($size_filter as $size) {
@@ -233,7 +228,7 @@ if (!empty($size_filter)) {
     $query .= " AND (" . implode(" OR ", $size_conditions) . ")";
 }
 
-// Color filter (multiple selection)
+// Color filter (multiple selection) - From your version
 if (!empty($color_filter)) {
     $placeholders = str_repeat('?,', count($color_filter) - 1) . '?';
     $query .= " AND p.color IN ($placeholders)";
@@ -241,7 +236,7 @@ if (!empty($color_filter)) {
     $types .= str_repeat('s', count($color_filter));
 }
 
-// Style filter (multiple selection)
+// Style filter (multiple selection) - From your version
 if (!empty($style_filter)) {
     $placeholders = str_repeat('?,', count($style_filter) - 1) . '?';
     $query .= " AND ps.style_id IN ($placeholders)";
@@ -249,19 +244,19 @@ if (!empty($style_filter)) {
     $types .= str_repeat('i', count($style_filter));
 }
 
-// PRICE RANGE FILTER - Only add if not default values
+// Price range filter - From your version
 if ($price_min > 0 || $price_max < 10000) {
-    $query .= " AND p.rental_price BETWEEN ? AND ?";
+    $query .= " AND p.price BETWEEN ? AND ?";
     $params[] = $price_min;
     $params[] = $price_max;
     $types .= "dd";
 }
 
-// Add sorting
+// Add sorting - Keep her simple approach but with your options
 if ($sort_by === 'price-low') {
-    $query .= " ORDER BY COALESCE(p.rental_price, 0) ASC";
+    $query .= " ORDER BY p.price ASC";
 } elseif ($sort_by === 'price-high') {
-    $query .= " ORDER BY COALESCE(p.rental_price, 0) DESC";
+    $query .= " ORDER BY p.price DESC";
 } elseif ($sort_by === 'popular') {
     $query .= " ORDER BY p.stock DESC";
 } else {
@@ -273,32 +268,21 @@ $query .= " LIMIT ?";
 $params[] = $limit;
 $types .= "i";
 
-// Fetch products with PROPER ERROR HANDLING
+// Fetch products - Using her approach but with your parameter binding
 $products = [];
 if ($stmt = $mysqli->prepare($query)) {
     if (!empty($params)) {
         $stmt->bind_param($types, ...$params);
     }
-    
-    if ($stmt->execute()) {
-        $res = $stmt->get_result();
-        while ($row = $res->fetch_assoc()) {
-            $products[] = $row;
-        }
-        $stmt->close();
-    } else {
-        // Log error and use fallback
-        error_log("Query execution failed: " . $stmt->error);
-        $fallback_query = "SELECT product_id, category_id, name, brand, description, size, color, price, rental_price, image, video_url, stock, is_rental, created_at FROM products WHERE is_rental = 1 AND stock > 0 ORDER BY created_at DESC LIMIT $limit";
-        if ($res = $mysqli->query($fallback_query)) {
-            while ($row = $res->fetch_assoc()) $products[] = $row;
-            $res->free();
-        }
+    $stmt->execute();
+    $res = $stmt->get_result();
+    while ($row = $res->fetch_assoc()) {
+        $products[] = $row;
     }
+    $stmt->close();
 } else {
-    // Log error and use fallback
-    error_log("Query preparation failed: " . $mysqli->error);
-    $fallback_query = "SELECT product_id, category_id, name, brand, description, size, color, price, rental_price, image, video_url, stock, is_rental, created_at FROM products WHERE is_rental = 1 AND stock > 0 ORDER BY created_at DESC LIMIT $limit";
+    // fallback: try direct query without filters
+    $fallback_query = "SELECT product_id, category_id, name, description, size, color, price, image, stock, is_rental, created_at FROM products ORDER BY created_at DESC LIMIT $limit";
     if ($res = $mysqli->query($fallback_query)) {
         while ($row = $res->fetch_assoc()) $products[] = $row;
         $res->free();
@@ -322,7 +306,7 @@ if ($logged_in) {
 }
 
 // Get total count for pagination
-$count_query = "SELECT COUNT(*) as total FROM products WHERE is_rental = 1 AND stock > 0";
+$count_query = "SELECT COUNT(*) as total FROM products";
 $total_products = 0;
 if ($count_stmt = $mysqli->prepare($count_query)) {
     $count_stmt->execute();
@@ -345,19 +329,20 @@ if ($logged_in) {
     $count_stmt->close();
 }
 
-// Helper to safe output - KEEPING HER SIMPLE APPROACH
+// Helper to safe output
 function esc($s) {
     return htmlspecialchars((string)$s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Dress Catalog — OZYDE</title>
     <style>
-        /* KEEPING ALL YOUR ADVANCED CSS STYLES */
+        /* (Keep her CSS exactly as is) */
         :root {
             --bg: #fff;
             --text: #222;
@@ -405,50 +390,50 @@ function esc($s) {
             font-weight: 600;
         }
 
-        /* Profile Dropdown - MODIFIED: Removed "My Account" */
-        .profile-dropdown {
-            position: relative;
-        }
+        /* Profile Dropdown */
+.profile-dropdown {
+    position: relative;
+}
 
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: #0b0b0b;
-            border-radius: 8px;
-            padding: 8px 0;
-            min-width: 180px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #0b0b0b;
+    border-radius: 8px;
+    padding: 8px 0;
+    min-width: 180px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
 
-        .profile-dropdown:hover .dropdown-menu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
+.profile-dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
 
-        .dropdown-menu a {
-            display: block;
-            padding: 10px 16px;
-            color: #fff;
-            font-size: 14px;
-            transition: background 0.2s ease;
-        }
+.dropdown-menu a {
+    display: block;
+    padding: 10px 16px;
+    color: #fff;
+    font-size: 14px;
+    transition: background 0.2s ease;
+}
 
-        .dropdown-menu a:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
+.dropdown-menu a:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
 
-        .dropdown-divider {
-            height: 1px;
-            background: rgba(255, 255, 255, 0.2);
-            margin: 6px 0;
-        }
+.dropdown-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 6px 0;
+}
 
         .search { flex:1; max-width:400px; display:flex; align-items:center; gap:6px; margin:0 12px; }
         .search input { width:100%; padding:10px 12px; border-radius:999px 0 0 999px; border:0; outline:0; font-size:14px; background:rgba(255,255,255,0.06); color:#fff; }
@@ -463,7 +448,7 @@ function esc($s) {
         .user-status.logged-out { background:#fff3cd; color:#856404; }
         .user-status a { color:var(--accent); text-decoration:underline; font-weight:600; margin-left:5px; }
 
-        /* YOUR ADVANCED FILTER STYLES - Superlist Inspired */
+        /* ADDED: New Filter Styles from your version */
         .filters-container {
             display: grid;
             grid-template-columns: 280px 1fr;
@@ -745,17 +730,7 @@ function esc($s) {
         footer { border-top:1px solid #eee; padding:36px 0; margin-top:28px; color:var(--muted); background:#fafafa; }
         .footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:32px; }
         
-        /* Debug info */
-        .debug-info {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        /* For You Indicator */
+        /* ADDED: For You Indicator */
         .for-you-badge {
             position: absolute;
             top: 12px;
@@ -769,7 +744,7 @@ function esc($s) {
             z-index: 5;
         }
         
-        /* For You Banner */
+        /* ADDED: For You Banner */
         .for-you-banner {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -843,7 +818,7 @@ function esc($s) {
                 <div>Ozyde</div>
             </div>
 
-            <!-- Search Bar -->
+            <!-- Search Bar - Updated to your version with form -->
             <div class="search" role="search" aria-label="Site search">
                 <form method="GET" id="searchForm" style="display: flex; width: 100%;">
                     <input type="search" name="search" placeholder="Search dresses, designers, collection..." 
@@ -858,6 +833,7 @@ function esc($s) {
             </div>
 
             <nav aria-label="Main navigation">
+                <!-- Updated to your navigation links -->
                 <ul id="main-nav">
                     <li><a href="finalhomepage.php">Home</a></li>
                     <li><a href="catalog.php" class="active">Browse</a></li>
@@ -905,9 +881,8 @@ function esc($s) {
                     </button>
                     <div class="dropdown-menu">
                         <a href="customerdashboard.php">Customer Dashboard</a>
-                        <!-- REMOVED: My Account link as requested -->
+                        <a href="my-account.html">My Account</a>
                         <div class="dropdown-divider"></div>
-                        <!-- FIXED: Logout link to logout.php -->
                         <a href="logout.php" id="logoutLink">Sign Out</a>
                     </div>
                 </div>
@@ -918,7 +893,7 @@ function esc($s) {
         </div>
     </header>
 
-    <!-- User Status Banner -->
+    <!-- User Status Banner - Updated with user name from your version -->
     <div class="user-status <?php echo $logged_in ? '' : 'logged-out'; ?>" id="userStatus">
         <div class="container">
             <?php if ($logged_in): ?>
@@ -941,19 +916,7 @@ function esc($s) {
         </section>
 
         <div class="container">
-            <!-- Debug Information -->
-            <div class="debug-info">
-                <strong>Debug Info:</strong> 
-                Showing <?php echo count($products); ?> products in <strong><?php echo $view_type === 'for-you' ? 'For You' : 'Shop'; ?></strong> view.
-                <?php if ($debug_mode): ?>
-                    <span style="color: var(--success);">DEBUG MODE: Showing all products</span>
-                <?php endif; ?>
-                <?php if ($view_type === 'for-you'): ?>
-                    <br><span style="color: var(--airbnb-pink);">Personalised recommendations based on your preferences</span>
-                <?php endif; ?>
-            </div>
-
-            <!-- For You Banner -->
+            <!-- For You Banner - From your version -->
             <?php if ($view_type === 'for-you'): ?>
             <div class="for-you-banner">
                 <h3>Recommended For You</h3>
@@ -961,7 +924,7 @@ function esc($s) {
             </div>
             <?php endif; ?>
 
-            <!-- Mobile Filter Toggle -->
+            <!-- Mobile Filter Toggle - From your version -->
             <div class="mobile-filter-toggle">
                 <button class="filter-toggle-btn" id="mobileFilterToggle">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -972,7 +935,7 @@ function esc($s) {
             </div>
 
             <div class="filters-container">
-                <!-- Filter Sidebar -->
+                <!-- Filter Sidebar - From your version (replaces her simple filters) -->
                 <aside class="filter-sidebar" id="filterSidebar">
                     <button class="filter-close-btn" id="filterCloseBtn">×</button>
                     
@@ -1109,7 +1072,7 @@ function esc($s) {
                             <?php if ($view_type === 'for-you'): ?>
                                 For You (<?php echo count($products); ?> recommendations)
                             <?php elseif (!empty($search_query)): ?>
-                                Search Results for "<?php echo esc($search_query); ?>" 
+                                Search Results for "<?php echo esc($search_query); ?>"
                             <?php else: ?>
                                 Available Dresses (<?php echo count($products); ?> found)
                             <?php endif; ?>
@@ -1126,6 +1089,7 @@ function esc($s) {
                                 </select>
                             </div>
 
+                            <!-- View Toggle - Updated to your version with links -->
                             <div class="view-toggle" role="tablist" aria-label="View toggle">
                                 <a href="?view=shop<?php echo !empty($_GET) ? '&' . http_build_query(array_diff_key($_GET, ['view' => ''])) : ''; ?>" 
                                    class="toggle <?php echo $view_type === 'shop' ? 'active' : ''; ?>" 
@@ -1171,9 +1135,7 @@ function esc($s) {
                                 $pid = (int)$p['product_id'];
                                 $title = esc($p['name'] ?? 'Untitled');
                                 $brand = esc($p['brand'] ?? 'Designer');
-                                // Use rental price instead of purchase price for rental business
-                                $price = is_numeric($p['rental_price']) && $p['rental_price'] > 0 ? number_format((float)$p['rental_price'], 2) : (is_numeric($p['price']) && $p['price'] > 0 ? number_format((float)$p['price'], 2) : '0.00');
-                                // KEEPING HER SIMPLE IMAGE HANDLING - THIS IS WHAT WORKS
+                                $price = is_numeric($p['price']) ? number_format((float)$p['price'], 2) : '0.00';
                                 $img = !empty($p['image']) ? esc($p['image']) : 'gallery/placeholder.png';
                                 $stock = isset($p['stock']) ? (int)$p['stock'] : 0;
                                 $is_rental = isset($p['is_rental']) ? (bool)$p['is_rental'] : false;
@@ -1201,7 +1163,6 @@ function esc($s) {
                                         <div class="for-you-badge">For You</div>
                                     <?php endif; ?>
                                     <div class="product-image">
-                                        <!-- KEEPING HER SIMPLE IMAGE DISPLAY - THIS IS WHAT WORKS -->
                                         <img src="<?php echo $img; ?>" alt="<?php echo $title; ?>" onerror="this.onerror=null;this.src='gallery/placeholder.png'">
                                         <button class="wishlist-btn <?php echo $is_wishlisted ? 'active' : ''; ?>" data-product-id="<?php echo $pid; ?>" aria-label="Add to wishlist">
                                             <svg viewBox="0 0 24 24" fill="<?php echo $is_wishlisted ? 'currentColor' : 'none'; ?>" stroke="currentColor" stroke-width="2" width="18" height="18">
@@ -1236,7 +1197,7 @@ function esc($s) {
         </div>
     </main>
 
-    <!-- Mobile Filter Overlay -->
+    <!-- Mobile Filter Overlay - From your version -->
     <div class="mobile-filter-overlay" id="mobileFilterOverlay"></div>
 
     <!-- Login Modal -->
@@ -1316,15 +1277,16 @@ function esc($s) {
                 </div>
             </div>
 
+
+
             <div style="margin-top:24px;text-align:center;padding-top:24px;border-top:1px solid #e6e6e6;color:var(--muted)">
                 © 2025 Ozyde. All rights reserved.
             </div>
         </div>
     </footer>
 
-    <!-- KEEPING ALL YOUR ADVANCED JAVASCRIPT FUNCTIONALITY -->
     <script>
-        // Mobile filter toggle
+        // Mobile filter toggle - From your version
         const mobileFilterToggle = document.getElementById('mobileFilterToggle');
         const filterSidebar = document.getElementById('filterSidebar');
         const mobileFilterOverlay = document.getElementById('mobileFilterOverlay');
@@ -1354,7 +1316,7 @@ function esc($s) {
             filterCloseBtn.addEventListener('click', closeMobileFilter);
         }
 
-        // Price Range Slider
+        // Price Range Slider - From your version
         const priceSlider = document.getElementById('priceSlider');
         const minThumb = document.getElementById('minThumb');
         const maxThumb = document.getElementById('maxThumb');
@@ -1425,7 +1387,7 @@ function esc($s) {
             setMaxValue(parseFloat(e.target.value) || maxPrice);
         });
         
-        // Active filters display
+        // Active filters display - From your version
         function updateActiveFilters() {
             const activeFilters = document.getElementById('activeFilters');
             activeFilters.innerHTML = '';
@@ -1500,7 +1462,7 @@ function esc($s) {
             return chip;
         }
         
-        // Filter form handling
+        // Filter form handling - From your version
         function applyFilters() {
             updateActiveFilters();
             if (window.innerWidth <= 880) {
@@ -1526,7 +1488,7 @@ function esc($s) {
             priceTimeout = setTimeout(applyFilters, 1000);
         });
         
-        // Clear filters
+        // Clear filters - From your version
         document.getElementById('clearFilters').addEventListener('click', function() {
             // Uncheck all checkboxes
             document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
@@ -1541,18 +1503,18 @@ function esc($s) {
             applyFilters();
         });
         
-        // Sort handling
+        // Sort handling - Keep her logic but with your enhancements
         document.getElementById('sort').addEventListener('change', function() {
             document.getElementById('sortInput').value = this.value;
             document.getElementById('filterForm').submit();
         });
         
-        // Load More functionality
+        // Load More functionality - Keep her logic
         const loadMoreBtn = document.getElementById('loadMore');
         if (loadMoreBtn) {
             loadMoreBtn.addEventListener('click', function() {
                 const currentLimit = parseInt(this.getAttribute('data-current-limit'));
-                const newLimit = currentLimit + 20;
+                const newLimit = currentLimit + 8;
                 
                 // Update the limit input and submit the form
                 document.getElementById('limitInput').value = newLimit;
@@ -1560,7 +1522,7 @@ function esc($s) {
             });
         }
         
-        // Wishlist functionality
+        // Wishlist functionality - Keep her logic
         document.querySelectorAll('.wishlist-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -1634,7 +1596,7 @@ function esc($s) {
             }
         }
         
-        // Search functionality
+        // Search functionality - From your version
         document.getElementById('searchForm').addEventListener('submit', function(e) {
             const searchInput = this.querySelector('input[name="search"]');
             if (!searchInput.value.trim()) {
@@ -1644,7 +1606,7 @@ function esc($s) {
             }
         });
         
-        // Login modal handling
+        // Login modal handling - Keep her logic
         const loginModal = document.getElementById('loginModal');
         const goToRegister = document.getElementById('goToRegister');
         const closeModal = document.getElementById('closeModal');
@@ -1658,7 +1620,7 @@ function esc($s) {
             loginModal.setAttribute('aria-hidden', 'true');
         });
 
-        // View type handling
+        // View type handling - From your version
         const viewToggles = document.querySelectorAll('.view-toggle .toggle');
         const currentView = '<?php echo $view_type; ?>';
 
@@ -1677,4 +1639,5 @@ function esc($s) {
         updateActiveFilters();
     </script>
 </body>
+
 </html>
