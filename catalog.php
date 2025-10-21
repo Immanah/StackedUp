@@ -95,7 +95,6 @@ $view_type = isset($_GET['view']) && $_GET['view'] === 'for-you' ? 'for-you' : '
 $category_filter = isset($_GET['category']) ? (array)$_GET['category'] : [];
 $size_filter = isset($_GET['size']) ? (array)$_GET['size'] : [];
 $color_filter = isset($_GET['color']) ? (array)$_GET['color'] : [];
-$style_filter = isset($_GET['style']) ? (array)$_GET['style'] : [];
 $price_min = isset($_GET['price_min']) ? (float)$_GET['price_min'] : 0;
 $price_max = isset($_GET['price_max']) ? (float)$_GET['price_max'] : 10000;
 $sort_by = isset($_GET['sort']) ? $_GET['sort'] : 'newest';
@@ -128,9 +127,7 @@ $params = [];
 $types = "";
 
 // Add JOIN for styles if style filter is applied - From your version
-if (!empty($style_filter)) {
-    $query .= " INNER JOIN product_styles ps ON p.product_id = ps.product_id";
-}
+
 
 // SEARCH FUNCTIONALITY - From your version
 if (!empty($search_query)) {
@@ -191,21 +188,7 @@ if ($view_type === 'for-you' && $logged_in) {
         }
         
         // Style preferences
-        if (!empty($user_styles)) {
-            if (!empty($style_filter)) {
-                // If style filter is already applied, combine with user preferences
-                $style_filter = array_merge($style_filter, $user_styles);
-                $style_filter = array_unique($style_filter);
-            } else {
-                // Apply user style preferences
-                $query .= " OR EXISTS (SELECT 1 FROM product_styles ps WHERE ps.product_id = p.product_id AND ps.style_id IN (" . 
-                         implode(',', array_fill(0, count($user_styles), '?')) . "))";
-                $params = array_merge($params, $user_styles);
-                $types .= str_repeat('i', count($user_styles));
-            }
-        }
         
-        $query .= ")";
     }
 }
 
@@ -236,13 +219,7 @@ if (!empty($color_filter)) {
     $types .= str_repeat('s', count($color_filter));
 }
 
-// Style filter (multiple selection) - From your version
-if (!empty($style_filter)) {
-    $placeholders = str_repeat('?,', count($style_filter) - 1) . '?';
-    $query .= " AND ps.style_id IN ($placeholders)";
-    $params = array_merge($params, $style_filter);
-    $types .= str_repeat('i', count($style_filter));
-}
+
 
 // Price range filter - From your version
 if ($price_min > 0 || $price_max < 10000) {
@@ -1025,18 +1002,7 @@ function esc($s) {
                             </div>
                         </div>
 
-                        <!-- Style Filter -->
-                        <div class="filter-section">
-                            <h4>Styles</h4>
-                            <div class="filter-options">
-                                <?php foreach ($styles as $style): ?>
-                                <div class="filter-option">
-                                    <input type="checkbox" id="style-<?php echo $style['style_id']; ?>" name="style[]" value="<?php echo $style['style_id']; ?>" <?php echo in_array($style['style_id'], $style_filter) ? 'checked' : ''; ?>>
-                                    <label for="style-<?php echo $style['style_id']; ?>"><?php echo esc($style['style_name']); ?></label>
-                                </div>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
+                       
 
                         <!-- Price Range Filter -->
                         <div class="filter-section">
@@ -1399,12 +1365,7 @@ function esc($s) {
                 activeFilters.appendChild(chip);
             });
             
-            // Style filters
-            document.querySelectorAll('input[name="style[]"]:checked').forEach(checkbox => {
-                const label = checkbox.nextElementSibling.textContent;
-                const chip = createFilterChip('style', checkbox.value, label);
-                activeFilters.appendChild(chip);
-            });
+            
             
             // Price filter (if not default)
             if (minValue > minPrice || maxValue < maxPrice) {
