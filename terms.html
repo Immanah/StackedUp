@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Terms of Service — Ozyde</title>
+    <style>
+        /* Ozyde Boutique consistent styling - matching homepage */
+        
+         :root {
+            --bg: #fff;
+            --text: #222;
+            --muted: #7a7a7a;
+            --accent: #111;
+            --max-width: 1200px;
+            --chip-bg: #f3f3f3;
+            --chip-border: #e6e6e6;
+            --primary: #111;
+            --success: #2fa46b;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1.6;
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        /* Header Styles - EXACTLY matching homepage */
+        
+        .nav-wrap {
+            background: #0b0b0b;
+            color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 120;
+            box-shadow: 0 6px 20px rgba(2, 2, 2, 0.12);
+        }
+        
+        .nav {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-weight: 800;
+            letter-spacing: 1px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .logo-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #fff2, #fff6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #111;
+            font-weight: 900;
+            font-size: 16px;
+        }
+        
+        nav ul {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 18px;
+            list-style: none;
+            align-items: center;
+        }
+        
+        nav a {
+            font-size: 14px;
+            color: #fff;
+            display: block;
+            padding: 8px 6px;
+            transition: color 0.2s ease;
+        }
+        
+        nav a.active {
+            color: #fff;
+            font-weight: 600;
+            border-bottom: 2px solid #fff;
+        }
+        
+        nav a:hover {
+            color: #ddd;
+        }
+        
+        .btn-signup {
+            background: var(--accent);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background 0.2s ease;
+        }
+        
+        .btn-signup:hover {
+            background: #333;
+        }
+        
+        .icons {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+        
+        .icon-only {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 0;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .icon-only:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        main {
+            padding: 60px 0;
+            min-height: 70vh;
+        }
+        /* Terms Page Specific Styles */
+        
+        .terms-header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .terms-header h1 {
+            font-size: 36px;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+        
+        .terms-header p {
+            color: var(--muted);
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .terms-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .policy-section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #fafafa;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .policy-section h2 {
+            color: var(--accent);
+            margin-bottom: 20px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .policy-section h3 {
+            color: var(--text);
+            margin: 25px 0 15px 0;
+            font-size: 18px;
+        }
+        
+        .policy-points {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        
+        .policy-points li {
+            padding: 8px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .policy-points li::before {
+            content: "•";
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        
+        .warning-box {
+            background: #fff8f8;
+            border: 1px solid #ffebee;
+            border-left: 4px solid var(--danger);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .warning-box h4 {
+            color: var(--danger);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .info-box {
+            background: #f0f7ff;
+            border: 1px solid #e1f0ff;
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .info-box h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .last-updated {
+            text-align: center;
+            color: var(--muted);
+            font-size: 14px;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        /* Footer Styles - matching homepage */
+        
+        footer {
+            border-top: 1px solid #eee;
+            padding: 36px 0;
+            margin-top: 28px;
+            color: var(--muted);
+            background: #fafafa;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 32px;
+        }
+        
+        .footer-grid h4 {
+            margin: 0 0 16px 0;
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        .footer-grid ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-grid li {
+            margin-bottom: 8px;
+        }
+        
+        .footer-grid a {
+            color: var(--muted);
+            transition: color 0.2s ease;
+        }
+        
+        .footer-grid a:hover {
+            color: var(--accent);
+        }
+        
+        .socials {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .socials a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: #f5f5f5;
+            transition: all 0.2s ease;
+        }
+        
+        .socials a:hover {
+            background: var(--accent);
+        }
+        
+        .socials a:hover svg path,
+        .socials a:hover svg circle {
+            stroke: #fff;
+            fill: #fff;
+        }
+        /* Responsive Design */
+        
+        @media (max-width: 768px) {
+            .terms-header h1 {
+                font-size: 28px;
+            }
+            .policy-section {
+                padding: 20px;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ===== Navigation Bar - EXACTLY like homepage ===== -->
+    <header class="nav-wrap" role="banner">
+        <div class="nav" role="navigation" aria-label="Main navigation">
+            <div class="logo" onclick="window.location.href='finalhomepage.html'">
+                <div class="logo-badge" aria-hidden="true">✦</div>
+                <div>Ozyde</div>
+            </div>
+
+            <nav aria-label="Main navigation">
+                <ul id="main-nav">
+                    <li><a href="finalhomepage.html">Home</a></li>
+                    <li><a href="catalog.php">Browse</a></li>
+                    <li><a href="custommade.html">Custom Made</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                </ul>
+            </nav>
+
+            <div class="icons" role="group" aria-label="User actions">
+                <a href="register.html" class="icon-only" title="Login/Register" aria-label="Login/Register">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                        <polyline points="10 17 15 12 10 7" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="15" y1="12" x2="3" y2="12" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </a>
+
+                <a href="help.html" class="icon-only" title="Help" aria-label="Help">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.2" fill="none"/>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                        <line x1="12" y1="17" x2="12" y2="17" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="terms-header">
+            <h1>Terms of Service</h1>
+            <p>Please read these terms carefully before using our rental services</p>
+        </div>
+
+        <div class="terms-content">
+            <!-- Non-Refundable Policy Section -->
+            <section class="policy-section">
+                <h2>📋 Non-Refundable Policy</h2>
+
+                <div class="warning-box">
+                    <h4>⚠️ Important Notice</h4>
+                    <p><strong>ALL RENTALS ARE FINAL SALE - NO REFUNDS OR CANCELLATIONS FOR ANY REASON</strong></p>
+                </div>
+
+                <p>By renting with Ozyde, you acknowledge and agree to our strict non-refundable policy. Please be absolutely sure of your purchase before making any payments.</p>
+
+                <h3>Non-Refundable Circumstances Include:</h3>
+                <ul class="policy-points">
+                    <li><strong>Change of Mind:</strong> Once a rental is confirmed, we cannot accept changes or cancellations</li>
+                    <li><strong>Event Cancellations:</strong> We do not provide refunds if your event is cancelled or postponed</li>
+                    <li><strong>Late or Missed Pickups:</strong> Failure to collect your rental does not qualify for a refund</li>
+                    <li><strong>Size/Fit Issues:</strong> We recommend scheduling fittings to ensure proper fit before rental</li>
+                </ul>
+
+                <div class="info-box">
+                    <h4>💡 Damaged or Incorrect Items</h4>
+                    <p>Report any issues with your rental within <strong>24 hours</strong> of receipt for possible exchange (subject to availability). No refunds will be issued for damaged or incorrect items.</p>
+                </div>
+            </section>
+
+            <!-- Rental Policy Section -->
+            <section class="policy-section">
+                <h2>👗 Rental Policy</h2>
+
+                <h3>Payment & Fees</h3>
+                <ul class="policy-points">
+                    <li><strong>Full Payment:</strong> Required before delivery of any rental items</li>
+                    <li><strong>Deposit:</strong> R800 deposit required to secure dress for your event date</li>
+                    <li><strong>Fitting Fee:</strong> R150 (highly recommended for best fit)</li>
+                    <li><strong>Delivery Fee:</strong> R250 for delivery services</li>
+                </ul>
+
+                <h3>Rental Period & Logistics</h3>
+                <ul class="policy-points">
+                    <li><strong>Rental Duration:</strong> Three days total (includes delivery and return days)</li>
+                    <li><strong>Shipping:</strong> Available within South Africa only</li>
+                    <li><strong>International Rentals:</strong> Not currently available</li>
+                    <li><strong>Fittings:</strong> Schedule in advance to ensure perfect fit</li>
+                </ul>
+
+                <div class="warning-box">
+                    <h4>Late Returns & Damage Fees</h4>
+                    <p>Additional charges apply for late returns or damages to rental items:</p>
+                    <ul class="policy-points">
+                        <li><strong>Damage Fee:</strong> Minimum 10% charge for any rental damages</li>
+                        <li><strong>Late Return Fee:</strong> Daily charges apply for overdue items</li>
+                        <li><strong>Penalties:</strong> By renting with Ozyde, you agree to these terms and associated fees</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Custom Made Orders Section -->
+            <section class="policy-section">
+                <h2>✂️ Custom Made Orders</h2>
+
+                <h3>Order Process</h3>
+                <ul class="policy-points">
+                    <li><strong>Deposit Required:</strong> Before we begin making your custom dress</li>
+                    <li><strong>Payment Plan:</strong> Payments can be made in 1-5 installments</li>
+                    <li><strong>Consultation Fee:</strong> R280 for initial design consultation</li>
+                    <li><strong>Lead Time:</strong> Place orders at least one month before your event</li>
+                </ul>
+
+                <h3>Fittings & Fabric</h3>
+                <ul class="policy-points">
+                    <li><strong>Fittings:</strong> Highly recommended to ensure perfect fit</li>
+                    <li><strong>Fabric Selection:</strong> You may suggest fabrics, but final decision rests with Ozyde to ensure best quality and fit</li>
+                    <li><strong>Delivery Fee:</strong> R250 for delivery of custom orders</li>
+                </ul>
+
+                <div class="info-box">
+                    <h4>Declaration Form</h4>
+                    <p>All custom order clients will be required to sign a declaration form acknowledging understanding and acceptance of these terms before work begins.</p>
+                </div>
+            </section>
+
+            <!-- General Terms Section -->
+            <section class="policy-section">
+                <h2>📄 General Terms</h2>
+
+                <h3>Agreement</h3>
+                <p>By using Ozyde's rental or custom order services, you agree to:</p>
+                <ul class="policy-points">
+                    <li>All terms and conditions outlined in this document</li>
+                    <li>Payment of all applicable fees and charges</li>
+                    <li>Proper care and timely return of rental items</li>
+                    <li>Communication regarding any issues within specified timeframes</li>
+                </ul>
+
+                <h3>Contact & Support</h3>
+                <p>For any questions about these terms or to report issues with your rental:</p>
+                <ul class="policy-points">
+                    <li>Email: ozydedesigns@gmail.com</li>
+                    <li>Phone: Contact us during business hours</li>
+                    <li>In-Person: Visit our Midrand location</li>
+                </ul>
+            </section>
+
+            <div class="last-updated">
+                <p><strong>Last Updated:</strong> January 2025</p>
+                <p>Thank you for choosing Ozyde! We're committed to making your special occasions unforgettable.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer - matching homepage -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4>Ozyde</h4>
+                    <p>Premium dress rentals for your special occasions. Quality, style, and affordability combined.</p>
+                    <div>Address:<br>5 Liebenberg Rd, Noordwyk, Midrand 1687</div>
+                    <div class="socials" aria-label="Social media">
+                        <a href="https://www.instagram.com/ozyde_?igsh=NWM0aTd4ZGFmeHVr" target="_blank" rel="noopener" aria-label="Instagram">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <rect x="3" y="3" width="18" height="18" rx="5" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <circle cx="12" cy="12" r="3.2" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <circle cx="17.5" cy="6.5" r="0.6" fill="#333"/>
+                            </svg>
+                        </a>
+                        <a href="https://www.tiktok.com/@ozyde_designs?_t=ZS-8zlyfPi8HHJ&_r=1" target="_blank" rel="noopener" aria-label="TikTok">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="#333">
+                                <path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 0 1-5.201 1.743l-.002-.001.002.001a2.895 2.895 0 0 1 3.183-4.51v-3.5a6.329 6.329 0 0 0-5.394 10.692 6.33 6.33 0 0 0 10.857-4.424V8.687a8.182 8.182 0 0 0 4.773 1.526V6.79a4.831 4.831 0 0 1-1.003-.104z"/>
+                            </svg>
+                        </a>
+                        <a href="mailto:ozydedesigns@gmail.com" aria-label="Email">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <rect x="3" y="6" width="18" height="12" rx="2" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <path d="M4 7.5l8 6 8-6" stroke="#333" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="howitworks.html">How It Works</a></li>
+                        <li><a href="sizingguide.html">Size Guide</a></li>
+                        <li><a href="#">Returns & Policy</a></li>
+                        <li><a href="#">Delivery</a></li>
+                        <li><a href="help.html">Help Center</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="terms.html">Terms</a></li>
+                        <li><a href="privacy.html">Privacy</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="cleaning.html">Cleaning & Care Guide</a></li>
+                        <li><a href="#">Partnerships</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="margin-top:24px;text-align:center;padding-top:24px;border-top:1px solid #e6e6e6;color:var(--muted)">
+                © 2025 Ozyde. All rights reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
