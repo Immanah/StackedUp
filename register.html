@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Sign In / Sign Up — Ozyde Boutique</title>
+    <style>
+        /* same base styles / nav as homepage for consistency */
+        
+         :root {
+            --bg: #fff;
+            --text: #222;
+            --muted: #7a7a7a;
+            --accent: #111;
+            --max-width: 1200px;
+            --chip-bg: #f3f3f3;
+            --chip-border: #e6e6e6;
+            --primary: #111;
+            --success: #2fa46b;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --airbnb-pink: #FF5A5F;
+        }
+        
+        * {
+            box-sizing: border-box
+        }
+        
+        body {
+            margin: 0;
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+             -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1.5;
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+        
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px
+        }
+        
+       /* Header Styles - EXACTLY matching homepage */
+        
+        .nav-wrap {
+            background: #0b0b0b;
+            color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 120;
+            box-shadow: 0 6px 20px rgba(2, 2, 2, 0.12);
+        }
+        
+        .nav {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-weight: 800;
+            letter-spacing: 1px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .logo-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #fff2, #fff6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #111;
+            font-weight: 900;
+            font-size: 16px;
+        }
+        
+        nav ul {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 18px;
+            list-style: none;
+            align-items: center;
+        }
+        
+        nav a {
+            font-size: 14px;
+            color: #fff;
+            display: block;
+            padding: 8px 6px;
+            transition: color 0.2s ease;
+        }
+        
+        nav a.active {
+            color: #fff;
+            font-weight: 600;
+            border-bottom: 2px solid #fff;
+        }
+        
+        nav a:hover {
+            color: #ddd;
+        }
+        
+        .btn-signup {
+            background: var(--accent);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background 0.2s ease;
+        }
+        
+        .btn-signup:hover {
+            background: #333;
+        }
+        
+        .icons {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+        
+        .icon-only {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 0;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .icon-only:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        main {
+            padding: 48px 0;
+            min-height: 70vh;
+        }
+
+        .mobile-toggle {
+            display: none;
+            background: transparent;
+            border: 0;
+            padding: 8px;
+            cursor: pointer
+        }
+        
+        .mobile-toggle .hamburger {
+            width: 22px;
+            height: 14px;
+            position: relative;
+            display: inline-block
+        }
+        
+        .mobile-toggle .hamburger::before,
+        .mobile-toggle .hamburger::after,
+        .mobile-toggle .hamburger div {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #222
+        }
+        
+        .mobile-toggle .hamburger::before {
+            top: 0
+        }
+        
+        .mobile-toggle .hamburger div {
+            top: 6px
+        }
+        
+        .mobile-toggle .hamburger::after {
+            bottom: 0
+        }
+        
+        .nav.open .mobile-toggle .hamburger::before {
+            transform: translateY(6px) rotate(45deg)
+        }
+        
+        .nav.open .mobile-toggle .hamburger div {
+            opacity: 0
+        }
+        
+        .nav.open .mobile-toggle .hamburger::after {
+            transform: translateY(-6px) rotate(-45deg)
+        }
+        
+        main {
+            padding: 36px 0
+        }
+        
+        footer {
+            border-top: 1px solid #eee;
+            padding: 36px 0;
+            margin-top: 28px;
+            color: var(--muted)
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 20px
+        }
+        
+        .socials {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px
+        }
+        
+        .socials a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: #f5f5f5
+        }
+        
+        @media (max-width:560px) {
+            nav ul {
+                display: none
+            }
+            .mobile-toggle {
+                display: flex
+            }
+            .footer-grid {
+                grid-template-columns: 1fr
+            }
+        }
+        
+        /* Auth-specific styles for Ozyde */
+        .auth-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 40px;
+            border: 1px solid #f0f0f0;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(10, 10, 10, 0.03);
+            background: #fff;
+        }
+        
+        .auth-toggle {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .toggle-option {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+            color: var(--muted);
+            font-weight: 500;
+        }
+        
+        .toggle-option.active {
+            border-bottom-color: var(--accent);
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        .auth-panel {
+            display: none;
+        }
+        
+        .auth-panel.active {
+            display: block;
+        }
+        
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .auth-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        .auth-title {
+            margin: 0 0 10px;
+            font-size: 24px;
+        }
+        
+        .auth-subtitle {
+            margin: 0;
+            color: var(--muted);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="tel"]{
+         width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.2s ease;
+        }
+         input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        /* Phone number input with country code */
+        .phone-input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .country-code {
+            flex: 0 0 120px;
+        }
+        
+        .phone-number {
+            flex: 1;
+        }
+        
+        .country-select-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .selected-country {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+        
+        .selected-country:hover {
+            border-color: #bbb;
+        }
+        
+        .country-flag {
+            font-size: 16px;
+        }
+        
+        .country-code-text {
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        .country-name {
+            flex: 1;
+            text-align: left;
+            color: var(--text);
+            font-size: 13px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        
+        .dropdown-arrow {
+            color: var(--muted);
+            font-size: 10px;
+        }
+        
+        .country-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: none;
+            max-height: 300px;
+            overflow: hidden;
+        }
+        
+        .country-dropdown.show {
+            display: block;
+        }
+        
+        .country-search {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .country-search:focus {
+            border-bottom-color: var(--accent);
+        }
+        
+        .country-list {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        
+        .country-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f5f5f5;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .country-option:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .country-option.active {
+            background-color: #e9ecef;
+        }
+        
+        .country-option-flag {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .country-option-name {
+            flex: 1;
+            text-align: left;
+        }
+        
+        .country-option-code {
+            color: var(--muted);
+            font-weight: 600;
+        }
+        
+        /* Password strength meter */
+        .password-strength {
+            margin-top: 8px;
+        }
+        
+        .strength-meter {
+            height: 4px;
+            background: #eee;
+            border-radius: 2px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+        
+        .strength-meter-fill {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+        
+        .strength-weak {
+            background: var(--danger);
+            width: 33%;
+        }
+        
+        .strength-medium {
+            background: var(--warning);
+            width: 66%;
+        }
+        
+        .strength-strong {
+            background: var(--success);
+            width: 100%;
+        }
+        
+        .password-requirements {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0 0 0;
+            font-size: 13px;
+        }
+        
+        .password-requirements li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+            color: var(--muted);
+        }
+        
+        .requirement-met {
+            color: var(--success);
+        }
+        
+        .requirement-met::before {
+            content: "✓";
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .requirement-unmet::before {
+            content: "○";
+            color: var(--muted);
+        }
+        
+        /* Password match indicator */
+        .password-match {
+            margin-top: 5px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .match-valid {
+            color: var(--success);
+        }
+        
+        .match-invalid {
+            color: var(--danger);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .checkbox-label {
+            font-size: 14px;
+            font-weight: normal;
+        }
+
+        .terms-link {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+        
+        .forgot-link {
+            color: var(--accent);
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .btn-primary {
+             width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: background 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background: #333;
+        }
+        
+        .social-auth {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .btn-google {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .auth-footer {
+            text-align: center;
+            color: var(--muted);
+        }
+        
+        .auth-footer a {
+            color: var(--accent);
+            font-weight: 500;
+        }
+        
+        .small {
+            font-size: 13px;
+            color: var(--muted)
+        }
+
+         /* Error messages */
+        .error-message {
+            color: var(--danger);
+            font-size: 13px;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .validation-valid {
+            color: var(--success);
+            font-size: 13px;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* Message Popup (from your version) */
+        .message-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            padding: 16px 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            border-left: 4px solid var(--success);
+            z-index: 1000;
+            max-width: 400px;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .message-popup.show {
+            transform: translateX(0);
+        }
+        
+        .message-popup.error {
+            border-left-color: var(--danger);
+        }
+        
+        .message-popup.success {
+            border-left-color: var(--success);
+        }
+        
+        .message-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .message-popup.success .message-icon {
+            background: var(--success);
+            color: white;
+        }
+        
+        .message-popup.error .message-icon {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .message-content {
+            flex: 1;
+        }
+        
+        .message-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text);
+        }
+        
+        .message-text {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        /* Success Popup */
+        .success-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1001;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Footer Styles - matching homepage */
+        footer {
+            border-top: 1px solid #eee;
+            padding: 36px 0;
+            margin-top: 28px;
+            color: var(--muted);
+            background: #fafafa;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 32px;
+        }
+        
+        .footer-grid h4 {
+            margin: 0 0 16px 0;
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        .footer-grid ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-grid li {
+            margin-bottom: 8px;
+        }
+        
+        .footer-grid a {
+            color: var(--muted);
+            transition: color 0.2s ease;
+        }
+        
+        .footer-grid a:hover {
+            color: var(--accent);
+        }
+        
+        .socials {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .socials a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: #f5f5f5;
+            transition: all 0.2s ease;
+        }
+        
+        .socials a:hover {
+            background: var(--accent);
+        }
+        
+        .socials a:hover svg path,
+        .socials a:hover svg circle {
+            stroke: #fff;
+            fill: #fff;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 640px) {
+            .auth-container {
+                padding: 30px 20px;
+            }
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            .phone-input-group {
+                flex-direction: column;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+        }
+
+        .success-popup.show {
+            display: flex;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .message-popup {
+                left: 20px;
+                right: 20px;
+                max-width: none;
+            }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Success Popup -->
+    <div class="success-popup" id="successPopup">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 6L9 17l-5-5"/>
+        </svg>
+        <span id="successMessage">Account created successfully!</span>
+    </div>
+
+    <!-- Message Popup -->
+    <div id="messagePopup" class="message-popup">
+        <div class="message-icon">!</div>
+        <div class="message-content">
+            <div class="message-title" id="messageTitle">Message</div>
+            <div class="message-text" id="messageText">This is a message</div>
+        </div>
+    </div>
+
+     <!-- ===== Navigation Bar - EXACTLY like homepage ===== -->
+    <header class="nav-wrap" role="banner">
+        <div class="nav" role="navigation" aria-label="Main navigation">
+            <div class="logo" onclick="window.location.href='finalhomepage.html'">
+                <div class="logo-badge" aria-hidden="true">✦</div>
+                <div>Ozyde</div>
+            </div>
+
+            <nav aria-label="Main navigation">
+                <ul id="main-nav">
+                    <li><a href="finalhomepage.html">Home</a></li>
+                    <li><a href="catalog.php">Browse</a></li>
+                    <li><a href="custommade.html">Custom Made</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                </ul>
+            </nav>
+
+            <div class="icons" role="group" aria-label="User actions">
+                <a href="register.html" class="icon-only" title="Login/Register" aria-label="Login/Register">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                        <polyline points="10 17 15 12 10 7" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="15" y1="12" x2="3" y2="12" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </a>
+
+                <a href="help.html" class="icon-only" title="Help" aria-label="Help">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.2" fill="none"/>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                        <line x1="12" y1="17" x2="12" y2="17" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1>Welcome to Ozyde</h1>
+        <p class="lead">Sign in to your account or create a new one to access exclusive rentals.</p>
+
+        <div class="auth-container">
+            <div class="auth-toggle">
+                <div class="toggle-option active" data-target="login">Sign In</div>
+                <div class="toggle-option" data-target="register">Create Account</div>
+            </div>
+            
+            <!-- Login Panel -->
+            <div class="auth-panel active" id="login-panel">
+                <div class="auth-header">
+                    <div class="auth-icon"> </div>
+                    <h2 class="auth-title">Sign in to your account</h2>
+                    <p class="auth-subtitle">Access your Ozyde dashboard</p>
+                </div>
+                
+                <form id="login-form" action="login.php" method="post">
+                    <div class="form-group">
+                        <label for="email">Email address</label>
+                        <input type="email" name="email" id="email" placeholder="Enter your email" required>
+                    </div>
+            
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" name="password" id="password" placeholder="Enter your password" required>
+                    </div>
+                    
+                    <div class="form-options">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="remember">
+                            <label for="remember">Remember me</label>
+                        </div>
+                        <a href="#" class="forgot-link">Forgot password?</a>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">Sign In</button>
+                </form>
+                
+                <div class="social-auth">
+                    <button class="btn-google" onclick="signInWithGoogle()">
+                        <svg width="18" height="18" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        Sign in with Google
+                    </button>
+                </div>
+                
+                <div class="auth-footer">
+                    Don't have an account? <a href="#" class="toggle-link" data-target="register">Sign up</a>
+                </div>
+            </div>
+            
+            <!-- Registration Panel -->
+            <div class="auth-panel" id="register-panel">
+                <div class="auth-header">
+                    <div class="auth-icon"> </div>
+                    <h2 class="auth-title">Create your account</h2>
+                    <p class="auth-subtitle">Join OZYDE for exclusive access</p>
+                </div>
+                
+                
+                <form id="register-form" action="register.php" method="POST">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First name</label>
+                            <input type="text" name="firstName" id="firstName" placeholder="First name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last name</label>
+                            <input type="text" name="lastName" id="lastName" placeholder="Last name" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signupEmail">Email address</label>
+                        <input type="email" name="signupEmail" id="signupEmail" placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                       <label for="phone">Phone number</label>
+                        <div class="phone-input-group">
+                            <div class="country-code">
+                                <div class="country-select-wrapper">
+                                    <div class="selected-country" id="selectedCountry">
+                                        <span class="country-flag">🇿🇦</span>
+                                        <span class="country-code-text">+27</span>
+                                        <span class="country-name">South Africa</span>
+                                        <span class="dropdown-arrow">▼</span>
+                                    </div>
+                                    <div class="country-dropdown" id="countryDropdown">
+                                        <input type="text" class="country-search" id="countrySearch" placeholder="Search countries...">
+                                        <div class="country-list" id="countryList">
+                                            <!-- Countries will be populated by JavaScript -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="countryCode" name="countryCode" value="+27">
+                            </div>
+                            <div class="phone-number">
+                                <input type="tel" name="phone" id="phone" placeholder="Enter your phone number" required>
+                            </div>
+                        </div>
+                        <div class="error-message" id="phone-error"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="newPassword">Password</label>
+                        <input type="password" name="newPassword" id="newPassword" placeholder="Create password" required>
+                        <div class="password-strength">
+                            <div class="strength-meter">
+                                <div class="strength-meter-fill" id="strength-meter-fill"></div>
+                            </div>
+                            <ul class="password-requirements" id="password-requirements">
+                                <li class="requirement-unmet" id="req-length">At least 8 characters</li>
+                                <li class="requirement-unmet" id="req-uppercase">One uppercase letter</li>
+                                <li class="requirement-unmet" id="req-lowercase">One lowercase letter</li>
+                                <li class="requirement-unmet" id="req-number">One number</li>
+                                <li class="requirement-unmet" id="req-special">One special character(!@#$%^&*) </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm password</label>
+                        <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm password" required>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="terms" required>
+                        <label for="terms" class="checkbox-label">
+ I agree to the <a href="terms.html" class="terms-link">Terms of Service</a> and <a href="privacy.html" class="terms-link">Privacy Policy</a>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">Create account</button>
+                </form>
+                
+                <div class="social-auth">
+                    <button class="btn-google" onclick="signUpWithGoogle()">
+                        <svg width="18" height="18" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        Sign up with Google
+                    </button>
+                </div>
+                
+                <div class="auth-footer">
+                    Already have an account? <a href="#" class="toggle-link" data-target="login">Sign in</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4>Ozyde</h4>
+                    <p>Premium dress rentals for your special occasions. Quality, style, and affordability combined.</p>
+                    <div>Address:<br>5 Liebenberg Rd, Noordwyk, Midrand 1687</div>
+                    <div class="socials" aria-label="Social media">
+                        <a href="https://www.instagram.com/ozyde_?igsh=NWM0aTd4ZGFmeHVr" target="_blank" rel="noopener" aria-label="Instagram">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <rect x="3" y="3" width="18" height="18" rx="5" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <circle cx="12" cy="12" r="3.2" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <circle cx="17.5" cy="6.5" r="0.6" fill="#333"/>
+                            </svg>
+                        </a>
+                        <!-- Proper TikTok SVG Icon -->
+                        <a href="https://www.tiktok.com/@ozyde_designs?_t=ZS-8zlyfPi8HHJ&_r=1" target="_blank" rel="noopener" aria-label="TikTok">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="#333">
+                                <path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 0 1-5.201 1.743l-.002-.001.002.001a2.895 2.895 0 0 1 3.183-4.51v-3.5a6.329 6.329 0 0 0-5.394 10.692 6.33 6.33 0 0 0 10.857-4.424V8.687a8.182 8.182 0 0 0 4.773 1.526V6.79a4.831 4.831 0 0 1-1.003-.104z"/>
+                            </svg>
+                        </a>
+                        <a href="mailto:ozydedesigns@gmail.com" aria-label="Email">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <rect x="3" y="6" width="18" height="12" rx="2" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <path d="M4 7.5l8 6 8-6" stroke="#333" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="howitworks.html">How It Works</a></li>
+                        <li><a href="sizingguide.html">Size Guide</a></li>
+                        <li><a href="policypage.html">Returns & Policy</a></li>
+                        <li><a href="delivery.html">Delivery</a></li>
+                        <li><a href="help.html">Help Center</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                       
+                        <li><a href="terms.html">Terms</a></li>
+                        <li><a href="privacy.html">Privacy</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="cleaning.html">Cleaning & Care Guide</a></li>
+                        <li><a href="partnership.html">Partnerships</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="margin-top:24px;text-align:center;padding-top:24px;border-top:1px solid #e6e6e6;color:var(--muted)">
+                © 2025 Ozyde. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Country code data with flags and names
+        const countryCodes = [
+            { code: "+27", flag: "🇿🇦", name: "South Africa" },
+            { code: "+1", flag: "🇺🇸", name: "United States" },
+            { code: "+1", flag: "🇨🇦", name: "Canada" },
+            { code: "+44", flag: "🇬🇧", name: "United Kingdom" },
+            { code: "+61", flag: "🇦🇺", name: "Australia" },
+            { code: "+64", flag: "🇳🇿", name: "New Zealand" },
+            { code: "+91", flag: "🇮🇳", name: "India" },
+            { code: "+86", flag: "🇨🇳", name: "China" },
+            { code: "+81", flag: "🇯🇵", name: "Japan" },
+            { code: "+82", flag: "🇰🇷", name: "South Korea" },
+            { code: "+65", flag: "🇸🇬", name: "Singapore" },
+            { code: "+60", flag: "🇲🇾", name: "Malaysia" },
+            { code: "+62", flag: "🇮🇩", name: "Indonesia" },
+            { code: "+63", flag: "🇵🇭", name: "Philippines" },
+            { code: "+66", flag: "🇹🇭", name: "Thailand" },
+            { code: "+84", flag: "🇻🇳", name: "Vietnam" },
+            { code: "+49", flag: "🇩🇪", name: "Germany" },
+            { code: "+33", flag: "🇫🇷", name: "France" },
+            { code: "+39", flag: "🇮🇹", name: "Italy" },
+            { code: "+34", flag: "🇪🇸", name: "Spain" },
+            { code: "+31", flag: "🇳🇱", name: "Netherlands" },
+            { code: "+32", flag: "🇧🇪", name: "Belgium" },
+            { code: "+41", flag: "🇨🇭", name: "Switzerland" },
+            { code: "+43", flag: "🇦🇹", name: "Austria" },
+            { code: "+46", flag: "🇸🇪", name: "Sweden" },
+            { code: "+47", flag: "🇳🇴", name: "Norway" },
+            { code: "+45", flag: "🇩🇰", name: "Denmark" },
+            { code: "+358", flag: "🇫🇮", name: "Finland" },
+            { code: "+353", flag: "🇮🇪", name: "Ireland" },
+            { code: "+351", flag: "🇵🇹", name: "Portugal" },
+            { code: "+30", flag: "🇬🇷", name: "Greece" },
+            { code: "+48", flag: "🇵🇱", name: "Poland" },
+            { code: "+36", flag: "🇭🇺", name: "Hungary" },
+            { code: "+420", flag: "🇨🇿", name: "Czech Republic" },
+            { code: "+55", flag: "🇧🇷", name: "Brazil" },
+            { code: "+52", flag: "🇲🇽", name: "Mexico" },
+            { code: "+54", flag: "🇦🇷", name: "Argentina" },
+            { code: "+56", flag: "🇨🇱", name: "Chile" },
+            { code: "+57", flag: "🇨🇴", name: "Colombia" },
+            { code: "+51", flag: "🇵🇪", name: "Peru" },
+            { code: "+7", flag: "🇷🇺", name: "Russia" },
+            { code: "+380", flag: "🇺🇦", name: "Ukraine" },
+            { code: "+90", flag: "🇹🇷", name: "Turkey" },
+            { code: "+20", flag: "🇪🇬", name: "Egypt" },
+            { code: "+234", flag: "🇳🇬", name: "Nigeria" },
+            { code: "+254", flag: "🇰🇪", name: "Kenya" },
+            { code: "+233", flag: "🇬🇭", name: "Ghana" },
+            { code: "+212", flag: "🇲🇦", name: "Morocco" },
+            { code: "+216", flag: "🇹🇳", name: "Tunisia" },
+            { code: "+971", flag: "🇦🇪", name: "United Arab Emirates" },
+            { code: "+966", flag: "🇸🇦", name: "Saudi Arabia" },
+            { code: "+974", flag: "🇶🇦", name: "Qatar" },
+            { code: "+965", flag: "🇰🇼", name: "Kuwait" },
+            { code: "+973", flag: "🇧🇭", name: "Bahrain" },
+            { code: "+968", flag: "🇴🇲", name: "Oman" },
+            { code: "+972", flag: "🇮🇱", name: "Israel" },
+            { code: "+962", flag: "🇯🇴", name: "Jordan" },
+            { code: "+961", flag: "🇱🇧", name: "Lebanon" }
+        ];
+
+        // Message popup functions
+        function showMessage(type, title, message) {
+            const popup = document.getElementById('messagePopup');
+            const messageTitle = document.getElementById('messageTitle');
+            const messageText = document.getElementById('messageText');
+
+            popup.className = `message-popup ${type}`;
+            messageTitle.textContent = title;
+            messageText.textContent = message;
+
+            popup.classList.add('show');
+
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    hideMessage();
+                }, 5000);
+            }
+        }
+
+        function hideMessage() {
+            const popup = document.getElementById('messagePopup');
+            popup.classList.remove('show');
+        }
+
+        // Email domain validation
+        function validateEmailDomain(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!emailRegex.test(email)) {
+                return false;
+            }
+
+            // Check for common TLD typos
+            const domain = email.split('@')[1];
+            const tld = domain.split('.').pop().toLowerCase();
+
+            const commonTypos = {
+                'cpm': 'com',
+                'con': 'com',
+                'comm': 'com',
+                'coom': 'com',
+                'commm': 'com',
+                'cim': 'com',
+                'vom': 'com',
+                'xom': 'com',
+                'cmo': 'com',
+                'cop': 'com',
+                'co': 'com',
+                'cm': 'com',
+                'c': 'com',
+                'om': 'com',
+                'ocm': 'com'
+            };
+
+            if (commonTypos[tld]) {
+                return {
+                    isValid: false,
+                    suggestion: email.replace(new RegExp(`\\.${tld}$`), `.${commonTypos[tld]}`)
+                };
+            }
+
+            return {
+                isValid: true
+            };
+        }
+
+        // Country dropdown functionality
+        function initializeCountryDropdown() {
+            const selectedCountry = document.getElementById('selectedCountry');
+            const countryDropdown = document.getElementById('countryDropdown');
+            const countrySearch = document.getElementById('countrySearch');
+            const countryList = document.getElementById('countryList');
+            const countryCodeInput = document.getElementById('countryCode');
+            const phoneInput = document.getElementById('phone');
+
+            // Populate country list
+            function populateCountryList(countries) {
+                countryList.innerHTML = '';
+                countries.forEach(country => {
+                    const option = document.createElement('div');
+                    option.className = 'country-option';
+                    option.innerHTML = `
+                        <span class="country-option-flag">${country.flag}</span>
+                        <span class="country-option-name">${country.name}</span>
+                        <span class="country-option-code">${country.code}</span>
+                    `;
+                    option.addEventListener('click', () => {
+                        selectCountry(country);
+                        closeDropdown();
+                    });
+                    countryList.appendChild(option);
+                });
+            }
+
+            // Select a country
+            function selectCountry(country) {
+                selectedCountry.innerHTML = `
+                    <span class="country-flag">${country.flag}</span>
+                    <span class="country-code-text">${country.code}</span>
+                    <span class="country-name">${country.name}</span>
+                    <span class="dropdown-arrow">▼</span>
+                `;
+                countryCodeInput.value = country.code;
+                
+                // Update phone placeholder based on country
+                if (country.code === '+27') {
+                    phoneInput.placeholder = 'Enter your phone number';
+                } else {
+                    phoneInput.placeholder = 'Enter your phone number';
+                }
+                
+                validatePhone();
+            }
+
+            // Open dropdown
+            function openDropdown() {
+                countryDropdown.classList.add('show');
+                countrySearch.focus();
+            }
+
+            // Close dropdown
+            function closeDropdown() {
+                countryDropdown.classList.remove('show');
+                countrySearch.value = '';
+                populateCountryList(countryCodes);
+            }
+
+            // Filter countries based on search
+            function filterCountries(query) {
+                const filtered = countryCodes.filter(country => 
+                    country.name.toLowerCase().includes(query.toLowerCase()) ||
+                    country.code.includes(query)
+                );
+                populateCountryList(filtered);
+            }
+
+            // Event listeners
+            selectedCountry.addEventListener('click', openDropdown);
+            
+            countrySearch.addEventListener('input', (e) => {
+                filterCountries(e.target.value);
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!selectedCountry.contains(e.target) && !countryDropdown.contains(e.target)) {
+                    closeDropdown();
+                }
+            });
+
+            // Initialize with South Africa
+            selectCountry(countryCodes[0]);
+            populateCountryList(countryCodes);
+        }
+
+        // Phone number validation
+        function validatePhone() {
+            const phoneInput = document.getElementById('phone');
+            const phoneError = document.getElementById('phone-error');
+            const countryCode = document.getElementById('countryCode').value;
+            const phone = phoneInput.value.replace(/\D/g, '');
+
+            if (!phone) {
+                phoneError.textContent = '';
+                return false;
+            }
+
+            // Country-specific validation
+            if (countryCode === '+27' && phone.length !== 9) {
+                phoneError.textContent = 'South African numbers must be 9 digits';
+                return false;
+            } else if (countryCode === '+1' && phone.length !== 10) {
+                phoneError.textContent = 'US/Canada numbers must be 10 digits';
+                return false;
+            } else if (phone.length < 8 || phone.length > 15) {
+                phoneError.textContent = 'Phone number must be between 8-15 digits';
+                return false;
+            }
+
+            phoneError.textContent = '';
+            return true;
+        }
+
+        // Check for success parameter in URL
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('registration') === 'success') {
+                showSuccessPopup('Account created successfully!');
+            }
+
+            // Initialize country dropdown
+            initializeCountryDropdown();
+
+            // Mobile menu functionality
+            (function mobileMenu() {
+                const toggle = document.querySelector('.mobile-toggle');
+                const navContainer = document.querySelector('.nav');
+                const mainNav = document.getElementById('main-nav');
+                if (!toggle || !navContainer) return;
+                toggle.addEventListener('click', () => {
+                    const expanded = toggle.getAttribute('aria-expanded') === 'true';
+                    toggle.setAttribute('aria-expanded', String(!expanded));
+                    navContainer.classList.toggle('open');
+                });
+                document.addEventListener('click', (e) => {
+                    if (!navContainer.classList.contains('open')) return;
+                    if (navContainer.contains(e.target)) return;
+                    navContainer.classList.remove('open');
+                    toggle.setAttribute('aria-expanded', 'false');
+                });
+                if (mainNav) {
+                    mainNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+                        if (navContainer.classList.contains('open')) {
+                            navContainer.classList.remove('open');
+                            toggle.setAttribute('aria-expanded', 'false');
+                        }
+                    }));
+                }
+            })();
+
+            // Auth toggle functionality
+            const toggleOptions = document.querySelectorAll('.toggle-option');
+            const toggleLinks = document.querySelectorAll('.toggle-link');
+            const panels = document.querySelectorAll('.auth-panel');
+            
+            // Function to switch between panels
+            function switchPanel(target) {
+                // Update toggle options
+                toggleOptions.forEach(option => {
+                    if (option.dataset.target === target) {
+                        option.classList.add('active');
+                    } else {
+                        option.classList.remove('active');
+                    }
+                });
+                
+                // Show/hide panels
+                panels.forEach(panel => {
+                    if (panel.id === `${target}-panel`) {
+                        panel.classList.add('active');
+                    } else {
+                        panel.classList.remove('active');
+                    }
+                });
+            }
+            
+            // Add event listeners to toggle options
+            toggleOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    switchPanel(this.dataset.target);
+                });
+            });
+            
+            // Add event listeners to toggle links in form footers
+            toggleLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    switchPanel(this.dataset.target);
+                });
+            });
+
+            // Email validation with domain checking
+            const emailInput = document.getElementById('signupEmail');
+            const emailError = document.getElementById('email-error');
+
+            function validateEmail() {
+                const email = emailInput.value;
+
+                if (email === '') {
+                    emailError.textContent = '';
+                    return false;
+                }
+
+                const domainCheck = validateEmailDomain(email);
+
+                if (!domainCheck.isValid) {
+                    if (domainCheck.suggestion) {
+                        emailError.textContent = `Did you mean ${domainCheck.suggestion}? Common typo detected.`;
+                    } else {
+                        emailError.textContent = 'Please enter a valid email address';
+                    }
+                    return false;
+                }
+
+                emailError.textContent = '';
+                return true;
+            }
+
+            if (emailInput) {
+                emailInput.addEventListener('blur', validateEmail);
+                emailInput.addEventListener('input', function() {
+                    // Clear error when user starts typing
+                    if (emailError.textContent.includes('Did you mean')) {
+                        emailError.textContent = '';
+                    }
+                });
+            }
+
+            // Phone number validation
+            const phoneInput = document.getElementById('phone');
+            if (phoneInput) {
+                phoneInput.addEventListener('input', validatePhone);
+            }
+
+            // Password strength validation
+            const passwordInput = document.getElementById('newPassword');
+            const strengthMeter = document.getElementById('strength-meter-fill');
+            const requirements = {
+                length: document.getElementById('req-length'),
+                uppercase: document.getElementById('req-uppercase'),
+                lowercase: document.getElementById('req-lowercase'),
+                number: document.getElementById('req-number'),
+                special: document.getElementById('req-special')
+            };
+
+            function checkPasswordStrength(password) {
+                let strength = 0;
+                let metRequirements = 0;
+                const totalRequirements = 5;
+
+                // Check length
+                if (password.length >= 8) {
+                    requirements.length.className = 'requirement-met';
+                    strength += 20;
+                    metRequirements++;
+                } else {
+                    requirements.length.className = 'requirement-unmet';
+                }
+
+                // Check uppercase
+                if (/[A-Z]/.test(password)) {
+                    requirements.uppercase.className = 'requirement-met';
+                    strength += 20;
+                    metRequirements++;
+                } else {
+                    requirements.uppercase.className = 'requirement-unmet';
+                }
+
+                // Check lowercase
+                if (/[a-z]/.test(password)) {
+                    requirements.lowercase.className = 'requirement-met';
+                    strength += 20;
+                    metRequirements++;
+                } else {
+                    requirements.lowercase.className = 'requirement-unmet';
+                }
+
+                // Check number
+                if (/[0-9]/.test(password)) {
+                    requirements.number.className = 'requirement-met';
+                    strength += 20;
+                    metRequirements++;
+                } else {
+                    requirements.number.className = 'requirement-unmet';
+                }
+
+                // Check special character
+                if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+                    requirements.special.className = 'requirement-met';
+                    strength += 20;
+                    metRequirements++;
+                } else {
+                    requirements.special.className = 'requirement-unmet';
+                }
+
+                // Update strength meter
+                strengthMeter.className = 'strength-meter-fill';
+                if (metRequirements <= 2) {
+                    strengthMeter.classList.add('strength-weak');
+                } else if (metRequirements <= 4) {
+                    strengthMeter.classList.add('strength-medium');
+                } else {
+                    strengthMeter.classList.add('strength-strong');
+                }
+
+                return strength;
+            }
+
+            if (passwordInput) {
+                passwordInput.addEventListener('input', function() {
+                    checkPasswordStrength(this.value);
+                });
+            }
+
+            // Password confirmation validation
+            const newPassword = document.getElementById('newPassword');
+            const confirmPassword = document.getElementById('confirmPassword');
+            
+            function validatePasswords() {
+                if (confirmPassword.value && newPassword.value !== confirmPassword.value) {
+                    confirmPassword.setCustomValidity('Passwords do not match');
+                } else {
+                    confirmPassword.setCustomValidity('');
+                }
+            }
+            
+            if (newPassword && confirmPassword) {
+                newPassword.addEventListener('input', validatePasswords);
+                confirmPassword.addEventListener('input', validatePasswords);
+            }
+            
+            // --- LOGIN FORM SUBMIT ---
+            const loginForm = document.getElementById('login-form');
+            if (loginForm) {
+                loginForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    fetch('login.php', {
+                        method: 'POST',
+                        body: new FormData(this)
+                    })
+                    .then(res => res.text())
+                    .then(data => {
+                      let response;
+                      try {
+                      response = JSON.parse(data);
+                       } catch (e) {
+                        alert('Unexpected response: ' + data);
+                         return;
+                      }
+
+                       if (response.status === 'success') {
+                       redirectUser(response.role || 'customer');
+                        } else if (response.status === '2fa_required') {
+                       // Save the temp_token in localStorage/sessionStorage (short lived)
+                       sessionStorage.setItem('twofa_temp_token', response.temp_token);
+                         window.location.href = '2fa.html';
+                         } else {
+                        alert(response.message || 'Login failed');
+                         }
+                         })
+
+                    .catch(err => {
+                        console.error('Login error:', err);
+                        alert("Error: " + err);
+                    });
+                });
+            }
+            
+            // --- REGISTER FORM SUBMIT ---
+            const registerForm = document.getElementById('register-form');
+            if (registerForm) {
+                registerForm.addEventListener('submit', function(e) {
+                    // Client-side validation
+                    if (!validateEmail() || !validatePhone()) {
+                        e.preventDefault();
+                        showMessage('error', 'Validation Error', 'Please fix the errors in the form before submitting.');
+                        return;
+                    }
+
+                    
+                    // Basic client-side validation
+                    const password = document.getElementById('newPassword').value;
+                    const confirmPassword = document.getElementById('confirmPassword').value;
+                    
+                    if (password !== confirmPassword) {
+                        alert("Passwords do not match!");
+                        return;
+                    }
+                    
+                    if (password.length < 8 || !/\d/.test(password) || !/[!@#$%^&*]/.test(password)) {
+                        alert("Password must be at least 8 characters with a number and special character!");
+                        return;
+                    }
+
+                    // Check terms agreement
+                    const termsAgreed = document.getElementById('terms').checked;
+                    if (!termsAgreed) {
+                        e.preventDefault();
+                        showMessage('error', 'Terms Required', 'Please agree to the Terms of Service and Privacy Policy.');
+                        return;
+                    }
+                    
+                    // Submit form normally (not via AJAX) to allow PHP redirect
+                    this.submit();
+                });
+            }
+        });
+
+        // Success Popup Function
+        function showSuccessPopup(message) {
+            const popup = document.getElementById('successPopup');
+            const messageEl = document.getElementById('successMessage');
+            
+            messageEl.textContent = message;
+            popup.classList.add('show');
+            
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 3000);
+        }
+
+        // User Redirect Function
+        function redirectUser(role) {
+            if (role === 'admin' || role === 'super_admin') {
+                window.location.href = "dashboard.php";
+            } else {
+                const urlParams = new URLSearchParams(window.location.search);
+                const redirect = urlParams.get('redirect');
+                
+                if (redirect) {
+                    window.location.href = redirect;
+                } else {
+                    window.location.href = "catalog.php";
+                }
+            }
+        }
+
+        // Google Sign-in Functions
+        function signInWithGoogle() {
+            window.location.href = 'google_auth.php';
+        }
+
+        function signUpWithGoogle() {
+            window.location.href = 'google_auth.php';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Return Policy - Ozyde</title>
+    <style>
+        /* Ozyde Boutique consistent styling */
+        :root {
+            --bg: #fff;
+            --text: #222;
+            --muted: #7a7a7a;
+            --accent: #111;
+            --max-width: 1200px;
+            --chip-bg: #f3f3f3;
+            --chip-border: #e6e6e6;
+            --primary: #111;
+            --success: #2fa46b;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --airbnb-pink: #FF5A5F;
+            --airbnb-light: #F7F7F7;
+            --airbnb-dark: #484848;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+        
+        /* Header Styles */
+        .nav-wrap {
+            background: #0b0b0b;
+            color: #fff;
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 120;
+            box-shadow: 0 6px 20px rgba(2, 2, 2, 0.12);
+        }
+        
+        .nav {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-weight: 800;
+            letter-spacing: 1px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .logo-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #fff2, #fff6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #111;
+            font-weight: 900;
+            font-size: 16px;
+        }
+        
+        nav ul {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 18px;
+            list-style: none;
+            align-items: center;
+        }
+        
+        nav a {
+            font-size: 14px;
+            color: #fff;
+            display: block;
+            padding: 8px 6px;
+            transition: color 0.2s ease;
+        }
+        
+        nav a:hover, nav a.active {
+            color: #ddd;
+        }
+        
+        .search {
+            flex: 1;
+            max-width: 400px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0 12px;
+        }
+        
+        .search input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 999px 0 0 999px;
+            border: 0;
+            outline: 0;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #fff;
+        }
+        
+        .search input::placeholder {
+            color: #aaa;
+        }
+        
+        .search button {
+            padding: 10px 12px;
+            border-radius: 0 999px 999px 0;
+            border: 0;
+            background: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .icons {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+        
+        .icon-only {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 0;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .icon-only:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: relative;
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #0b0b0b;
+            border-radius: 8px;
+            padding: 8px 0;
+            min-width: 180px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .profile-dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .dropdown-menu a {
+            display: block;
+            padding: 10px 16px;
+            color: #fff;
+            font-size: 14px;
+            transition: background 0.2s ease;
+        }
+        
+        .dropdown-menu a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            margin: 6px 0;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 40px 0;
+            background: var(--airbnb-light);
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .page-title {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 15px;
+        }
+        
+        .page-subtitle {
+            font-size: 18px;
+            color: var(--muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Policy Content */
+        .policy-content {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--chip-border);
+            margin-bottom: 50px;
+        }
+        
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: var(--accent);
+        }
+        
+        .policy-section {
+            margin-bottom: 40px;
+        }
+        
+        .policy-section h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .policy-section h3 .icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--airbnb-light);
+            color: var(--accent);
+        }
+        
+        .policy-section p {
+            color: var(--muted);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .policy-section ul, .policy-section ol {
+            color: var(--muted);
+            line-height: 1.6;
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .policy-section li {
+            margin-bottom: 8px;
+        }
+        
+        /* Policy Highlights */
+        .policy-highlights {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .highlight-card {
+            background: var(--airbnb-light);
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid var(--airbnb-pink);
+        }
+        
+        .highlight-card h4 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            color: var(--accent);
+        }
+        
+        .highlight-card p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+        
+        /* Timeline */
+        .timeline {
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .timeline:before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--chip-border);
+        }
+        
+        .timeline-item {
+            display: flex;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .timeline-marker {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid var(--airbnb-pink);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            flex-shrink: 0;
+            z-index: 1;
+        }
+        
+        .timeline-content {
+            flex: 1;
+            padding-bottom: 10px;
+        }
+        
+        .timeline-content h4 {
+            margin: 0 0 8px 0;
+            font-size: 18px;
+            color: var(--accent);
+        }
+        
+        .timeline-content p {
+            margin: 0;
+            color: var(--muted);
+        }
+        
+        /* Alert Boxes */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid;
+        }
+        
+        .alert-success {
+            background: #f0f9f4;
+            border-left-color: var(--success);
+            color: #0d6832;
+        }
+        
+        .alert-warning {
+            background: #fffbeb;
+            border-left-color: var(--warning);
+            color: #92400e;
+        }
+        
+        .alert-danger {
+            background: #fef2f2;
+            border-left-color: var(--danger);
+            color: #991b1b;
+        }
+        
+        .alert-info {
+            background: #eff6ff;
+            border-left-color: #3b82f6;
+            color: #1e40af;
+        }
+        
+        /* FAQ Section */
+        .faq-section {
+            margin-top: 50px;
+        }
+        
+        .faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .faq-item {
+            border-bottom: 1px solid var(--chip-border);
+            padding-bottom: 20px;
+        }
+        
+        .faq-question {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--accent);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .faq-answer {
+            color: var(--muted);
+            line-height: 1.6;
+            display: none;
+        }
+        
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+        
+        .faq-toggle {
+            font-size: 20px;
+            color: var(--accent);
+            transition: transform 0.3s ease;
+        }
+        
+        .faq-item.active .faq-toggle {
+            transform: rotate(45deg);
+        }
+        
+        /* Contact CTA */
+        .contact-cta {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--chip-border);
+            text-align: center;
+            margin-top: 50px;
+        }
+        
+        .contact-cta h2 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+        
+        .contact-cta p {
+            color: var(--muted);
+            margin-bottom: 25px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background: #333;
+        }
+        
+        .btn-primary {
+            background: var(--airbnb-pink);
+        }
+        
+        .btn-primary:hover {
+            background: #e04a4f;
+        }
+        
+        /* Footer Styles */
+        footer {
+            border-top: 1px solid #eee;
+            padding: 36px 0;
+            color: var(--muted);
+            background: #fafafa;
+            width: 100%;
+            margin-top: auto;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 32px;
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .footer-grid h4 {
+            margin: 0 0 16px 0;
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        .footer-grid ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-grid li {
+            margin-bottom: 8px;
+        }
+        
+        .footer-grid a {
+            color: var(--muted);
+            transition: color 0.2s ease;
+        }
+        
+        .footer-grid a:hover {
+            color: var(--accent);
+        }
+        
+        .socials {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .socials a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: #f5f5f5;
+            transition: all 0.2s ease;
+        }
+        
+        .socials a:hover {
+            background: var(--accent);
+        }
+        
+        .socials a:hover svg path,
+        .socials a:hover svg circle {
+            stroke: #fff;
+            fill: #fff;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 880px) {
+            .search {
+                display: none;
+            }
+            
+            .nav {
+                flex-wrap: wrap;
+            }
+            
+            nav ul {
+                order: 2;
+                width: 100%;
+                justify-content: center;
+                margin-top: 15px;
+            }
+            
+            .policy-highlights {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 24px;
+            }
+            
+            .page-title {
+                font-size: 28px;
+            }
+            
+            .policy-content {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .contact-cta {
+                padding: 20px;
+            }
+            
+            .timeline:before {
+                left: 15px;
+            }
+            
+            .timeline-marker {
+                width: 32px;
+                height: 32px;
+                margin-right: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== Navigation Bar ===== -->
+    <header class="nav-wrap" role="banner">
+        <div class="nav" role="navigation" aria-label="Main navigation">
+            <div class="logo" id="brandLink">
+                <div class="logo-badge" aria-hidden="true">✦</div>
+                <div>Ozyde</div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search" role="search" aria-label="Site search">
+                <input id="searchInput" type="search" placeholder="Search dresses, designers, collection..." aria-label="Search">
+                <button id="searchBtn" aria-label="Search">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+                        <path d="M21 21l-4.35-4.35" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="11" cy="11" r="6" stroke="#111" stroke-width="2"/>
+                    </svg>
+                </button>
+            </div>
+
+            <nav aria-label="Main navigation">
+                <ul id="main-nav">
+                    <li><a href="finalhomepage.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="custommade.html">Custom Made</a></li>
+                    <li><a href="catalog.php">Browse</a></li>
+                    
+                </ul>
+            </nav>
+
+            <div class="icons" role="group" aria-label="User actions">
+                <!-- Help Button -->
+                <a href="help.html" class="icon-only" title="Help" aria-label="Help">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.2" fill="none"/>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                        <line x1="12" y1="17" x2="12" y2="17" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </a>
+
+                <a href="wishlist.php" class="icon-only" title="Wishlist" aria-label="Wishlist">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="white" stroke-width="1.2" fill="none"/>
+                    </svg>
+                </a>
+
+                <a href="cart.php" class="icon-only" title="Shopping Cart" aria-label="Shopping Cart">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <circle cx="9" cy="21" r="1" stroke="white" stroke-width="1.2" fill="none"/>
+                        <circle cx="20" cy="21" r="1" stroke="white" stroke-width="1.2" fill="none"/>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" stroke="white" stroke-width="1.2" fill="none"/>
+                    </svg>
+                </a>
+
+                <div class="profile-dropdown">
+                    <button class="icon-only" title="My Account" aria-label="My Account">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="white" stroke-width="1.2" fill="none"/>
+                            <circle cx="12" cy="7" r="4" stroke="white" stroke-width="1.2" fill="none"/>
+                        </svg>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a href="customerdashboard.html">Customer Dashboard</a>
+                        <a href="account-security.html">Account & Security</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" id="logoutLink">Sign Out</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Return Policy</h1>
+                <p class="page-subtitle">Our commitment to making your Ozyde experience seamless and worry-free</p>
+            </div>
+
+            <!-- Policy Content -->
+            <div class="policy-content">
+                <!-- Introduction -->
+                <div class="policy-section">
+                    <h2 class="section-title">Our Return Policy</h2>
+                    <p>At Ozyde Boutique, we want you to be completely satisfied with your rental experience. Our return policy is designed to be fair, transparent, and customer-friendly while ensuring the quality and condition of our designer dresses for all our clients.</p>
+                    
+                    <div class="alert alert-info">
+                        <strong>Important:</strong> As a rental service, our return policy differs from traditional retail. Please read this policy carefully to understand your responsibilities and our processes.
+                    </div>
+                </div>
+
+                <!-- Policy Highlights -->
+                <div class="policy-highlights">
+                    <div class="highlight-card">
+                        <h4>Easy Returns</h4>
+                        <p>Prepaid shipping label included with every rental for hassle-free returns</p>
+                    </div>
+                    <div class="highlight-card">
+                        <h4>3-Day Rental Period</h4>
+                        <p>Standard rental includes delivery day, event day, and return day</p>
+                    </div>
+                    <div class="highlight-card">
+                        <h4>Damage Protection</h4>
+                        <p>Minor damage coverage included with every rental</p>
+                    </div>
+                    <div class="highlight-card">
+                        <h4>Quality Guarantee</h4>
+                        <p>All dresses professionally cleaned and inspected after each rental</p>
+                    </div>
+                </div>
+
+                <!-- Standard Returns -->
+                <div class="policy-section">
+                    <h3>
+                        <span class="icon">✓</span>
+                        Standard Return Process
+                    </h3>
+                    <p>Our standard return process is designed to be simple and convenient:</p>
+                    
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker">1</div>
+                            <div class="timeline-content">
+                                <h4>Pack the Dress</h4>
+                                <p>Carefully place the dress back in the original garment bag and packaging provided</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker">2</div>
+                            <div class="timeline-content">
+                                <h4>Attach Shipping Label</h4>
+                                <p>Use the prepaid shipping label included in your rental package</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker">3</div>
+                            <div class="timeline-content">
+                                <h4>Drop Off</h4>
+                                <p>Drop the package at any authorized shipping location or schedule a pickup</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker">4</div>
+                            <div class="timeline-content">
+                                <h4>Confirmation</h4>
+                                <p>Receive email confirmation once we've processed your return</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-success">
+                        <strong>Free Returns:</strong> All standard returns include a prepaid shipping label at no additional cost to you.
+                    </div>
+                </div>
+
+                <!-- Return Timeframes -->
+                <div class="policy-section">
+                    <h3>
+                        <span class="icon">⏱</span>
+                        Return Timeframes
+                    </h3>
+                    <p>Our rental periods are designed to give you ample time to enjoy your dress while ensuring availability for other customers:</p>
+                    
+                    <ul>
+                        <li><strong>Standard Rental:</strong> 3-day period (includes delivery, event, and return days)</li>
+                        <li><strong>Extended Rental:</strong> Available for additional days at a pro-rated fee</li>
+                        <li><strong>Late Returns:</strong> Additional fees apply for returns received after the due date</li>
+                        <li><strong>Early Returns:</strong> We accept early returns but do not offer partial refunds</li>
+                    </ul>
+                    
+                    <div class="alert alert-warning">
+                        <strong>Late Return Fees:</strong> Returns received after the due date will incur a late fee of R150 per day until the dress is returned.
+                    </div>
+                </div>
+
+                <!-- Condition Requirements -->
+                <div class="policy-section">
+                    <h3>
+                        <span class="icon">✨</span>
+                        Dress Condition Requirements
+                    </h3>
+                    <p>To ensure the quality of our collection for all customers, we require dresses to be returned in the same condition they were received:</p>
+                    
+                    <ul>
+                        <li>Free of stains, tears, or damage</li>
+                        <li>All original tags and packaging included</li>
+                        <li>No alterations or modifications</li>
+                        <li>No strong perfumes or odors</li>
+                        <li>Returned in the original garment bag</li>
+                    </ul>
+                    
+                    <div class="alert alert-info">
+                        <strong>Professional Cleaning:</strong> Please do not attempt to clean the dress yourself. All cleaning is professionally handled by our team after each rental.
+                    </div>
+                </div>
+
+                <!-- Damage and Issues -->
+                <div class="policy-section">
+                    <h3>
+                        <span class="icon">🛡</span>
+                        Damage Protection & Fees
+                    </h3>
+                    <p>We understand that accidents happen. Our damage protection covers minor incidents, while significant damage may incur fees:</p>
+                    
+                    <div class="policy-highlights">
+                        <div class="highlight-card">
+                            <h4>Covered (No Charge)</h4>
+                            <ul>
+                                <li>Small food/drink stains</li>
+                                <li>Loose threads/buttons</li>
+                                <li>Minor make-up transfer</li>
+                            </ul>
+                        </div>
+                        <div class="highlight-card">
+                            <h4>Repair Fees Apply</h4>
+                            <ul>
+                                <li>Tears or rips</li>
+                                <li>Major stains</li>
+                                <li>Broken zippers</li>
+                                <li>Missing accessories</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-danger">
+                        <strong>Non-Returnable Situations:</strong> Dresses returned with severe damage, smoke smell, or evidence of dry cleaning attempts may be subject to replacement fees up to the retail value of the dress.
+                    </div>
+                </div>
+
+                <!-- Cancellations and Changes -->
+                <div class="policy-section">
+                    <h3>
+                        <span class="icon">🔄</span>
+                        Cancellations & Modifications
+                    </h3>
+                    <p>We understand that plans change. Here's our policy on cancellations and modifications:</p>
+                    
+                    <ul>
+                        <li><strong>7+ Days Before Rental:</strong> Full refund</li>
+                        <li><strong>3-6 Days Before Rental:</strong> 50% refund</li>
+                        <li><strong>Less than 48 Hours:</strong> No refund, but rental credit may be issued</li>
+                        <li><strong>Date Changes:</strong> Free changes based on availability</li>
+                        <li><strong>Size Exchanges:</strong> Free if requested within 2 hours of delivery</li>
+                    </ul>
+                </div>
+
+                <!-- FAQ Section -->
+                <div class="faq-section">
+                    <h2 class="section-title">Frequently Asked Questions</h2>
+                    <div class="faq-list">
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                What if my dress doesn't fit?
+                                <span class="faq-toggle">+</span>
+                            </div>
+                            <div class="faq-answer">
+                                Contact us within 2 hours of delivery, and we'll expedite a replacement size if available. We recommend reviewing our detailed size guide before ordering and considering our virtual try-on options.
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                Can I extend my rental period?
+                                <span class="faq-toggle">+</span>
+                            </div>
+                            <div class="faq-answer">
+                                Yes! If the dress is available for additional days, you can extend your rental for a pro-rated fee. Contact our support team at least 24 hours before your scheduled return date to check availability.
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                What happens if I damage the dress?
+                                <span class="faq-toggle">+</span>
+                            </div>
+                            <div class="faq-answer">
+                                Minor damage is covered by our protection plan. For significant damage, we'll assess repair costs and contact you. Most repairs cost between R200-R800 depending on the extent of damage and dress value.
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                How do I return the dress?
+                                <span class="faq-toggle">+</span>
+                            </div>
+                            <div class="faq-answer">
+                                Use the prepaid shipping label included in your package. Place the dress in the original garment bag, seal the package, and drop it at any shipping location. We recommend getting a drop-off receipt for your records.
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                What if I need to cancel last minute?
+                                <span class="faq-toggle">+</span>
+                            </div>
+                            <div class="faq-answer">
+                                Cancellations within 48 hours of delivery typically don't qualify for refunds, but we may issue rental credit for future use. Contact our team immediately if you need to cancel, and we'll do our best to accommodate your situation.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact CTA -->
+                <div class="contact-cta">
+                    <h2>Need Help With a Return?</h2>
+                    <p>Our customer support team is here to help with any questions about returns, damages, or special circumstances.</p>
+                    <a href="contact.html" class="btn btn-primary">Contact Support</a>
+                    <p style="margin-top: 15px; font-size: 14px;">
+                        Email: returns@ozydeboutique.com | Phone: +27 000 111 2222
+                    </p>
+                </div>
+
+                <!-- Policy Updates -->
+                <div class="policy-section">
+                    <div class="alert alert-info">
+                        <strong>Policy Updates:</strong> This return policy was last updated on March 15, 2023. We reserve the right to modify this policy at any time. Continued use of our services constitutes acceptance of any changes.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4>Ozyde</h4>
+                    <p>Premium dress rentals for your special occasions. Quality, style, and affordability combined.</p>
+                    <div>Address:<br>5 Liebenberg Rd, Noordwyk, Midrand 1687</div>
+                    <div class="socials" aria-label="Social media">
+                        <a href="https://www.instagram.com/ozyde_?igsh=NWM0aTd4ZGFmeHVr" target="_blank" rel="noopener" aria-label="Instagram">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <rect x="3" y="3" width="18" height="18" rx="5" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <circle cx="12" cy="12" r="3.2" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <circle cx="17.5" cy="6.5" r="0.6" fill="#333"/>
+                            </svg>
+                        </a>
+                        <!-- Replaced generic SVG with a proper TikTok logo image (keeps layout & sizing identical) -->
+                        <a href="https://www.tiktok.com/@ozyde_designs?_t=ZS-8zlyfPi8HHJ&_r=1" target="_blank" rel="noopener" aria-label="TikTok">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/TikTok_logo.svg/1200px-TikTok_logo.svg.png" alt="TikTok" style="width:18px;height:18px;display:block" />
+                        </a>
+                        <a href="mailto:ozydedesigns@gmail.com" aria-label="Email">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <rect x="3" y="6" width="18" height="12" rx="2" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <path d="M4 7.5l8 6 8-6" stroke="#333" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="howitworks.html">How It Works</a></li>
+                        <li><a href="sizingguide.html">Size Guide</a></li>
+                        <li><a href="returns.html" class="active">Returns & Policy</a></li>
+                        <li><a href="#">Delivery</a></li>
+                        <li><a href="help.html">Help Center</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Terms</a></li>
+                        <li><a href="#">Privacy</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="cleaning.html">Cleaning & Care Guide</a></li>
+                        <li><a href="partnership.html">Partnerships</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="margin-top:24px;text-align:center;padding-top:24px;border-top:1px solid #e6e6e6;color:var(--muted)">
+                © 2024 Ozyde Boutique. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // FAQ toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                
+                question.addEventListener('click', function() {
+                    // Close all other FAQ items
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove('active');
+                        }
+                    });
+                    
+                    // Toggle current item
+                    item.classList.toggle('active');
+                });
+            });
+            
+            // Add active class to first FAQ item by default
+            if (faqItems.length > 0) {
+                faqItems[0].classList.add('active');
+            }
+
+            // Search functionality
+            document.getElementById('searchBtn')?.addEventListener('click', () => {
+                const query = document.getElementById('searchInput').value.trim();
+                if (!query) {
+                    alert('Please enter a search term');
+                    return;
+                }
+                window.location.href = `catalog.php?search=${encodeURIComponent(query)}`;
+            });
+
+            document.getElementById('searchInput')?.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('searchBtn').click();
+                }
+            });
+
+            // Navigation functionality
+            document.getElementById('brandLink')?.addEventListener('click', () => {
+                window.location.href = 'finalhomepage.html';
+            });
+        });
+    </script>
+</body>
+</html>
