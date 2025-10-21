@@ -737,6 +737,7 @@ ALTER TABLE `product_categories` ADD CONSTRAINT `product_categories_ibfk_2` FORE
 
 -- Product Images
 ALTER TABLE `product_images` ADD CONSTRAINT `product_images_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE;
+ALTER TABLE `product_images` ADD COLUMN `display_order` INT DEFAULT 0;
 
 -- Product Measurements
 ALTER TABLE `product_measurements` ADD CONSTRAINT `product_measurements_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE;
@@ -788,4 +789,5 @@ SELECT
   (SELECT COUNT(*) FROM bookings) as total_bookings,
   (SELECT COUNT(*) FROM cart) as total_cart_items,
   (SELECT COUNT(*) FROM custom_orders) as total_custom_orders,
+
   (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'ozyde_merged') as total_tables;
