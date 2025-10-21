@@ -374,20 +374,9 @@ function esc($s) {
         .icon-only { display:inline-flex; width:40px; height:40px; border-radius:8px; align-items:center; justify-content:center; background:transparent; border:0; color:#fff; cursor:pointer; transition:background 0.2s ease; position: relative; }
         .icon-only:hover { background:rgba(255,255,255,0.1); }
 
+        /* REMOVED: Wishlist count badge */
         .wishlist-count {
-            background: var(--airbnb-pink);
-            color: white;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 11px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            font-weight: 600;
+            display: none !important;
         }
 
         /* Profile Dropdown */
@@ -448,11 +437,11 @@ function esc($s) {
         .user-status.logged-out { background:#fff3cd; color:#856404; }
         .user-status a { color:var(--accent); text-decoration:underline; font-weight:600; margin-left:5px; }
 
-        /* ADDED: New Filter Styles from your version */
+        /* UPDATED: Filter container - moved filter to the left */
         .filters-container {
             display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 30px;
+            grid-template-columns: 240px 1fr; /* Reduced filter width */
+            gap: 40px; /* Increased gap for more space */
             margin-bottom: 40px;
         }
 
@@ -464,6 +453,7 @@ function esc($s) {
             height: fit-content;
             position: sticky;
             top: 100px;
+            margin-left: -10px; /* Pull filter further left */
         }
 
         .filter-header {
@@ -683,9 +673,23 @@ function esc($s) {
         .view-toggle .toggle.active { color:var(--accent); }
         .view-toggle .toggle.active::after { content:''; position:absolute; left:6px; right:6px; height:3px; background:var(--accent); bottom:-6px; border-radius:3px; }
 
-        .products-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:30px; margin-bottom:40px; }
+        /* UPDATED: Products grid - more spread out */
+        .products-grid { 
+            display:grid; 
+            grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); /* Increased min width */
+            gap:35px; /* Increased gap between products */
+            margin-bottom:40px; 
+        }
 
-        .product-card { background:#fff; border:1px solid #f0f0f0; border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.05); transition:transform .3s ease, box-shadow .3s ease; position:relative; }
+        .product-card { 
+            background:#fff; 
+            border:1px solid #f0f0f0; 
+            border-radius:12px; 
+            overflow:hidden; 
+            box-shadow:0 4px 12px rgba(0,0,0,0.05); 
+            transition:transform .3s ease, box-shadow .3s ease; 
+            position:relative; 
+        }
         .product-card:hover { transform:translateY(-5px); box-shadow:0 10px 30px rgba(0,0,0,0.1); }
         .product-image { position:relative; height:300px; overflow:hidden; }
         .product-image img { width:100%; height:100%; object-fit:cover; transition:transform .3s ease; }
@@ -698,21 +702,17 @@ function esc($s) {
         
         .product-info { padding:20px; }
         .product-title { margin:0 0 8px 0; font-size:18px; font-weight:600; color:var(--accent); }
-        .product-designer { margin:0 0 12px 0; color:var(--muted); font-size:14px; }
         .product-details { display:flex; justify-content:space-between; margin-bottom:12px; font-size:13px; color:var(--muted); }
         .product-price { font-size:20px; font-weight:700; color:var(--accent); }
         
+        /* REMOVED: Product status badges */
         .product-status {
-            font-size: 12px;
-            padding: 4px 8px;
-            border-radius: 4px;
-            margin-top: 5px;
-            display: inline-block;
+            display: none !important;
         }
         
-        .status-rental { background: #e8f5e8; color: #2fa46b; }
-        .status-sale { background: #fff3cd; color: #856404; }
-        .status-outofstock { background: #f8d7da; color: #721c24; }
+        .status-rental, .status-sale, .status-outofstock {
+            display: none !important;
+        }
 
         .load-more-section { text-align:center; }
         .load-more-btn { padding:12px 30px; border:1px solid #e6e6e6; border-radius:6px; background:#fff; color:var(--accent); font-weight:600; cursor:pointer; }
@@ -821,7 +821,7 @@ function esc($s) {
             <!-- Search Bar - Updated to your version with form -->
             <div class="search" role="search" aria-label="Site search">
                 <form method="GET" id="searchForm" style="display: flex; width: 100%;">
-                    <input type="search" name="search" placeholder="Search dresses, designers, collection..." 
+                    <input type="search" name="search" placeholder="Search dresses, collection..." 
                            aria-label="Search" value="<?php echo esc($search_query); ?>">
                     <button type="submit" aria-label="Search">
                         <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
@@ -837,7 +837,7 @@ function esc($s) {
                 <ul id="main-nav">
                     <li><a href="finalhomepage.php">Home</a></li>
                     <li><a href="catalog.php" class="active">Browse</a></li>
-                    <li><a href="custommade_loggedin.php">Custom Made</a></li>
+                    <li><a href="custommade.html">Custom Made</a></li>
                     <li><a href="about.html">About</a></li>
                     <li><a href="blog.html">Blog</a></li>
                     <li><a href="contact.html">Contact Us</a></li>
@@ -858,9 +858,7 @@ function esc($s) {
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="white" stroke-width="1.2" fill="none"/>
                     </svg>
-                    <?php if ($logged_in && $wishlist_count > 0): ?>
-                        <span class="wishlist-count"><?php echo $wishlist_count; ?></span>
-                    <?php endif; ?>
+                    <!-- REMOVED: Wishlist count badge -->
                 </a>
 
                 <a href="cart.php" class="icon-only" title="Shopping Cart" aria-label="Shopping Cart">
@@ -881,6 +879,7 @@ function esc($s) {
                     </button>
                     <div class="dropdown-menu">
                         <a href="customerdashboard.php">Customer Dashboard</a>
+                        <a href="my-account.html">My Account</a>
                         <div class="dropdown-divider"></div>
                         <a href="logout.php" id="logoutLink">Sign Out</a>
                     </div>
@@ -1073,7 +1072,7 @@ function esc($s) {
                             <?php elseif (!empty($search_query)): ?>
                                 Search Results for "<?php echo esc($search_query); ?>"
                             <?php else: ?>
-                                Available Dresses (<?php echo count($products); ?> found)
+                                Available Dresses 
                             <?php endif; ?>
                         </h2>
 
@@ -1107,7 +1106,7 @@ function esc($s) {
                     <?php if ($view_type === 'for-you' && !$logged_in): ?>
                         <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
                             <p style="margin: 0; color: #856404;">
-                                <strong>Sign in to see personalised recommendations!</strong><br>
+                                <strong>Sign in to see personalized recommendations!</strong><br>
                                 The "For You" section shows dresses that match your size and style preferences.
                             </p>
                             <a href="register.php" class="btn btn-primary" style="margin-top: 10px; display: inline-block; padding: 10px 20px; background: var(--accent); color: white; border-radius: 4px;">Sign In / Register</a>
@@ -1133,7 +1132,6 @@ function esc($s) {
                             <?php foreach ($products as $p): 
                                 $pid = (int)$p['product_id'];
                                 $title = esc($p['name'] ?? 'Untitled');
-                                $brand = esc($p['brand'] ?? 'Designer');
                                 $price = is_numeric($p['price']) ? number_format((float)$p['price'], 2) : '0.00';
                                 $img = !empty($p['image']) ? esc($p['image']) : 'gallery/placeholder.png';
                                 $stock = isset($p['stock']) ? (int)$p['stock'] : 0;
@@ -1141,17 +1139,7 @@ function esc($s) {
 
                                 $is_wishlisted = isset($wishlist_status[$pid]);
                                 
-                                // Determine product status
-                                $status_class = 'status-rental';
-                                $status_text = 'For Rent';
-                                if (!$is_rental) {
-                                    $status_class = 'status-sale';
-                                    $status_text = 'For Sale';
-                                }
-                                if ($stock <= 0) {
-                                    $status_class = 'status-outofstock';
-                                    $status_text = 'Out of Stock';
-                                }
+                                // REMOVED: Product status logic
 
                                 // Check if this is a "For You" recommendation
                                 $is_for_you = $view_type === 'for-you';
@@ -1171,10 +1159,9 @@ function esc($s) {
                                     </div>
                                     <div class="product-info">
                                         <h3 class="product-title"><?php echo $title; ?></h3>
-                                        <p class="product-designer">By <?php echo $brand; ?></p>
                                         <div class="product-details">
                                             <span class="rental-period"><?php echo $is_rental ? '3-day rental' : 'For Sale'; ?></span>
-                                            <span class="product-status <?php echo $status_class; ?>"><?php echo $status_text; ?></span>
+                                            <!-- REMOVED: Status badge -->
                                         </div>
                                         <div class="product-price">R<?php echo $price; ?></div>
                                     </div>
@@ -1475,20 +1462,12 @@ function esc($s) {
             checkbox.addEventListener('change', applyFilters);
         });
         
-        // Price input debounce
-        let priceTimeout;
-        priceMinInput.addEventListener('input', () => {
-            clearTimeout(priceTimeout);
-            priceTimeout = setTimeout(applyFilters, 1000);
-        });
+        // Price input changes
+        priceMinInput.addEventListener('change', applyFilters);
+        priceMaxInput.addEventListener('change', applyFilters);
         
-        priceMaxInput.addEventListener('input', () => {
-            clearTimeout(priceTimeout);
-            priceTimeout = setTimeout(applyFilters, 1000);
-        });
-        
-        // Clear filters - From your version
-        document.getElementById('clearFilters').addEventListener('click', function() {
+        // Clear filters
+        document.getElementById('clearFilters').addEventListener('click', () => {
             // Uncheck all checkboxes
             document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
                 checkbox.checked = false;
@@ -1498,145 +1477,179 @@ function esc($s) {
             setMinValue(minPrice);
             setMaxValue(maxPrice);
             
-            // Apply filters
+            // Reset sort
+            document.getElementById('sort').value = 'newest';
+            document.getElementById('sortInput').value = 'newest';
+            
+            // Submit form
             applyFilters();
         });
         
-        // Sort handling - Keep her logic but with your enhancements
+        // Sort functionality
         document.getElementById('sort').addEventListener('change', function() {
             document.getElementById('sortInput').value = this.value;
-            document.getElementById('filterForm').submit();
+            applyFilters();
         });
         
-        // Load More functionality - Keep her logic
-        const loadMoreBtn = document.getElementById('loadMore');
-        if (loadMoreBtn) {
-            loadMoreBtn.addEventListener('click', function() {
-                const currentLimit = parseInt(this.getAttribute('data-current-limit'));
-                const newLimit = currentLimit + 8;
-                
-                // Update the limit input and submit the form
-                document.getElementById('limitInput').value = newLimit;
-                document.getElementById('filterForm').submit();
-            });
-        }
-        
-        // Wishlist functionality - Keep her logic
-        document.querySelectorAll('.wishlist-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const productId = this.getAttribute('data-product-id');
-                const isActive = this.classList.contains('active');
-                const action = isActive ? 'remove' : 'add';
-                
-                // Check if user is logged in
-                const loggedIn = <?php echo $logged_in ? 'true' : 'false'; ?>;
-                
-                if (!loggedIn) {
-                    document.getElementById('loginModal').classList.add('active');
-                    document.getElementById('loginModal').setAttribute('aria-hidden', 'false');
-                    return;
-                }
-                
-                // Toggle visual state immediately for better UX
-                this.classList.toggle('active');
-                this.querySelector('svg').setAttribute('fill', this.classList.contains('active') ? 'currentColor' : 'none');
-                
-                // Send AJAX request to update wishlist
-                const formData = new FormData();
-                formData.append('wishlist_action', action);
-                formData.append('product_id', productId);
-                
-                fetch('catalog.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.success) {
-                        // Revert visual state if request failed
-                        this.classList.toggle('active');
-                        this.querySelector('svg').setAttribute('fill', this.classList.contains('active') ? 'currentColor' : 'none');
-                        alert(data.message || 'Failed to update wishlist. Please try again.');
-                    } else {
-                        // Update wishlist count in navigation
-                        updateWishlistCount(action);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    // Revert visual state if request failed
-                    this.classList.toggle('active');
-                    this.querySelector('svg').setAttribute('fill', this.classList.contains('active') ? 'currentColor' : 'none');
-                    alert('Failed to update wishlist. Please try again.');
+        // Initialize active filters
+        updateActiveFilters();
+
+        // Load More functionality - FIXED VERSION
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadMoreBtn = document.getElementById('loadMore');
+            
+            if (loadMoreBtn) {
+                loadMoreBtn.addEventListener('click', function() {
+                    const currentLimit = parseInt(this.getAttribute('data-current-limit')) || 8;
+                    const newLimit = currentLimit + 8;
+                    
+                    // Show loading state
+                    this.disabled = true;
+                    this.textContent = 'Loading...';
+                    
+                    // Get current URL parameters
+                    const urlParams = new URLSearchParams(window.location.search);
+                    urlParams.set('limit', newLimit);
+                    
+                    // Create new URL with updated limit
+                    const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+                    
+                    // Fetch the new content
+                    fetch(newUrl)
+                        .then(response => response.text())
+                        .then(html => {
+                            // Parse the response and extract products grid
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(html, 'text/html');
+                            const newProductsGrid = doc.getElementById('productsGrid');
+                            
+                            if (newProductsGrid) {
+                                // Replace the current products grid with the new one
+                                const currentGrid = document.getElementById('productsGrid');
+                                currentGrid.innerHTML = newProductsGrid.innerHTML;
+                                
+                                // Update the load more button
+                                const newLoadMoreBtn = doc.getElementById('loadMore');
+                                if (newLoadMoreBtn) {
+                                    this.setAttribute('data-current-limit', newLimit);
+                                    this.textContent = 'Load More Dresses';
+                                    this.disabled = false;
+                                } else {
+                                    // No more products to load
+                                    this.style.display = 'none';
+                                    document.querySelector('.load-more-section').innerHTML = '<p>All products loaded</p>';
+                                }
+                                
+                                // Reattach wishlist event listeners to new products
+                                attachWishlistListeners();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error loading more products:', error);
+                            this.disabled = false;
+                            this.textContent = 'Load More Dresses';
+                            alert('Error loading more products. Please try again.');
+                        });
                 });
-            });
+            }
+
+            // Wishlist functionality
+            function attachWishlistListeners() {
+                document.querySelectorAll('.wishlist-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const productId = this.getAttribute('data-product-id');
+                        const isActive = this.classList.contains('active');
+                        const action = isActive ? 'remove' : 'add';
+                        
+                        // Check if user is logged in
+                        <?php if (!$logged_in): ?>
+                            document.getElementById('loginModal').classList.add('active');
+                            return;
+                        <?php endif; ?>
+                        
+                        // Toggle visual state immediately for better UX
+                        this.classList.toggle('active');
+                        const svg = this.querySelector('svg');
+                        if (isActive) {
+                            svg.setAttribute('fill', 'none');
+                        } else {
+                            svg.setAttribute('fill', 'currentColor');
+                        }
+                        
+                        // Send AJAX request
+                        const formData = new FormData();
+                        formData.append('wishlist_action', action);
+                        formData.append('product_id', productId);
+                        
+                        fetch('catalog.php', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.success) {
+                                // Revert visual state if failed
+                                this.classList.toggle('active');
+                                svg.setAttribute('fill', isActive ? 'currentColor' : 'none');
+                                
+                                if (data.message.includes('login')) {
+                                    document.getElementById('loginModal').classList.add('active');
+                                } else {
+                                    alert(data.message);
+                                }
+                            }
+                            // If success, the visual state remains changed
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            // Revert visual state on error
+                            this.classList.toggle('active');
+                            svg.setAttribute('fill', isActive ? 'currentColor' : 'none');
+                            alert('Error updating wishlist. Please try again.');
+                        });
+                    });
+                });
+            }
+            
+            // Initial attachment of wishlist listeners
+            attachWishlistListeners();
         });
-        
-        function updateWishlistCount(action) {
-            const wishlistCount = document.querySelector('.wishlist-count');
-            let currentCount = parseInt(wishlistCount?.textContent || 0);
-            
-            if (action === 'add') {
-                currentCount++;
-            } else if (action === 'remove') {
-                currentCount = Math.max(0, currentCount - 1);
+
+        // Login modal functionality
+        document.getElementById('goToRegister')?.addEventListener('click', function() {
+            window.location.href = 'register.php';
+        });
+
+        document.getElementById('closeModal')?.addEventListener('click', function() {
+            document.getElementById('loginModal').classList.remove('active');
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('loginModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
             }
-            
-            if (wishlistCount) {
-                if (currentCount > 0) {
-                    wishlistCount.textContent = currentCount;
-                    wishlistCount.style.display = 'flex';
-                } else {
-                    wishlistCount.style.display = 'none';
-                }
-            }
-        }
-        
-        // Search functionality - From your version
-        document.getElementById('searchForm').addEventListener('submit', function(e) {
+        });
+
+        // Logo click to go home
+        document.getElementById('brandLink')?.addEventListener('click', function() {
+            window.location.href = 'finalhomepage.php';
+        });
+
+        // Search form submission
+        document.getElementById('searchForm')?.addEventListener('submit', function(e) {
             const searchInput = this.querySelector('input[name="search"]');
             if (!searchInput.value.trim()) {
                 e.preventDefault();
-                alert('Please enter a search term');
-                return;
+                // Remove search parameter and reload
+                const url = new URL(window.location);
+                url.searchParams.delete('search');
+                window.location.href = url.toString();
             }
         });
-        
-        // Login modal handling - Keep her logic
-        const loginModal = document.getElementById('loginModal');
-        const goToRegister = document.getElementById('goToRegister');
-        const closeModal = document.getElementById('closeModal');
-
-        goToRegister.addEventListener('click', function() {
-            window.location.href = 'register.php?redirect=catalog.php';
-        });
-        
-        closeModal.addEventListener('click', function() {
-            loginModal.classList.remove('active');
-            loginModal.setAttribute('aria-hidden', 'true');
-        });
-
-        // View type handling - From your version
-        const viewToggles = document.querySelectorAll('.view-toggle .toggle');
-        const currentView = '<?php echo $view_type; ?>';
-
-        // Set active state for view toggles
-        viewToggles.forEach(toggle => {
-            if (toggle.getAttribute('data-view') === currentView) {
-                toggle.classList.add('active');
-                toggle.setAttribute('aria-selected', 'true');
-            } else {
-                toggle.classList.remove('active');
-                toggle.setAttribute('aria-selected', 'false');
-            }
-        });
-        
-        // Initialize active filters display
-        updateActiveFilters();
     </script>
 </body>
-
 </html>
