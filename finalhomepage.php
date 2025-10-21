@@ -840,15 +840,15 @@ if ($logged_in) {
                     <div class="collection-label">Wedding</div>
                 </div>
                 <div class="collection-item">
-                    <a href="<?php echo $logged_in ? 'catalog.php?category=matric' : 'register.html'; ?>" class="collection" id="col-2" style="background-image:url('images/collection-matric.jpg');"></a>
+                    <a href="<?php echo $logged_in ? 'catalog.php?category=matric' : 'register.html'; ?>" class="collection" id="col-2" style="background-image:url('PIC1.jpg');"></a>
                     <div class="collection-label">Matric Dance</div>
                 </div>
                 <div class="collection-item">
-                    <a href="<?php echo $logged_in ? 'catalog.php?category=birthday' : 'register.html'; ?>" class="collection" id="col-3" style="background-image:url('images/collection-bday.jpg');"></a>
+                    <a href="<?php echo $logged_in ? 'catalog.php?category=birthday' : 'register.html'; ?>" class="collection" id="col-3" style="background-image:url('PIC4.jpg');"></a>
                     <div class="collection-label">Birthday</div>
                 </div>
                 <div class="collection-item">
-                    <a href="<?php echo $logged_in ? 'custommade.html' : 'register.html'; ?>" class="collection" id="col-4" style="background-image:url('images/collection-custom.jpg');"></a>
+                    <a href="<?php echo $logged_in ? 'custommade.html' : 'register.html'; ?>" class="collection" id="col-4" style="background-image:url('PIC6.jpg');"></a>
                     <div class="collection-label">Custom-made Dresses</div>
                 </div>
             </div>
