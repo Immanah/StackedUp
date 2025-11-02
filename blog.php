@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Blog — Ozyde</title>
+    <style>
+        /* Ozyde Boutique consistent styling - matching catalog */
+        
+         :root {
+            --bg: #fff;
+            --text: #222;
+            --muted: #7a7a7a;
+            --accent: #111;
+            --max-width: 1200px;
+            --chip-bg: #f3f3f3;
+            --chip-border: #e6e6e6;
+            --primary: #111;
+            --success: #2fa46b;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --airbnb-pink: #FF5A5F;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        /* Header Styles - matching catalog */
+        
+        .nav-wrap {
+            background: #0b0b0b;
+            color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 120;
+            box-shadow: 0 6px 20px rgba(2, 2, 2, 0.12);
+        }
+        
+        .nav {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-weight: 800;
+            letter-spacing: 1px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .logo-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #fff2, #fff6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #111;
+            font-weight: 900;
+            font-size: 16px;
+        }
+        
+        nav ul {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 18px;
+            list-style: none;
+            align-items: center;
+        }
+        
+        nav a {
+            font-size: 14px;
+            color: #fff;
+            display: block;
+            padding: 8px 6px;
+            transition: color 0.2s ease;
+        }
+        
+        nav a.active {
+            color: #fff;
+            font-weight: 600;
+            border-bottom: 2px solid #fff;
+        }
+        
+        nav a:hover {
+            color: #ddd;
+        }
+        
+        .btn-signup {
+            background: var(--accent);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background 0.2s ease;
+        }
+        
+        .btn-signup:hover {
+            background: #333;
+        }
+        
+        .icons {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+        
+        .icon-only {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 0;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .icon-only:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        /* Hero Section - matching catalog */
+        
+        .hero {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 60px 0;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .hero-content h1 {
+            margin: 0 0 16px 0;
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--accent);
+        }
+        
+        .hero-content p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 18px;
+        }
+        /* Main Content Styles */
+        
+        main {
+            padding: 32px 0;
+        }
+        
+        .content-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: #111;
+            color: #fff;
+            text-decoration: none;
+            transition: background 0.2s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        
+        .back-btn:hover {
+            background: #333;
+        }
+        
+        .page-title {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .lead {
+            color: var(--muted);
+            margin-top: 8px;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+        
+        .posts {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .post {
+            background: #fff;
+            border: 1px solid #f0f0f0;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .post:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .post h3 {
+            margin: 0 0 12px;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1.3;
+        }
+        
+        .meta {
+            color: var(--muted);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        
+        .post p {
+            margin: 0 0 16px;
+            line-height: 1.6;
+            color: var(--text);
+        }
+        
+        .read-more {
+            color: var(--accent);
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: gap 0.2s ease;
+        }
+        
+        .read-more:hover {
+            gap: 8px;
+        }
+
+        .no-posts {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--muted);
+        }
+        /* Footer Styles - matching catalog */
+        
+        footer {
+            border-top: 1px solid #eee;
+            padding: 36px 0;
+            margin-top: 28px;
+            color: var(--muted);
+            background: #fafafa;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 32px;
+        }
+        
+        .footer-grid h4 {
+            margin: 0 0 16px 0;
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        .footer-grid ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-grid li {
+            margin-bottom: 8px;
+        }
+        
+        .footer-grid a {
+            color: var(--muted);
+            transition: color 0.2s ease;
+        }
+        
+        .footer-grid a:hover {
+            color: var(--accent);
+        }
+        
+        .socials {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .socials a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: #f5f5f5;
+            transition: all 0.2s ease;
+        }
+        
+        .socials a:hover {
+            background: var(--accent);
+        }
+        
+        .socials a:hover svg path,
+        .socials a:hover svg circle {
+            stroke: #fff;
+            fill: #fff;
+        }
+        /* Responsive Design */
+        
+        @media (max-width: 880px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 24px;
+            }
+            .posts {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .nav {
+                flex-wrap: wrap;
+            }
+            nav ul {
+                order: 2;
+                width: 100%;
+                justify-content: center;
+                margin-top: 15px;
+            }
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+            .hero-content h1 {
+                font-size: 28px;
+            }
+            .hero-content p {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ===== Navigation Bar ===== -->
+    <header class="nav-wrap" role="banner">
+        <div class="nav" role="navigation" aria-label="Main navigation">
+            <div class="logo" id="brandLink">
+                <div class="logo-badge" aria-hidden="true">✦</div>
+                <div>Ozyde</div>
+            </div>
+
+            <nav aria-label="Main navigation">
+                <ul id="main-nav">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="blog.php" class="active">Blog</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="custommade.html">Custom Made</a></li>
+                    <li><a href="catalog.php">Browse</a></li>
+                </ul>
+            </nav>
+
+            <div class="icons" role="group" aria-label="User actions">
+                <a href="login_register.php" class="icon-only" title="Login/Register" aria-label="Login/Register">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                        <polyline points="10 17 15 12 10 7" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="15" y1="12" x2="3" y2="12" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </a>
+
+                <a href="help.html" class="icon-only" title="Help" aria-label="Help">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.2" fill="none"/>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                        <line x1="12" y1="17" x2="12" y2="17" stroke="white" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>From the Ozyde Journal</h1>
+                <p>Latest tips, trends and behind-the-scenes from the rental world.</p>
+            </div>
+        </div>
+    </section>
+
+    <main class="container">
+        <div class="content-header">
+            <h2 class="page-title">Latest Articles</h2>
+        </div>
+
+        <div class="posts">
+            <?php
+            // Database connection
+            require_once 'db.php';
+            
+            // Fetch published posts from database
+            $sql = "SELECT * FROM posts WHERE is_published = 1 ORDER BY created_at DESC";
+            $result = $conn->query($sql);
+            
+            if ($result && $result->num_rows > 0) {
+                while ($post = $result->fetch_assoc()) {
+                    // Format date
+                    $date = date('j M Y', strtotime($post['created_at']));
+                    // Truncate content for preview
+                    $content_preview = strlen($post['content']) > 150 
+                        ? substr($post['content'], 0, 150) . '...' 
+                        : $post['content'];
+                    ?>
+                    <article class="post">
+                        <?php if (!empty($post['image'])): ?>
+                            <img src="admin/uploads/posts/<?= htmlspecialchars($post['image']) ?>" alt="<?= htmlspecialchars($post['title']) ?>" style="width:100%;height:200px;object-fit:cover;border-radius:8px;margin-bottom:16px;">
+                        <?php endif; ?>
+                        <h3><?= htmlspecialchars($post['title']) ?></h3>
+                        <div class="meta">By Ozyde • <?= $date ?></div>
+                        <p><?= htmlspecialchars($content_preview) ?></p>
+                        <a href="blog_post.php?id=<?= $post['post_id'] ?>" class="read-more">Read more →</a>
+                    </article>
+                    <?php
+                }
+            } else {
+                // Show fallback content if no posts exist
+                ?>
+                <div class="no-posts">
+                    <h3>No blog posts yet</h3>
+                    <p>Check back soon for the latest fashion tips and rental insights from Ozyde.</p>
+                </div>
+                
+                <!-- Fallback static posts (optional - remove if you don't want them) -->
+                <article class="post">
+                    <h3>How to choose the perfect dress for an evening gala</h3>
+                    <div class="meta">By Ozyde • 12 Aug 2024</div>
+                    <p>Picking a dress for a gala is part fit, part confidence. We guide you through silhouette, fabric and accessorising so you shine.</p>
+                    <a href="#" class="read-more">Read more →</a>
+                </article>
+
+                <article class="post">
+                    <h3>Why renting is the smarter choice for occasional wear</h3>
+                    <div class="meta">By Ozyde • 3 Jul 2024</div>
+                    <p>Renting allows you to try statement pieces without long-term commitment — sustainable, affordable, and fun.</p>
+                    <a href="#" class="read-more">Read more →</a>
+                </article>
+                <?php
+            }
+            ?>
+        </div>
+    </main>
+
+    <!-- Footer - matching catalog -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4>Ozyde</h4>
+                    <p>Premium dress rentals for your special occasions. Quality, style, and affordability combined.</p>
+                    <div>Address:<br>5 Liebenberg Rd, Noordwyk, Midrand 1687</div>
+                    <div class="socials" aria-label="Social media">
+                        <a href="https://www.instagram.com/ozyde_?igsh=NWM0aTd4ZGFmeHVr" target="_blank" rel="noopener" aria-label="Instagram">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <rect x="3" y="3" width="18" height="18" rx="5" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <circle cx="12" cy="12" r="3.2" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <circle cx="17.5" cy="6.5" r="0.6" fill="#333"/>
+                            </svg>
+                        </a>
+                        <a href="https://www.tiktok.com/@ozyde_designs?_t=ZS-8zlyfPi8HHJ&_r=1" target="_blank" rel="noopener" aria-label="TikTok">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/TikTok_logo.svg/1200px-TikTok_logo.svg.png" alt="TikTok" style="width:18px;height:18px;display:block" />
+                        </a>
+                        <a href="mailto:ozydedesigns@gmail.com" aria-label="Email">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <rect x="3" y="6" width="18" height="12" rx="2" stroke="#333" stroke-width="1.2" fill="none"/>
+                                <path d="M4 7.5l8 6 8-6" stroke="#333" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="howitworks.html">How It Works</a></li>
+                        <li><a href="sizingguide.html">Size Guide</a></li>
+                        <li><a href="#">Returns & Policy</a></li>
+                        <li><a href="#">Delivery</a></li>
+                        <li><a href="help.html">Help Center</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Terms</a></li>
+                        <li><a href="#">Privacy</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="cleaning.html">Cleaning & Care Guide</a></li>
+                        <li><a href="#">Partnerships</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="margin-top:24px;text-align:center;padding-top:24px;border-top:1px solid #e6e6e6;color:var(--muted)">
+                © 2025 Ozyde. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Basic navigation functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Logo click to go home
+            document.getElementById('brandLink').addEventListener('click', function() {
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
+</body>
+</html>
