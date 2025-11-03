@@ -5,7 +5,7 @@ require_once 'db.php';
 // Google OAuth Configuration - NO SPACES!
 $clientID = '771207645527-8or8trdlmec62ekl6pj63t8hae975dmi.apps.googleusercontent.com';
 $clientSecret = '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';
-$redirectUri = 'http://localhost/ozyde/google_callback.php';
+$redirectUri = 'https://ozyderentals.co.za/google_callback.php';
 
 // Verify state parameter to prevent CSRF
 if (!isset($_GET['state']) || $_GET['state'] !== $_SESSION['oauth2state']) {
@@ -216,4 +216,5 @@ function sendWelcomeEmail($email, $name, $isGoogleSignup = false) {
 }
 
 $conn->close();
+
 ?>
