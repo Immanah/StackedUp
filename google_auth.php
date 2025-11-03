@@ -4,7 +4,7 @@ session_start();
 // Google OAuth Configuration - REMOVED THE SPACE AFTER CLIENT ID
 $clientID = '771207645527-8or8trdlmec62ekl6pj63t8hae975dmi.apps.googleusercontent.com';
 $clientSecret = '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';
-$redirectUri = 'http://localhost/ozyde/google_callback.php';
+$redirectUri = 'https://ozyderentals.co.za/google_callback.php';
 
 // Generate state token for security
 $state = bin2hex(random_bytes(16));
@@ -34,4 +34,5 @@ try {
     header('Location: register.html?error=google_config');
     exit();
 }
+
 ?>
