@@ -182,7 +182,7 @@ $conn->close();
                 }
 
                 const script = document.createElement('script');
-                script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDNtN2PthreyRY418NuINNnihVx_eX_ifQ&loading=async&libraries=places,marker&callback=initAutocomplete';
+                script.src = 'https://maps.googleapis.com/maps/api/js?key=&libraries=places,marker&callback=initAutocomplete';
                 script.async = true;
                 script.defer = true;
                 
@@ -2580,3 +2580,4 @@ $conn->close();
     </script>
 </body>
 </html>
+
