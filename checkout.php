@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Fetch cart items for user
+// Fetch cart items for user with variants
 $sql = "SELECT 
             c.cart_id, 
             c.product_id, 
@@ -19,43 +19,127 @@ $sql = "SELECT
             c.size, 
             c.start_date, 
             c.end_date,
-            c.quantity
+            c.quantity,
+            c.variant_id,
+            pv.size as variant_size,
+            pv.price as variant_price
         FROM cart c
         JOIN products p ON c.product_id = p.product_id
-        WHERE c.user_id = $user_id";
+        LEFT JOIN product_variants pv ON c.variant_id = pv.variant_id
+        WHERE c.user_id = ?";
 
-$result = $conn->query($sql);
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
 $cart_items = [];
 $items = []; // For JavaScript
 
 if ($result && $result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        // Calculate rental period display
-        $start = new DateTime($row['start_date']);
-        $end = new DateTime($row['end_date']);
-        $start_formatted = $start->format('M j');
-        $end_formatted = $end->format('M j, Y');
-        $rental_period = $start_formatted . ' - ' . $end_formatted;
+        try {
+            $start = new DateTime($row['start_date']);
+            $end = new DateTime($row['end_date']);
+            $start_formatted = $start->format('M j');
+            $end_formatted = $end->format('M j, Y');
+            $rental_period = $start_formatted . ' - ' . $end_formatted;
+        } catch (Exception $e) {
+            $rental_period = 'Date not set';
+        }
+
+        // Use variant price if available, otherwise use product price
+        $price = !empty($row['variant_price']) ? (float)$row['variant_price'] : (float)$row['price'];
+        $size = !empty($row['variant_size']) ? $row['variant_size'] : $row['size'];
 
         $cart_items[] = [
             'cart_id' => $row['cart_id'],
             'product_id' => $row['product_id'],
             'name' => $row['product_name'],
             'image' => $row['image'],
-            'price' => (float)$row['price'],
-            'size' => $row['size'],
+            'price' => $price,
+            'size' => $size,
             'quantity' => (int)$row['quantity'],
             'start_date' => $row['start_date'],
             'end_date' => $row['end_date'],
             'rental_period' => $rental_period,
+            'variant_id' => $row['variant_id']
         ];
         
-        // Also create items array for JavaScript
         $items[] = [
             'title' => $row['product_name'],
             'rental_period' => $rental_period,
-            'price' => (float)$row['price']
+            'price' => $price,
+            'size' => $size
         ];
+    }
+}
+
+// After successful payment processing, update the booking with variant support
+function createBookingWithPayment($user_id, $cart_items, $payment_data) {
+    global $conn;
+    
+    $booking_ref = 'OZ' . rand(100000, 999999);
+    $total_amount = $payment_data['total'];
+    
+    // Start transaction
+    $conn->begin_transaction();
+    
+    try {
+        // Create booking for each cart item
+        foreach ($cart_items as $item) {
+            $stmt = $conn->prepare("
+                INSERT INTO bookings 
+                (product_id, user_id, start_date, end_date, booking_ref, total_amount, 
+                 payment_status, payment_method, amount_paid, variant_id, size, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+            ");
+            
+            $payment_status = $payment_data['method'] === 'card' ? 'paid' : 'pending';
+            $variant_id = !empty($item['variant_id']) ? $item['variant_id'] : NULL;
+            $size = !empty($item['size']) ? $item['size'] : '';
+            
+            $stmt->bind_param(
+                "iisssdssdiss",
+                $item['product_id'],
+                $user_id,
+                $item['start_date'],
+                $item['end_date'],
+                $booking_ref,
+                $item['price'],
+                $payment_status,
+                $payment_data['method'],
+                $payment_data['amount_paid'],
+                $variant_id,
+                $size
+            );
+            
+            $stmt->execute();
+            
+            // Update variant stock if variant is used
+            if (!empty($variant_id)) {
+                $update_stock = $conn->prepare("
+                    UPDATE product_variants 
+                    SET stock = stock - 1 
+                    WHERE variant_id = ? AND stock > 0
+                ");
+                $update_stock->bind_param("i", $variant_id);
+                $update_stock->execute();
+                $update_stock->close();
+            }
+        }
+        
+        // Clear cart
+        $clear_cart = $conn->prepare("DELETE FROM cart WHERE user_id = ?");
+        $clear_cart->bind_param("i", $user_id);
+        $clear_cart->execute();
+        
+        $conn->commit();
+        return $booking_ref;
+        
+    } catch (Exception $e) {
+        $conn->rollback();
+        throw $e;
     }
 }
 
@@ -71,11 +155,12 @@ foreach ($cart_items as $item) {
     $subtotal += $item['price'];
 }
 
-$deposit = 800; // Fixed deposit as in your cart
+$deposit = 800;
 $deliveryFee = 0;
 $returnFee = 0;
 $total = $subtotal + $deposit;
 
+$stmt->close();
 $conn->close();
 ?>
 
@@ -86,8 +171,39 @@ $conn->close();
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Checkout — OZYDE</title>
-    <style>
-         :root {
+    
+    <!-- Load Google Maps API -->
+    <script>
+        function loadGoogleMaps() {
+            return new Promise((resolve, reject) => {
+                if (window.google && window.google.maps) {
+                    resolve();
+                    return;
+                }
+
+                const script = document.createElement('script');
+                script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDNtN2PthreyRY418NuINNnihVx_eX_ifQ&loading=async&libraries=places,marker&callback=initAutocomplete';
+                script.async = true;
+                script.defer = true;
+                
+                script.onload = resolve;
+                script.onerror = reject;
+                
+                document.head.appendChild(script);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadGoogleMaps().catch(error => {
+                console.error('Failed to load Google Maps API:', error);
+                showGoogleMapsError('Failed to load address suggestions. Please enter your address manually.');
+            });
+        });
+    </script>
+    
+   <style>
+        /* Your existing CSS styles remain exactly the same */
+        :root {
             --bg: #fff;
             --text: #222;
             --muted: #7a7a7a;
@@ -96,6 +212,9 @@ $conn->close();
             --radius: 14px;
             --max-width: 1100px;
             --gold: #c6a04a;
+            --error: #e74c3c;
+            --success: #2ecc71;
+            --warning: #f39c12;
         }
         
         * {
@@ -181,6 +300,7 @@ $conn->close();
             flex-direction: column;
             gap: 6px;
             margin-bottom: 8px;
+            position: relative;
         }
         
         label {
@@ -196,6 +316,19 @@ $conn->close();
             border-radius: 8px;
             border: 1px solid #e8e8e8;
             font-size: 14px;
+            transition: border-color 0.2s;
+            width: 100%;
+        }
+        
+        input.error {
+            border-color: var(--error);
+        }
+        
+        .error-message {
+            color: var(--error);
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
         }
         
         .delivery-options {
@@ -381,6 +514,12 @@ $conn->close();
             background: var(--accent);
             color: #fff;
             font-weight: 700;
+            transition: all 0.2s;
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
         
         .btn.ghost {
@@ -412,7 +551,7 @@ $conn->close();
         .success {
             padding: 12px;
             background: #e8ffef;
-            border-left: 4px solid #2fa46b;
+            border-left: 4px solid var(--success);
             border-radius: 8px;
             color: #075;
         }
@@ -420,9 +559,17 @@ $conn->close();
         .warning {
             padding: 12px;
             background: #fff8e8;
-            border-left: 4px solid #ffb300;
+            border-left: 4px solid var(--warning);
             border-radius: 8px;
             color: #856404;
+        }
+        
+        .error-notice {
+            padding: 12px;
+            background: #ffe8e8;
+            border-left: 4px solid var(--error);
+            border-radius: 8px;
+            color: #c00;
         }
         
         .foot-note {
@@ -430,7 +577,6 @@ $conn->close();
             color: var(--muted);
             margin-top: 8px;
         }
-        /* small glam accents for the page */
         
         .glam-line {
             height: 2px;
@@ -583,7 +729,7 @@ $conn->close();
         }
 
         .note-icon {
-            flex-shrink: 0;
+            flex: 0 0 auto;
             font-size: 14px;
         }
 
@@ -669,6 +815,175 @@ $conn->close();
             opacity: 0.7;
             pointer-events: none;
         }
+
+        /* First come first serve warning */
+        .fcfs-warning {
+            background: rgba(243, 156, 18, 0.1);
+            border: 1px solid rgba(243, 156, 18, 0.3);
+            border-left: 4px solid var(--warning);
+            padding: 12px;
+            border-radius: 8px;
+            margin: 12px 0;
+            font-size: 13px;
+        }
+
+        /* Google Maps autocomplete styling */
+        .pac-container {
+            border-radius: 8px !important;
+            border: 1px solid #e8e8e8 !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+            font-family: Inter, sans-serif !important;
+            z-index: 10000 !important;
+            margin-top: 4px !important;
+            background: white !important;
+        }
+
+        .pac-item {
+            padding: 8px 12px !important;
+            border-bottom: 1px solid #f0f0f0 !important;
+            font-size: 14px !important;
+            cursor: pointer !important;
+            color: #222 !important;
+        }
+
+        .pac-item:hover {
+            background: #f8f8f8 !important;
+        }
+
+        .pac-item-query {
+            font-size: 14px !important;
+            color: #222 !important;
+            font-weight: 600 !important;
+        }
+
+        .pac-matched {
+            font-weight: 600 !important;
+            color: #111 !important;
+        }
+
+        .pac-icon {
+            margin-right: 8px !important;
+        }
+
+        /* Phone input formatting */
+        .phone-hint {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        /* Address autocomplete hint */
+        .address-hint {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+            font-style: italic;
+        }
+
+        /* Map Preview Styles */
+        #mapPreview {
+            border: 1px solid #e8e8e8;
+            background: #f9f9f9;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        #mapPreview:not([style*="display: none"]) {
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Read-only field styling */
+        input[readonly], select[readonly] {
+            background-color: #f9f9f9 !important;
+            cursor: not-allowed;
+            opacity: 0.9;
+        }
+
+        /* Address field states */
+        .address-loading {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23757575"><path d="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2Z" opacity="0.5"/><path d="M20 12h2A10 10 0 0 0 12 2V4A8 8 0 0 1 20 12Z"/></svg>') !important;
+            background-repeat: no-repeat !important;
+            background-position: right 12px center !important;
+            background-size: 16px 16px !important;
+        }
+
+        .address-success {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%232ecc71"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>') !important;
+            background-repeat: no-repeat !important;
+            background-position: right 12px center !important;
+            background-size: 16px 16px !important;
+        }
+
+        /* Google Maps error state */
+        .address-error {
+            color: var(--error);
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .address-error.show {
+            display: block;
+        }
+
+        /* New PlaceAutocompleteElement Styling */
+        .gmpx-place-autocomplete {
+            width: 100%;
+            position: relative;
+        }
+
+        .gmpx-place-autocomplete input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #e8e8e8;
+            font-size: 14px;
+            font-family: Inter, sans-serif;
+            background: white;
+        }
+
+        .gmpx-place-autocomplete input:focus {
+            outline: none;
+            border-color: #111;
+            box-shadow: 0 0 0 2px rgba(17, 17, 17, 0.1);
+        }
+
+        /* Override default Google styles */
+        .gmpx-control {
+            border: none !important;
+            background: transparent !important;
+        }
+
+        .gmpx-listbox {
+            background: white !important;
+            border: 1px solid #e8e8e8 !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+            margin-top: 4px !important;
+        }
+
+        .gmpx-option {
+            padding: 8px 12px !important;
+            border-bottom: 1px solid #f0f0f0 !important;
+            font-family: Inter, sans-serif !important;
+            font-size: 14px !important;
+            color: #222 !important;
+        }
+
+        .gmpx-option:hover {
+            background: #f8f8f8 !important;
+        }
+
+        .gmpx-option[aria-selected="true"] {
+            background: #111 !important;
+            color: white !important;
+        }
     </style>
 </head>
 
@@ -687,7 +1002,10 @@ $conn->close();
                     <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
                         <div>
                             <div style="font-weight:700"><?php echo htmlspecialchars($item['name']); ?></div>
-                            <div class="small"><?php echo $item['rental_period']; ?></div>
+                            <div class="small"><?php echo htmlspecialchars($item['rental_period']); ?></div>
+                            <?php if (!empty($item['size'])): ?>
+                            <div class="small">Size: <?php echo htmlspecialchars($item['size']); ?></div>
+                            <?php endif; ?>
                         </div>
                         <div style="font-weight:700">R<?php echo number_format($item['price'], 2); ?></div>
                     </div>
@@ -738,31 +1056,77 @@ $conn->close();
                 <h3 style="margin:0 0 8px 0">Shipping & Contact</h3>
 
                 <div class="grid" style="margin-bottom:8px">
-                    <div class="field"><label for="firstName">First name</label><input id="firstName" type="text" placeholder="Full name" required></div>
-                    <div class="field"><label for="lastName">Last name</label><input id="lastName" type="text" placeholder="Surname" required></div>
-                </div>
-
-                <div class="grid">
-                    <div class="field"><label for="email">Email</label><input id="email" type="email" placeholder=" " required></div>
-                    <div class="field"><label for="phone">Phone</label><input id="phone" type="tel" placeholder="+27 ** *** ****" required></div>
-                </div>
-
-                <div class="field"><label for="addr1">Address 1</label><input id="addr1" type="text" placeholder="Street address" required></div>
-                <div class="field"><label for="addr2">Address 2 (optional)</label><input id="addr2" type="text" placeholder="Unit / complex"></div>
-
-                <div class="grid">
-                    <div class="field"><label for="city">City</label><input id="city" type="text" placeholder="" required></div>
-                    <div class="field"><label for="province">Province</label>
-                        <select id="province" required>
-                          <option value="">Select Province</option>
-                          <option>Gauteng</option><option>Western Cape</option><option>KwaZulu-Natal</option><option>Eastern Cape</option><option>North West</option><option>Mpumalanga</option><option>Northern Cape</option><option>Free State</option><option>Limpopo</option>
-                        </select>
+                    <div class="field">
+                        <label for="firstName">First name</label>
+                        <input id="firstName" type="text" placeholder="Full name" required>
+                        <div class="error-message" id="firstNameError">Please enter your first name</div>
+                    </div>
+                    <div class="field">
+                        <label for="lastName">Last name</label>
+                        <input id="lastName" type="text" placeholder="Surname" required>
+                        <div class="error-message" id="lastNameError">Please enter your last name</div>
                     </div>
                 </div>
 
                 <div class="grid">
-                    <div class="field"><label for="postal">Postal code</label><input id="postal" type="text" placeholder="" required></div>
-                    <div class="field"><label for="country">Country</label><input id="country" type="text" value="South Africa" readonly></div>
+                    <div class="field">
+                        <label for="email">Email</label>
+                        <input id="email" type="email" placeholder=" " required>
+                        <div class="error-message" id="emailError">Please enter a valid email address</div>
+                    </div>
+                    <div class="field">
+                        <label for="phone">Phone</label>
+                        <input id="phone" type="tel" placeholder="+27 12 345 6789" required>
+                        <div class="error-message" id="phoneError">Please enter a valid phone number (10+ digits)</div>
+                        <div class="phone-hint">Format: +27 XX XXX XXXX, 0XX XXX XXXX, or international numbers</div>
+                    </div>
+                </div>
+
+                <!-- Google Maps Address Field -->
+                <div class="field">
+                    <label for="address">Delivery Address</label>
+                    <input id="address" type="text" placeholder="Start typing your address..." required>
+                    <div class="error-message" id="addressError">Please enter your delivery address</div>
+                    <div class="address-hint">Start typing your address and select from suggestions</div>
+                </div>
+
+                <!-- Map Preview -->
+                <div id="mapPreview" style="height: 200px; width: 100%; margin-top: 12px; border-radius: 8px; display: none;"></div>
+
+                <div class="field">
+                    <label for="addr2">Address Line 2 (optional)</label>
+                    <input id="addr2" type="text" placeholder="Unit number, complex name, etc.">
+                    <div class="address-hint">Additional address information (apartment, suite, building)</div>
+                </div>
+
+                <div class="grid">
+                    <div class="field">
+                        <label for="city">City</label>
+                        <input id="city" type="text" placeholder="" required style="background-color: #f9f9f9;">
+                        <div class="error-message" id="cityError">Please enter your city</div>
+                    </div>
+                    <div class="field">
+                        <label for="province">Province</label>
+                        <select id="province" required style="background-color: #f9f9f9;">
+                          <option value="">Select Province</option>
+                          <option>Gauteng</option><option>Western Cape</option><option>KwaZulu-Natal</option>
+                          <option>Eastern Cape</option><option>North West</option><option>Mpumalanga</option>
+                          <option>Northern Cape</option><option>Free State</option><option>Limpopo</option>
+                        </select>
+                        <div class="error-message" id="provinceError">Please select your province</div>
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <div class="field">
+                        <label for="postal">Postal code</label>
+                        <input id="postal" type="text" placeholder="" required style="background-color: #f9f9f9;">
+                        <div class="error-message" id="postalError">Please enter your postal code</div>
+                    </div>
+                    <div class="field">
+                        <label for="country">Country</label>
+                        <input id="country" type="text" value="South Africa" readonly>
+                    </div>
                 </div>
 
                 <div style="margin-top:8px;">
@@ -772,7 +1136,6 @@ $conn->close();
                         <button class="opt" data-delivery="standard" id="optDeliver">Deliver to me (R250)</button>
                     </div>
                     
-                    <!-- Simple returns section - matches delivery styling -->
                     <div style="margin-top: 16px;">
                         <div class="small">Return options</div>
                         <div class="delivery-options" role="radiogroup" aria-label="Return options">
@@ -825,14 +1188,30 @@ $conn->close();
                         <!-- CARD FORM -->
                         <div id="method-card" style="margin-top:12px">
                             <div class="card-form">
-                                <div class="field"><label for="cardNumber">Card number</label><input id="cardNumber" type="text" inputmode="numeric" maxlength="19" placeholder="0000 0000 0000 0000" autocomplete="cc-number" aria-label="Card number"></div>
+                                <div class="field">
+                                    <label for="cardNumber">Card number</label>
+                                    <input id="cardNumber" type="text" inputmode="numeric" maxlength="19" placeholder="0000 0000 0000 0000" autocomplete="cc-number" aria-label="Card number">
+                                    <div class="error-message" id="cardNumberError">Please enter a valid card number</div>
+                                </div>
 
                                 <div class="grid">
-                                    <div class="field"><label for="cardName">Name on card</label><input id="cardName" type="text" placeholder="Name Surname" autocomplete="cc-name"></div>
-                                    <div class="field"><label for="cardExpiry">Expiry (MM/YY)</label><input id="cardExpiry" type="text" maxlength="5" placeholder="MM/YY" autocomplete="cc-exp"></div>
+                                    <div class="field">
+                                        <label for="cardName">Name on card</label>
+                                        <input id="cardName" type="text" placeholder="Name Surname" autocomplete="cc-name">
+                                        <div class="error-message" id="cardNameError">Please enter the name on card</div>
+                                    </div>
+                                    <div class="field">
+                                        <label for="cardExpiry">Expiry (MM/YY)</label>
+                                        <input id="cardExpiry" type="text" maxlength="5" placeholder="MM/YY" autocomplete="cc-exp">
+                                        <div class="error-message" id="cardExpiryError">Please enter a valid expiry date</div>
+                                    </div>
                                 </div>
                                 <div class="grid">
-                                    <div class="field"><label for="cardCvv">CVV</label><input id="cardCvv" type="text" maxlength="3" placeholder="123" autocomplete="cc-csc"></div>
+                                    <div class="field">
+                                        <label for="cardCvv">CVV</label>
+                                        <input id="cardCvv" type="text" maxlength="3" placeholder="123" autocomplete="cc-csc">
+                                        <div class="error-message" id="cardCvvError">Please enter a valid CVV</div>
+                                    </div>
                                     <div style="display:flex; align-items:end; gap:8px">
                                         <button id="payCardBtn" class="btn" style="width:100%">Pay <span id="payAmountText">R<?php echo number_format($total, 2); ?></span></button>
                                     </div>
@@ -843,8 +1222,11 @@ $conn->close();
 
                         <!-- PAY IN STORE -->
                         <div id="method-store" style="margin-top:12px; display:none">
+                            <div class="fcfs-warning">
+                                <strong>First Come First Serve:</strong> Your booking is reserved for <strong>24 hours</strong> only. If another customer pays online during this time, your reservation may be cancelled.
+                            </div>
                             <div class="notice">
-                                Reserve now and pay in store within <strong>2 days</strong> (by <span id="storeDeadlineStatic"></span>). A reference will be generated for your booking.
+                                Reserve now and pay in store within <strong>24 hours</strong> (by <span id="storeDeadlineStatic"></span>). A reference will be generated for your booking.
                             </div>
                             <div style="margin-top:12px; display:flex; gap:8px">
                                 <button id="generateRef" class="btn">Generate payment reference</button>
@@ -854,6 +1236,9 @@ $conn->close();
 
                         <!-- EFT -->
                         <div id="method-eft" style="margin-top:12px; display:none">
+                            <div class="fcfs-warning">
+                                <strong>Immediate Payment Required:</strong> Your booking will be cancelled if payment is not reflected in our account within <strong>2 hours</strong>. Only use this option if you can make an immediate payment.
+                            </div>
                             <div class="muted">Transfer the total amount to our bank account and upload proof of payment below.</div>
                             <div class="bank-details" style="margin-top:10px;">
                                 <div style="font-weight:700">Ozyde Rentals (PTY)</div>
@@ -919,9 +1304,9 @@ $conn->close();
             for (let i = 0; i < len; i++) s += chars[Math.floor(Math.random() * chars.length)];
             return s;
         };
-        const addDays = (d, days) => {
+        const addHours = (d, hours) => {
             const out = new Date(d);
-            out.setDate(out.getDate() + days);
+            out.setHours(out.getHours() + hours);
             return out;
         };
         const formatDateShort = (d) => d.toLocaleDateString(undefined, {
@@ -929,11 +1314,48 @@ $conn->close();
             month: 'short',
             day: 'numeric'
         });
+        const formatDateTime = (d) => d.toLocaleString(undefined, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
 
-        // Card validation functions
+        // Enhanced validation functions
+        const validateEmail = (email) => {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        };
+
+        // FIXED: More flexible phone validation
+        const validatePhone = (phone) => {
+            // Remove all non-digit characters
+            const digitsOnly = phone.replace(/\D/g, '');
+            
+            // Check if it's a valid South African number
+            // +27 followed by 9 digits (total 11) OR
+            // 0 followed by 9 digits (total 10) OR
+            // Any international number with 10-15 digits
+            if (digitsOnly.startsWith('27') && digitsOnly.length === 11) {
+                return true; // +27 format
+            } else if (digitsOnly.startsWith('0') && digitsOnly.length === 10) {
+                return true; // 0XX format
+            } else if (digitsOnly.length >= 10 && digitsOnly.length <= 15) {
+                return true; // International numbers
+            }
+            
+            return false;
+        };
+
+        const validatePostalCode = (postal) => {
+            return /^\d{4}$/.test(postal);
+        };
+
+        // Enhanced card validation functions
         const validateCardNumber = (number) => {
             const cleanNumber = number.replace(/\s/g, '');
-            // Luhn algorithm validation
+            if (!/^\d{13,19}$/.test(cleanNumber)) return false;
+            
             let sum = 0;
             let isEven = false;
             
@@ -973,6 +1395,145 @@ $conn->close();
             return /^\d{3,4}$/.test(cvv);
         };
 
+        const validateName = (name) => {
+            return name && name.trim().length >= 2;
+        };
+
+        // Field validation functions
+        function validateField(field, value) {
+            const errorElement = q(`#${field}Error`);
+            let isValid = true;
+            let message = '';
+
+            switch (field) {
+                case 'firstName':
+                case 'lastName':
+                    isValid = validateName(value);
+                    message = `Please enter your ${field.replace('Name', '').toLowerCase()} name`;
+                    break;
+                case 'email':
+                    isValid = validateEmail(value);
+                    message = 'Please enter a valid email address';
+                    break;
+                case 'phone':
+                    isValid = validatePhone(value);
+                    message = 'Please enter a valid phone number (10+ digits)';
+                    break;
+                case 'address':
+                    isValid = value && value.trim().length > 5;
+                    message = 'Please enter a valid address';
+                    break;
+                case 'city':
+                    isValid = value && value.trim().length > 0;
+                    message = 'Please enter your city';
+                    break;
+                case 'province':
+                    isValid = value && value !== '';
+                    message = 'Please select your province';
+                    break;
+                case 'postal':
+                    isValid = validatePostalCode(value);
+                    message = 'Please enter a valid 4-digit postal code';
+                    break;
+                case 'cardNumber':
+                    isValid = validateCardNumber(value);
+                    message = 'Please enter a valid card number';
+                    break;
+                case 'cardName':
+                    isValid = validateName(value);
+                    message = 'Please enter the name on card';
+                    break;
+                case 'cardExpiry':
+                    isValid = validateExpiry(value);
+                    message = 'Please enter a valid expiry date (MM/YY)';
+                    break;
+                case 'cardCvv':
+                    isValid = validateCVV(value);
+                    message = 'Please enter a valid CVV';
+                    break;
+            }
+
+            if (errorElement) {
+                if (!isValid) {
+                    errorElement.textContent = message;
+                    errorElement.style.display = 'block';
+                    q(`#${field}`).classList.add('error');
+                } else {
+                    errorElement.style.display = 'none';
+                    q(`#${field}`).classList.remove('error');
+                }
+            }
+
+            return isValid;
+        }
+
+        // Real-time validation
+        function setupFieldValidation(fieldId, validationType) {
+            const field = q(`#${fieldId}`);
+            if (field) {
+                field.addEventListener('blur', () => {
+                    validateField(fieldId, field.value);
+                });
+                
+                field.addEventListener('input', () => {
+                    const errorElement = q(`#${fieldId}Error`);
+                    if (errorElement) {
+                        errorElement.style.display = 'none';
+                        field.classList.remove('error');
+                    }
+                });
+            }
+        }
+
+        // Phone number formatting and validation
+        function setupPhoneValidation() {
+            const phoneInput = q('#phone');
+            if (phoneInput) {
+                phoneInput.addEventListener('input', (e) => {
+                    let value = e.target.value.replace(/\D/g, '');
+                    
+                    // Auto-format based on the number pattern
+                    if (value.startsWith('27')) {
+                        // +27 format
+                        if (value.length > 2) value = '+27 ' + value.substring(2);
+                        if (value.length > 6) value = value.substring(0, 6) + ' ' + value.substring(6);
+                        if (value.length > 10) value = value.substring(0, 10) + ' ' + value.substring(10);
+                    } else if (value.startsWith('0')) {
+                        // 0XX format
+                        if (value.length > 1) value = value.substring(0, 1) + ' ' + value.substring(1);
+                        if (value.length > 5) value = value.substring(0, 5) + ' ' + value.substring(5);
+                        if (value.length > 9) value = value.substring(0, 9) + ' ' + value.substring(9);
+                    } else {
+                        // International format - just add spaces every 3-4 digits
+                        if (value.length > 3) value = value.substring(0, 3) + ' ' + value.substring(3);
+                        if (value.length > 7) value = value.substring(0, 7) + ' ' + value.substring(7);
+                        if (value.length > 11) value = value.substring(0, 11) + ' ' + value.substring(11);
+                    }
+                    
+                    e.target.value = value;
+                    
+                    const errorElement = q('#phoneError');
+                    if (errorElement) {
+                        errorElement.style.display = 'none';
+                        phoneInput.classList.remove('error');
+                    }
+                });
+                
+                phoneInput.addEventListener('blur', () => {
+                    validateField('phone', phoneInput.value);
+                });
+            }
+        }
+
+        // Initialize field validations
+        ['firstName', 'lastName', 'email', 'phone', 'address', 'city', 'province', 'postal', 
+         'cardNumber', 'cardName', 'cardExpiry', 'cardCvv'].forEach(field => {
+            setupFieldValidation(field, field);
+        });
+
+        // Initialize phone validation
+        setupPhoneValidation();
+
         const VAT = 0.15;
         const DEPOSIT_PCT = 0.20;
 
@@ -985,10 +1546,9 @@ $conn->close();
 
         // Render items & totals
         function renderSummary() {
-            // Use the fixed deposit amount from PHP (R800)
             const subtotal = initialSubtotal;
-            const deposit = initialDeposit; // R800 fixed deposit
-            const total = subtotal + deposit + deliveryFee + returnFee; // Total = subtotal + deposit + fees
+            const deposit = initialDeposit;
+            const total = subtotal + deposit + deliveryFee + returnFee;
 
             q('#subtotal').textContent = formatR(subtotal);
             q('#deposit').textContent = formatR(deposit);
@@ -997,7 +1557,6 @@ $conn->close();
             q('#totalAmount').textContent = formatR(total);
             q('#payAmountText').textContent = formatR(total);
 
-            // expose totals for later booking object creation
             q('#totalAmount').dataset.value = String(total);
             q('#subtotal').dataset.value = String(subtotal);
             q('#deposit').dataset.value = String(deposit);
@@ -1017,7 +1576,7 @@ $conn->close();
             });
         });
 
-        // Return options - using same class as delivery
+        // Return options
         const returnButtons = [q('#returnDrop'), q('#returnPickup')];
         returnButtons.forEach(b => {
             b.addEventListener('click', () => {
@@ -1049,11 +1608,11 @@ $conn->close();
         }
         showMethod('card');
 
-        // Set static store deadline
+        // Set static store deadline (24 hours)
         const storeDeadlineStatic = q('#storeDeadlineStatic');
         if (storeDeadlineStatic) {
-            const dl = addDays(new Date(), 2);
-            storeDeadlineStatic.textContent = formatDateShort(dl);
+            const dl = addHours(new Date(), 24);
+            storeDeadlineStatic.textContent = formatDateTime(dl);
         }
 
         // Card preview bindings
@@ -1065,17 +1624,20 @@ $conn->close();
             cardNumberInput.addEventListener('input', (e) => {
                 e.target.value = fmtCardNumber(e.target.value);
                 q('#cardNumberPreview').textContent = e.target.value || '0000 0000 0000 0000';
+                validateField('cardNumber', e.target.value);
             });
         }
         if (cardNameInput) {
             cardNameInput.addEventListener('input', (e) => {
                 q('#cardNamePreview').textContent = (e.target.value || 'NAME SURNAME').toUpperCase();
+                validateField('cardName', e.target.value);
             });
         }
         if (cardExpiryInput) {
             cardExpiryInput.addEventListener('input', (e) => {
                 e.target.value = fmtExpiry(e.target.value);
                 q('#cardExpiryPreview').textContent = e.target.value || 'MM/YY';
+                validateField('cardExpiry', e.target.value);
             });
         }
         if (cardCvvInput) {
@@ -1084,17 +1646,36 @@ $conn->close();
             });
             cardCvvInput.addEventListener('blur', () => {
                 q('#cardPreview').style.transform = '';
+                validateField('cardCvv', cardCvvInput.value);
             });
         }
 
-        // Card pay with proper validation
+        // Enhanced shipping details validation
+        function validateShippingDetails() {
+            const fields = [
+                'firstName', 'lastName', 'email', 'phone', 
+                'address', 'city', 'province', 'postal'
+            ];
+            
+            let isValid = true;
+            fields.forEach(field => {
+                const value = q(`#${field}`).value;
+                if (!validateField(field, value)) {
+                    isValid = false;
+                }
+            });
+            
+            return isValid;
+        }
+
+        // Card pay with actual server processing
         const payCardBtn = q('#payCardBtn');
         if (payCardBtn) {
             payCardBtn.addEventListener('click', (ev) => {
                 ev.preventDefault();
                 
-                // Validate shipping details first
                 if (!validateShippingDetails()) {
+                    q('#statusArea').innerHTML = `<div class="error-notice">Please fix the errors in your shipping details before proceeding.</div>`;
                     return;
                 }
 
@@ -1103,109 +1684,91 @@ $conn->close();
                 const exp = (q('#cardExpiry') && q('#cardExpiry').value) || '';
                 const cvv = (q('#cardCvv') && q('#cardCvv').value) || '';
                 
-                const errs = [];
+                const cardFieldsValid = [
+                    validateField('cardNumber', num),
+                    validateField('cardName', name),
+                    validateField('cardExpiry', exp),
+                    validateField('cardCvv', cvv)
+                ].every(valid => valid);
                 
-                // Enhanced card validation
-                if (!validateCardNumber(num)) errs.push('Please enter a valid card number.');
-                if (!name || name.length < 2) errs.push('Enter the full cardholder name.');
-                if (!validateExpiry(exp)) errs.push('Enter a valid expiry date (MM/YY).');
-                if (!validateCVV(cvv)) errs.push('Enter a valid 3 or 4-digit CVV.');
-                
-                if (errs.length) {
-                    q('#statusArea').innerHTML = `<div class="notice" role="alert">${errs.join('<br>')}</div>`;
+                if (!cardFieldsValid) {
+                    q('#statusArea').innerHTML = `<div class="error-notice">Please fix the errors in your card details before proceeding.</div>`;
                     return;
                 }
 
-                // Show processing state
                 payCardBtn.innerHTML = '<span class="spinner"></span> Processing...';
                 payCardBtn.classList.add('processing');
+                payCardBtn.disabled = true;
 
-                // Simulate payment processing
-                setTimeout(() => {
-                    // compute totals again (ensure correct numbers)
-                    const subtotal = Number(q('#subtotal').dataset.value || 0);
-                    const deposit = Number(q('#deposit').dataset.value || 0);
-                    const total = Number(q('#totalAmount').dataset.value || 0);
-
-                    // create booking object to hand off to success page
-                    const booking = {
-                        ref: randRef(6),
+                // Actually process the payment and create booking
+                const total = Number(q('#totalAmount').dataset.value || 0);
+                
+                fetch('process_booking.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
                         method: 'card',
-                        status: 'confirmed',
-                        items: items,
-                        subtotal: subtotal,
-                        deposit: deposit,
-                        deliveryFee: deliveryFee,
-                        returnFee: returnFee,
                         total: total,
-                        name: (q('#firstName') && q('#firstName').value.trim()) || '',
-                        email: (q('#email') && q('#email').value.trim()) || '',
-                        phone: (q('#phone') && q('#phone').value.trim()) || '',
-                        address: (q('#addr1') && q('#addr1').value.trim()) || '',
-                        createdAt: new Date().toISOString()
-                    };
+                        amount_paid: total
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        q('#statusArea').innerHTML = `<div class="success" role="status">Payment successful — booking confirmed. Redirecting to confirmation…</div>`;
+                        
+                        // Store in sessionStorage for success page
+                        const booking = {
+                            ref: data.booking_ref,
+                            method: 'card',
+                            status: 'confirmed',
+                            items: items,
+                            total: total,
+                            name: (q('#firstName') && q('#firstName').value.trim()) || '',
+                            email: (q('#email') && q('#email').value.trim()) || '',
+                            createdAt: new Date().toISOString()
+                        };
+                        
+                        try {
+                            sessionStorage.setItem('ozyde_booking', JSON.stringify(booking));
+                        } catch (err) {
+                            console.warn('sessionStorage set failed', err);
+                        }
 
-                    try {
-                        sessionStorage.setItem('ozyde_booking', JSON.stringify(booking));
-                    } catch (err) {
-                        console.warn('sessionStorage set failed', err);
+                        setTimeout(() => {
+                            window.location.href = 'success.php?ref=' + data.booking_ref;
+                        }, 1500);
+                    } else {
+                        throw new Error(data.error || 'Payment failed');
                     }
-
-                    q('#statusArea').innerHTML = `<div class="success" role="status">Payment successful — booking confirmed. Redirecting to confirmation…</div>`;
-
-                    // short delay to let user see the success message, then go to success page
-                    setTimeout(() => {
-                        window.location.href = 'success.php';
-                    }, 1500);
-                }, 2000);
+                })
+                .catch(error => {
+                    payCardBtn.innerHTML = 'Pay <span id="payAmountText">R' + formatR(total) + '</span>';
+                    payCardBtn.classList.remove('processing');
+                    payCardBtn.disabled = false;
+                    q('#statusArea').innerHTML = `<div class="error-notice">Payment failed: ${error.message}</div>`;
+                });
             });
         }
 
-        // Validate shipping details
-        function validateShippingDetails() {
-            const fn = (q('#firstName') && q('#firstName').value.trim()) || '';
-            const ln = (q('#lastName') && q('#lastName').value.trim()) || '';
-            const email = (q('#email') && q('#email').value.trim()) || '';
-            const phone = (q('#phone') && q('#phone').value.trim()) || '';
-            const addr = (q('#addr1') && q('#addr1').value.trim()) || '';
-            const city = (q('#city') && q('#city').value.trim()) || '';
-            const province = (q('#province') && q('#province').value) || '';
-            const postal = (q('#postal') && q('#postal').value.trim()) || '';
-            
-            const errs = [];
-            if (!fn) errs.push('First name is required');
-            if (!ln) errs.push('Last name is required');
-            if (!email || !/\S+@\S+\.\S+/.test(email)) errs.push('Valid email is required');
-            if (!phone || phone.length < 10) errs.push('Valid phone number is required');
-            if (!addr) errs.push('Address is required');
-            if (!city) errs.push('City is required');
-            if (!province) errs.push('Province is required');
-            if (!postal) errs.push('Postal code is required');
-            
-            if (errs.length) {
-                q('#statusArea').innerHTML = `<div class="notice" role="alert">Please complete shipping details:<br>${errs.join('<br>')}</div>`;
-                return false;
-            }
-            return true;
-        }
-
-        // Pay-in-store: generate ref & deadline
+        // Pay-in-store: generate ref & deadline (24 hours)
         const genRefBtn = q('#generateRef');
         if (genRefBtn) {
             genRefBtn.addEventListener('click', () => {
                 if (!validateShippingDetails()) {
+                    q('#statusArea').innerHTML = `<div class="error-notice">Please complete your shipping details first.</div>`;
                     return;
                 }
 
                 const ref = randRef(6);
-                const deadline = addDays(new Date(), 2);
+                const deadline = addHours(new Date(), 24);
                 
-                // Get customer name for the slip
                 const firstName = (q('#firstName') && q('#firstName').value.trim()) || '';
                 const lastName = (q('#lastName') && q('#lastName').value.trim()) || '';
                 const customerName = `${firstName} ${lastName}`.trim() || 'Customer';
                 
-                // Create the reference card
                 q('#storeResult').innerHTML = `
                     <div class="store-ref-card">
                         <div class="ref-header">
@@ -1224,16 +1787,16 @@ $conn->close();
                             </div>
                             
                             <div class="deadline-container">
-                                <div class="deadline-icon">📅</div>
+                                <div class="deadline-icon">⏰</div>
                                 <div class="deadline-text">
-                                    <div class="deadline-label">Payment Due By</div>
-                                    <div class="deadline-date">${formatDateShort(deadline)}</div>
+                                    <div class="deadline-label">Payment Due By (24 hours)</div>
+                                    <div class="deadline-date">${formatDateTime(deadline)}</div>
                                 </div>
                             </div>
                             
                             <div class="ref-note">
-                                <div class="note-icon">ℹ️</div>
-                                <div class="note-text">If payment is not received by this deadline, your reservation may be cancelled.</div>
+                                <div class="note-icon">⚠️</div>
+                                <div class="note-text"><strong>First Come First Serve:</strong> Your reservation is held for 24 hours only. If another customer pays online, your booking may be cancelled.</div>
                             </div>
                         </div>
                         
@@ -1256,14 +1819,12 @@ $conn->close();
 
                 storeReferenceGenerated = true;
 
-                // Set up copy and print buttons
                 setTimeout(() => {
                     const copyRefBtn = q('#copyRefBtn');
                     if (copyRefBtn) {
                         copyRefBtn.addEventListener('click', () => {
                             if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
                                 navigator.clipboard.writeText(ref).then(() => {
-                                    // Visual feedback for copy
                                     copyRefBtn.innerHTML = '<span class="btn-icon">✓</span> Copied!';
                                     copyRefBtn.classList.add('copied');
                                     setTimeout(() => {
@@ -1280,7 +1841,6 @@ $conn->close();
                     const printRef = q('#printRef');
                     if (printRef) {
                         printRef.addEventListener('click', () => {
-                            // Create a slip-like print layout
                             const printWindow = window.open('', '_blank');
                             if (printWindow) {
                                 printWindow.document.write(`
@@ -1302,6 +1862,7 @@ $conn->close();
                                                 .total { font-size: 16px; font-weight: bold; text-align: center; margin: 10px 0; }
                                                 .footer { margin-top: 20px; font-size: 10px; color: #666; text-align: center; border-top: 1px solid #ccc; padding-top: 10px; }
                                                 .barcode { text-align: center; margin: 10px 0; font-family: monospace; letter-spacing: 3px; }
+                                                .warning { background: #fff8e8; padding: 8px; border-radius: 4px; margin: 10px 0; font-size: 12px; }
                                             }
                                         </style>
                                     </head>
@@ -1321,7 +1882,12 @@ $conn->close();
                                                 <div class="section-title">CUSTOMER DETAILS</div>
                                                 <div><strong>Name:</strong> ${customerName}</div>
                                                 <div><strong>Date:</strong> ${new Date().toLocaleDateString()}</div>
-                                                <div><strong>Due Date:</strong> ${formatDateShort(deadline)}</div>
+                                                <div><strong>Due Date:</strong> ${formatDateTime(deadline)}</div>
+                                            </div>
+                                            
+                                            <div class="warning">
+                                                <strong>FIRST COME FIRST SERVE:</strong><br>
+                                                Valid for 24 hours only
                                             </div>
                                             
                                             <div class="section">
@@ -1345,7 +1911,6 @@ $conn->close();
                                 `);
                                 printWindow.document.close();
                                 
-                                // Wait for content to load then print
                                 setTimeout(() => {
                                     printWindow.print();
                                     printWindow.close();
@@ -1354,36 +1919,66 @@ $conn->close();
                         });
                     }
 
-                    // Confirm store payment button
                     const confirmStorePayment = q('#confirmStorePayment');
                     if (confirmStorePayment) {
                         confirmStorePayment.addEventListener('click', () => {
+                            if (!validateShippingDetails()) {
+                                q('#statusArea').innerHTML = `<div class="error-notice">Please complete your shipping details first.</div>`;
+                                return;
+                            }
+
                             confirmStorePayment.innerHTML = '<span class="spinner"></span> Processing...';
                             confirmStorePayment.classList.add('processing');
                             
-                            // Store booking data for pending order
-                            const booking = {
-                                ref: ref,
-                                method: 'store',
-                                status: 'pending',
-                                items: items,
-                                subtotal: Number(q('#subtotal').dataset.value || 0),
-                                total: Number(q('#totalAmount').dataset.value || 0),
-                                name: customerName,
-                                email: (q('#email') && q('#email').value.trim()) || '',
-                                phone: (q('#phone') && q('#phone').value.trim()) || '',
-                                address: (q('#addr1') && q('#addr1').value.trim()) || '',
-                                createdAt: new Date().toISOString(),
-                                deadline: deadline.toISOString()
-                            };
+                            const total = Number(q('#totalAmount').dataset.value || 0);
+                            const ref = randRef(6);
                             
-                            try {
-                                sessionStorage.setItem('ozyde_booking', JSON.stringify(booking));
-                            } catch (e) {}
-                            
-                            setTimeout(() => {
-                                window.location.href = 'pending.php?method=store&ref=' + ref;
-                            }, 1000);
+                            fetch('process_booking.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    method: 'store',
+                                    total: total,
+                                    amount_paid: 0
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    const booking = {
+                                        ref: data.booking_ref,
+                                        method: 'store',
+                                        status: 'pending',
+                                        items: items,
+                                        subtotal: Number(q('#subtotal').dataset.value || 0),
+                                        total: total,
+                                        name: customerName,
+                                        email: (q('#email') && q('#email').value.trim()) || '',
+                                        phone: (q('#phone') && q('#phone').value.trim()) || '',
+                                        address: (q('#address') && q('#address').value.trim()) || '',
+                                        createdAt: new Date().toISOString(),
+                                        deadline: deadline.toISOString(),
+                                        expires_at: deadline.toISOString()
+                                    };
+                                    
+                                    try {
+                                        sessionStorage.setItem('ozyde_booking', JSON.stringify(booking));
+                                    } catch (e) {}
+                                    
+                                    setTimeout(() => {
+                                        window.location.href = 'pending.php?method=store&ref=' + data.booking_ref;
+                                    }, 1000);
+                                } else {
+                                    throw new Error(data.error || 'Booking creation failed');
+                                }
+                            })
+                            .catch(error => {
+                                confirmStorePayment.innerHTML = 'Confirm Reservation';
+                                confirmStorePayment.classList.remove('processing');
+                                q('#statusArea').innerHTML = `<div class="error-notice">Reservation failed: ${error.message}</div>`;
+                            });
                         });
                     }
                 }, 50);
@@ -1399,7 +1994,6 @@ $conn->close();
             ta.select();
             try {
                 document.execCommand('copy');
-                // Visual feedback for copy
                 btn.innerHTML = '<span class="btn-icon">✓</span> Copied!';
                 btn.classList.add('copied');
                 setTimeout(() => {
@@ -1412,7 +2006,7 @@ $conn->close();
             document.body.removeChild(ta);
         }
 
-        // EFT proof upload
+        // EFT proof upload with 2-hour deadline
         const proofInput = q('#proof');
         const proofPreview = q('#proofPreview');
         const submitProof = q('#submitProof');
@@ -1422,9 +2016,8 @@ $conn->close();
                 const file = e.target.files[0];
                 if (!file) return;
                 
-                // Validate file type and size
                 const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
-                const maxSize = 5 * 1024 * 1024; // 5MB
+                const maxSize = 5 * 1024 * 1024;
                 
                 if (!validTypes.includes(file.type)) {
                     q('#proofMsg').textContent = 'Please upload a JPG, PNG, or PDF file.';
@@ -1470,6 +2063,7 @@ $conn->close();
         if (submitProof) {
             submitProof.addEventListener('click', () => {
                 if (!validateShippingDetails()) {
+                    q('#statusArea').innerHTML = `<div class="error-notice">Please complete your shipping details first.</div>`;
                     return;
                 }
 
@@ -1481,34 +2075,59 @@ $conn->close();
                 submitProof.innerHTML = '<span class="spinner"></span> Submitting...';
                 submitProof.disabled = true;
                 
-                setTimeout(() => {
-                    // Store booking data for pending EFT order
-                    const ref = randRef(6);
-                    const booking = {
-                        ref: ref,
+                const total = Number(q('#totalAmount').dataset.value || 0);
+                
+                fetch('process_booking.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
                         method: 'eft',
-                        status: 'pending',
-                        items: items,
-                        subtotal: Number(q('#subtotal').dataset.value || 0),
-                        total: Number(q('#totalAmount').dataset.value || 0),
-                        name: (q('#firstName') && q('#firstName').value.trim()) + ' ' + (q('#lastName') && q('#lastName').value.trim()),
-                        email: (q('#email') && q('#email').value.trim()) || '',
-                        phone: (q('#phone') && q('#phone').value.trim()) || '',
-                        address: (q('#addr1') && q('#addr1').value.trim()) || '',
-                        createdAt: new Date().toISOString(),
-                        proofUploaded: true
-                    };
-                    
-                    try {
-                        sessionStorage.setItem('ozyde_booking', JSON.stringify(booking));
-                    } catch (e) {}
-                    
-                    q('#statusArea').innerHTML = `<div class="warning">Proof submitted. Your order is pending verification. Redirecting...</div>`;
-                    
-                    setTimeout(() => {
-                        window.location.href = 'pending.php?method=eft&ref=' + ref;
-                    }, 1500);
-                }, 1000);
+                        total: total,
+                        amount_paid: 0
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const verificationDeadline = addHours(new Date(), 2);
+                        
+                        const booking = {
+                            ref: data.booking_ref,
+                            method: 'eft',
+                            status: 'pending_verification',
+                            items: items,
+                            subtotal: Number(q('#subtotal').dataset.value || 0),
+                            total: total,
+                            name: (q('#firstName') && q('#firstName').value.trim()) + ' ' + (q('#lastName') && q('#lastName').value.trim()),
+                            email: (q('#email') && q('#email').value.trim()) || '',
+                            phone: (q('#phone') && q('#phone').value.trim()) || '',
+                            address: (q('#address') && q('#address').value.trim()) || '',
+                            createdAt: new Date().toISOString(),
+                            proofUploaded: true,
+                            verification_deadline: verificationDeadline.toISOString(),
+                            expires_at: verificationDeadline.toISOString()
+                        };
+                        
+                        try {
+                            sessionStorage.setItem('ozyde_booking', JSON.stringify(booking));
+                        } catch (e) {}
+                        
+                        q('#statusArea').innerHTML = `<div class="warning">Proof submitted. Your order is pending verification and will be cancelled if payment is not reflected within 2 hours. Redirecting...</div>`;
+                        
+                        setTimeout(() => {
+                            window.location.href = 'pending.php?method=eft&ref=' + data.booking_ref;
+                        }, 1500);
+                    } else {
+                        throw new Error(data.error || 'Booking creation failed');
+                    }
+                })
+                .catch(error => {
+                    submitProof.innerHTML = 'Submit proof';
+                    submitProof.disabled = false;
+                    q('#statusArea').innerHTML = `<div class="error-notice">Submission failed: ${error.message}</div>`;
+                });
             });
         }
         if (clearProofBtn) {
@@ -1527,6 +2146,7 @@ $conn->close();
             e.preventDefault();
             
             if (!validateShippingDetails()) {
+                q('#statusArea').innerHTML = `<div class="error-notice">Please complete your shipping details before finalizing.</div>`;
                 return;
             }
             
@@ -1558,8 +2178,405 @@ $conn->close();
             if (confirm('Cancel checkout and return to shop?')) window.location.href = 'cart.php';
         });
 
-        // Init done
-        renderSummary();
+        // ========== GOOGLE MAPS PLACES AUTCOMPLETE IMPLEMENTATION ==========
+        
+        let autocomplete = null;
+        let map = null;
+        let marker = null;
+
+        function initAutocomplete() {
+            console.log("🚀 Google Maps API (New) loaded successfully");
+            
+            const addressInput = document.getElementById("address");
+            const mapPreview = document.getElementById("mapPreview");
+
+            if (!addressInput) {
+                console.error("❌ Address input element not found");
+                return;
+            }
+
+            // Check if new API is available
+            if (typeof google === 'undefined' || !google.maps || !google.maps.places || !google.maps.places.PlaceAutocompleteElement) {
+                console.error("❌ New Places API not available");
+                showGoogleMapsError("New address suggestions not available. Please enter address manually.");
+                return;
+            }
+
+            try {
+                // Create the new PlaceAutocompleteElement
+                const options = {
+                    inputElement: addressInput,
+                    componentRestrictions: { country: 'za' }
+                };
+
+                console.log("🔄 Creating PlaceAutocompleteElement with options:", options);
+                
+                autocomplete = new google.maps.places.PlaceAutocompleteElement(options);
+                
+                // Create a container for the autocomplete
+                const container = document.createElement('div');
+                container.className = 'gmpx-place-autocomplete';
+                
+                // Insert the container after the address input
+                addressInput.parentNode.insertBefore(container, addressInput.nextSibling);
+                container.appendChild(autocomplete);
+
+                console.log("✅ PlaceAutocompleteElement created and added to DOM");
+
+                // Initialize map with AdvancedMarkerElement if available
+                if (mapPreview) {
+                    map = new google.maps.Map(mapPreview, {
+                        center: { lat: -26.2041, lng: 28.0473 },
+                        zoom: 10,
+                        styles: [
+                            {
+                                featureType: "all",
+                                elementType: "geometry",
+                                stylers: [{ color: "#f5f5f5" }]
+                            }
+                        ],
+                        disableDefaultUI: true,
+                        zoomControl: true,
+                        mapId: 'ozyde_map'
+                    });
+
+                    // Use AdvancedMarkerElement if available, fallback to regular Marker
+                    if (google.maps.marker && google.maps.marker.AdvancedMarkerElement) {
+                        marker = new google.maps.marker.AdvancedMarkerElement({
+                            map: map,
+                            position: { lat: -26.2041, lng: 28.0473 },
+                            title: "Selected location"
+                        });
+                    } else {
+                        // Fallback to regular Marker
+                        marker = new google.maps.Marker({ 
+                            map: map,
+                            position: { lat: -26.2041, lng: 28.0473 },
+                            title: "Selected location"
+                        });
+                    }
+
+                    console.log("✅ Map and marker initialized");
+                }
+
+                // Add event listener for place selection
+                autocomplete.addEventListener('gmp-placeselect', async (event) => {
+                    console.log("📍 Place selected with new API");
+                    await onPlaceSelected(event.place);
+                });
+
+                // Sync the autocomplete value with the original input and handle input changes
+                autocomplete.addEventListener('input', function() {
+                    // Update the original input field
+                    addressInput.value = autocomplete.value;
+                    
+                    // Show loading state for longer inputs
+                    if (autocomplete.value.length > 2) {
+                        addressInput.classList.add('address-loading');
+                        addressInput.classList.remove('address-success');
+                    } else {
+                        addressInput.classList.remove('address-loading', 'address-success');
+                        clearAddressFields();
+                    }
+                    
+                    // Hide map when typing
+                    if (mapPreview) mapPreview.style.display = 'none';
+                    if (marker) {
+                        if (marker.setMap) marker.setMap(null);
+                        if (marker.map) marker.map = null;
+                    }
+                    
+                    // Clear errors
+                    clearAddressError();
+                });
+
+                // Hide the original input since we're using the autocomplete element
+                addressInput.style.display = 'none';
+
+                console.log("✅ New Google Maps Places API fully initialized");
+
+            } catch (error) {
+                console.error("❌ Error initializing new Places API:", error);
+                // Fallback: show the original input
+                addressInput.style.display = 'block';
+                const autocompleteContainer = document.querySelector('.gmpx-place-autocomplete');
+                if (autocompleteContainer) {
+                    autocompleteContainer.remove();
+                }
+                setupManualAddressInput();
+            }
+        }
+
+        async function onPlaceSelected(place) {
+            console.log("📍 Place selected:", place);
+            
+            const addressInput = document.getElementById("address");
+            const mapPreview = document.getElementById("mapPreview");
+
+            if (!place) {
+                console.log("❌ No place selected");
+                return;
+            }
+
+            try {
+                // Show success state
+                addressInput.classList.remove('address-loading');
+                addressInput.classList.add('address-success');
+
+                // Fetch additional place details
+                console.log("🔄 Fetching place details...");
+                const placeWithDetails = await place.fetchFields({
+                    fields: ['location', 'formattedAddress', 'addressComponents']
+                });
+
+                console.log("📍 Place details fetched:", placeWithDetails);
+
+                // Update the original input with the formatted address
+                if (placeWithDetails.formattedAddress && addressInput) {
+                    addressInput.value = placeWithDetails.formattedAddress;
+                }
+
+                // Update map with location
+                if (mapPreview && map && placeWithDetails.location) {
+                    mapPreview.style.display = 'block';
+                    map.setCenter(placeWithDetails.location);
+                    map.setZoom(15);
+                    
+                    // Update marker position
+                    if (marker.position) {
+                        marker.position = placeWithDetails.location;
+                    } else if (marker.setPosition) {
+                        marker.setPosition(placeWithDetails.location);
+                    }
+                    
+                    if (marker.map) {
+                        marker.map = map;
+                    } else if (marker.setMap) {
+                        marker.setMap(map);
+                    }
+                }
+
+                // Parse address components
+                if (placeWithDetails.addressComponents && placeWithDetails.addressComponents.length > 0) {
+                    console.log("📍 Using addressComponents:", placeWithDetails.addressComponents);
+                    parseNewAddressComponents(placeWithDetails.addressComponents);
+                } else if (placeWithDetails.formattedAddress) {
+                    console.log("📍 Using formattedAddress:", placeWithDetails.formattedAddress);
+                    extractAddressFromFormatted(placeWithDetails.formattedAddress);
+                } else if (autocomplete.value) {
+                    console.log("📍 Using autocomplete value:", autocomplete.value);
+                    extractAddressFromFormatted(autocomplete.value);
+                } else {
+                    console.log("❌ No address data available");
+                }
+
+                // Validate the address field
+                validateField('address', addressInput.value);
+
+            } catch (error) {
+                console.error("❌ Error processing selected place:", error);
+                // Fallback: try to extract from the autocomplete value
+                if (autocomplete && autocomplete.value) {
+                    console.log("🔄 Fallback: extracting from autocomplete value");
+                    extractAddressFromFormatted(autocomplete.value);
+                } else if (addressInput && addressInput.value) {
+                    console.log("🔄 Fallback: extracting from address input value");
+                    extractAddressFromFormatted(addressInput.value);
+                }
+            }
+        }
+
+        function parseNewAddressComponents(components) {
+            console.log("📍 Parsing new API address components:", components);
+            
+            const addressData = {
+                streetNumber: '',
+                route: '',
+                locality: '',
+                administrativeArea: '',
+                postalCode: '',
+                subpremise: ''
+            };
+
+            components.forEach(component => {
+                const types = component.types;
+                
+                console.log("📍 Component:", component, "Types:", types);
+                
+                if (types.includes('street_number')) {
+                    addressData.streetNumber = component.longText || component.shortText || '';
+                } else if (types.includes('route')) {
+                    addressData.route = component.shortText || component.longText || '';
+                } else if (types.includes('locality') || types.includes('postal_town')) {
+                    addressData.locality = component.longText || '';
+                } else if (types.includes('administrative_area_level_1')) {
+                    addressData.administrativeArea = component.longText || '';
+                } else if (types.includes('postal_code')) {
+                    addressData.postalCode = component.longText || '';
+                } else if (types.includes('subpremise')) {
+                    addressData.subpremise = component.longText || '';
+                }
+            });
+
+            console.log("📍 Parsed address data:", addressData);
+            fillAddressFields(addressData);
+        }
+
+        function extractAddressFromFormatted(formattedAddress) {
+            if (!formattedAddress) return;
+            
+            console.log("📍 Extracting from formatted address:", formattedAddress);
+            
+            const parts = formattedAddress.split(',').map(part => part.trim());
+            const addressData = {
+                locality: '',
+                administrativeArea: '',
+                postalCode: ''
+            };
+            
+            console.log("📍 Formatted address parts:", parts);
+            
+            if (parts.length >= 3) {
+                // Typical format: "123 Main St, Johannesburg, Gauteng, 2001, South Africa"
+                addressData.locality = parts[1] || '';
+                addressData.administrativeArea = parts[2] || '';
+                
+                // Look for postal code in any part
+                for (let part of parts) {
+                    const postalMatch = part.match(/\b\d{4}\b/);
+                    if (postalMatch) {
+                        addressData.postalCode = postalMatch[0];
+                        break;
+                    }
+                }
+            } else if (parts.length === 2) {
+                // Shorter format: "Johannesburg, Gauteng"
+                addressData.locality = parts[0] || '';
+                addressData.administrativeArea = parts[1] || '';
+            }
+            
+            console.log("📍 Extracted address data:", addressData);
+            fillAddressFields(addressData);
+        }
+
+        function fillAddressFields(addressData) {
+            const addr2 = document.getElementById('addr2');
+            const city = document.getElementById('city');
+            const province = document.getElementById('province');
+            const postal = document.getElementById('postal');
+
+            console.log("📍 Filling address fields with:", addressData);
+
+            // Set Address Line 2 if there's a subpremise
+            if (addressData.subpremise && addr2) {
+                addr2.value = `Unit ${addressData.subpremise}`;
+            }
+
+            // Set city - editable but with visual indication
+            if (addressData.locality && city) {
+                city.value = addressData.locality;
+                city.style.backgroundColor = '#f9f9f9';
+                validateField('city', addressData.locality);
+            }
+
+            // Set province - editable but with visual indication
+            if (addressData.administrativeArea && province) {
+                const provinceMap = {
+                    'gauteng': 'Gauteng',
+                    'western cape': 'Western Cape', 
+                    'kwaZulu-natal': 'KwaZulu-Natal',
+                    'kzn': 'KwaZulu-Natal',
+                    'eastern cape': 'Eastern Cape',
+                    'north west': 'North West',
+                    'mpumalanga': 'Mpumalanga',
+                    'northern cape': 'Northern Cape',
+                    'free state': 'Free State',
+                    'limpopo': 'Limpopo'
+                };
+                
+                const provinceLower = addressData.administrativeArea.toLowerCase();
+                const mappedProvince = provinceMap[provinceLower] || addressData.administrativeArea;
+                province.value = mappedProvince;
+                province.style.backgroundColor = '#f9f9f9';
+                validateField('province', mappedProvince);
+            }
+
+            // Set postal code - editable but with visual indication
+            if (addressData.postalCode && postal) {
+                postal.value = addressData.postalCode;
+                postal.style.backgroundColor = '#f9f9f9';
+                validateField('postal', addressData.postalCode);
+            }
+
+            console.log("✅ Address fields filled successfully");
+        }
+
+        function clearAddressFields() {
+            const fields = ['addr2', 'city', 'province', 'postal'];
+            fields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.value = '';
+                    // Remove background color when clearing
+                    field.style.backgroundColor = '';
+                }
+            });
+        }
+
+        function clearAddressError() {
+            const errorElement = document.getElementById('addressError');
+            const addressInput = document.getElementById('address');
+            if (errorElement) {
+                errorElement.style.display = 'none';
+            }
+            if (addressInput) {
+                addressInput.classList.remove('error');
+            }
+        }
+
+        function showGoogleMapsError(message) {
+            const addressHint = document.querySelector('.address-hint');
+            if (addressHint) {
+                addressHint.innerHTML = message || 'Address suggestions unavailable. Please enter your address manually.';
+                addressHint.style.color = '#e74c3c';
+            }
+            
+            const addressInput = document.getElementById('address');
+            if (addressInput) {
+                addressInput.placeholder = 'Enter your full address manually...';
+            }
+        }
+
+        function setupManualAddressInput() {
+            console.log("🔄 Setting up manual address input as fallback");
+            
+            const addressInput = document.getElementById("address");
+            if (!addressInput) return;
+
+            // Make sure the original input is visible
+            addressInput.style.display = 'block';
+
+            addressInput.addEventListener('blur', function() {
+                if (this.value.trim().length > 5) {
+                    extractAddressFromFormatted(this.value);
+                    validateField('address', this.value);
+                }
+            });
+
+            showGoogleMapsError("Using manual address input. Please enter complete address.");
+        }
+
+        // Make function globally available
+        window.initAutocomplete = initAutocomplete;
+
+        // Fallback if API fails to load
+        setTimeout(() => {
+            if (typeof google === 'undefined' || !google.maps) {
+                console.warn("Google Maps failed to load, using manual input");
+                setupManualAddressInput();
+            }
+        }, 5000);
+
     </script>
 </body>
 </html>
